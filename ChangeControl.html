@@ -18,7 +18,11 @@
 
 
 
+
+
 </style><script role="script" id="twine-user-script" type="text/twine-javascript">
+
+
 
 
 
@@ -27,11 +31,13 @@
 </script><tw-passagedata pid="1" name="Day 1.00" tags="" position="500,200">{
 &lt;h4&gt;Day 1: Harry&lt;/h4&gt;
 
-&lt;p&gt;You knock waiting to be let in, through the frosted glass you see Sarah rushing to finish her sentence before she focuses her attention on you. Finally the door opens and you find your seat tucked in the furthest corner of the room. Sarah begins the meeting “So, Harry how is work going?” &lt;/p&gt;
+(if: $new is 1)[&lt;p&gt;It’s Monday morning again and as usual Sarah wants to see you.&lt;/p&gt;]
+
+&lt;p&gt;You knock waiting to be let in, through the frosted glass you see Sarah rushing to finish her sentence before she focuses her attention on you. Finally the door opens and you find your seat tucked in the furthest corner of the room. Sarah begins the meeting “so Harry, how is work going?” &lt;/p&gt;
 
 &lt;p&gt;You pause, a little worried “There seems to be a lot more files to remove than we originally thought.” You try to gauge your manager’s reaction, then continue. “I’m honestly not sure we’ll meet our predictions of under a week at this rate.”&lt;/p&gt;
 
-&lt;p&gt;Sarah’s brows furrow “See what you can do, I’ll check up on you tomorrow.”&lt;/p&gt;
+&lt;p&gt;Sarah’s brow furrow “See what you can do, I’ll check up on you tomorrow.”&lt;/p&gt;
 
 &lt;p&gt;You leave a little more shaken than when you went in, it was bad luck really that the week after you started your internship the company had been bought out.&lt;/p&gt;
 
@@ -40,15 +46,19 @@
 
 }</tw-passagedata>
 <tw-passagedata pid="2" name="Day 1.10" tags="" position="700,200">{
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
+
 &lt;p&gt;(if: $deleted &lt;1)[You slump down into the swivel desk chair waiting for the computer to recognise your password.] You log  into the intranet (if: $deleted &gt;=1)[again] and check the list of servers that need erasing, you:&lt;/p&gt;
 
-&lt;p&gt;[[Open Terminal-&gt;Day 1.11]] ||[[Leave-&gt;Day 1.12]]&lt;/p&gt;
+&lt;p&gt;[[Erase Server -&gt;Day 1.11]] ||[[Leave-&gt;Day 1.12]]&lt;/p&gt;
 
 (set:$time to &quot;morning&quot;)
 }
 </tw-passagedata>
 <tw-passagedata pid="3" name="Day 1.11" tags="" position="905,42">{
-&lt;p&gt; Finding the host you ssh into it double checking what’s inside you then recursively removing all the data. &lt;/p&gt;
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
+
+&lt;p&gt; Finding the right server you remotely log in and double check what’s inside then recursively removing all the data. &lt;/p&gt;
 
 (if:$time is &quot;morning&quot;)[&lt;p&gt;[[Next-&gt;Day 1.10]]&lt;/p&gt;]
 (else:)[&lt;p&gt;[[Next-&gt;Day 1.20]]&lt;/p&gt;]
@@ -58,10 +68,13 @@
 (set: $deleted +=10)
 (set: $work to &quot;yes&quot;)</tw-passagedata>
 <tw-passagedata pid="4" name="Day 1.12" tags="" position="900,200">{
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
 
 &lt;p&gt;Head throbbing you move quickly into the kitchenette towards the supply of caffeine. A poster has been stuck to the coffee cupboard warning you that water can become superheated if you try to use the microwave as a kettle. Looking down at where the kettle should be, a cross with a post-it note across it: RIP died from limescale.&lt;/p&gt;
 
-&lt;p&gt;Weighing up death by superheated water and living with a caffeine dependency headache, you pop your mug into the microwave. &lt;/p&gt;
+&lt;p&gt;Weighing up death by superheated water and living with a caffeine dependency headache, you pop your mug into the microwave.&lt;/p&gt;
+
+(if: $new is 1)[&lt;p&gt;It can’t happen that often if you survived the microwave all of last week.&lt;/p&gt;]
 
 &lt;p&gt;[[Next-&gt;Day 1.20]]&lt;/p&gt;
 
@@ -70,27 +83,34 @@
 }
 </tw-passagedata>
 <tw-passagedata pid="5" name="Day 1.20" tags="" position="1100,200">{
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
 
-&lt;p&gt;(if: $work is &quot;no&quot;)[You return back to your desk, triumphant you survived the microwave, sipping your coffee you let yourself dream a little before y](else-if: $work is &quot;yes&quot;)[Y]ou log back onto the intranet (if: $work is &quot;yes&quot;)[again] and check the list of servers.&lt;/p&gt;
+&lt;p&gt;(if: $work is &quot;no&quot;)[You return back to your desk, triumphant you survived the microwave(if: $new is 1)[ again]
+, sipping your coffee you let yourself dream a little before y](else-if: $work is &quot;yes&quot;)[Y]
+
+ou log back onto the intranet (if: $work is &quot;yes&quot;)[again] and check the list of servers.&lt;/p&gt;
 
 &lt;p&gt;[[Open Terminal-&gt;Day 1.11]]||[[Leave-&gt;Day 1.22]]&lt;/p&gt;
 
 }
 </tw-passagedata>
 <tw-passagedata pid="6" name="Day 1.22" tags="" position="1300,200">{
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
 
-&lt;p&gt;You leave the files for later and head outside to enjoy that last hour of sunlight. A rumble comes from your stomach reminding you it’s dinner time as your feet head on auto pilot Chicago Land.&lt;/p&gt;
+&lt;p&gt;You leave the files for later and head outside to enjoy that last hour of sunlight. A rumble comes from your stomach reminding you it’s dinner time as your feet head on auto pilot to Chicago Land.&lt;/p&gt;
 
-&lt;p&gt;Stuffing your face with greasy carbs you remember you had one last meeting of the day with Oli and rush back inside. &lt;/p&gt;
+&lt;p&gt;Stuffing your face with greasy carbs you remember you had one last meeting of the day with Oli and rush back to the office.&lt;/p&gt;
 
 &lt;p&gt;[[Next-&gt;Day 1.30]]&lt;/p&gt;
 
 }
 </tw-passagedata>
-<tw-passagedata pid="7" name="Day 1.30" tags="" position="1700.0001,200">{
-&lt;p&gt;Running up the stairs to the third floor you try to catch your break outside the conference room, feeling the pizza fight against your stomach. Oli opens the door hitting you with a barrage of words.&lt;/p&gt;
+<tw-passagedata pid="7" name="Day 1.30" tags="" position="1700,201">{
+&lt;h4&gt;Day 1: Harry&lt;/h4&gt;
 
-&lt;p&gt;“Heya Harry, I thought you might have gone home. Come in, come in. Now Sarah has spoken to me about how much work we have got on at the mo, and it doesn’t look good. I can’t work out why I keep having to transfer the same files only for them to be deleted. But enough about my work, I’m here to see what you’ve been up to. How has work been today?”&lt;/p&gt;
+&lt;p&gt;Running up the stairs to the third floor you try to catch your breath outside the conference room, feeling the pizza fight against your stomach. Oli opens the door hitting you with a barrage of words.&lt;/p&gt;
+
+&lt;p&gt;“Heya Harry, I thought you might have gone home. Come in, come in. Now Sarah has spoken to me about how much work we have got on at the mo, and it doesn’t look good. I can’t work out why I keep having to transfer the same files only for them to be deleted. But enough about my work, I’m here to see what you’ve been up to.” Oli pauses for a breath and continues “how has work been today?”&lt;/p&gt;
 
 (if: $deleted &gt;1)[&lt;p&gt;“I’ve not done too badly about (print: $deleted) files today.”&lt;/p&gt;]
 (else:)[&lt;p&gt;“I don’t think I’ve done any work…”&lt;/p&gt;]
@@ -109,15 +129,15 @@
 
 &lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-&lt;p&gt;Its 3pm and a Tuesday, crawling into the office you consider how flexi-time really hasn’t helped your sleep cycle. Knocking on Sarah’s door you’re glad to see her still in, she would be furious if you had missed your meeting.&lt;/p&gt;
+&lt;p&gt;Its 3pm and a Tuesday, crawling into the office you consider how flexi-time really hasn’t helped your sleep cycle. Knocking on Sarah’s door you’re glad to see her still in, she would be furious if you had missed your meeting. &lt;/p&gt;
 
 &lt;p&gt;Forgetting that you had already knocked you walk straight in and get to it, “Heya Sarah, how’s todays work been?”&lt;/p&gt;
 
-&lt;p&gt;“You still gaming all night Oli? It really can’t be great for you.&lt;/p&gt;
+&lt;p&gt;“You still gaming all night Oli? It really can’t be great for you.”&lt;/p&gt;
 
 &lt;p&gt;“Umm, it doesn’t affect me all that much” you shrug it off “anyway how are you?”&lt;/p&gt;
 
-(if: $deleted &gt;=40)[&lt;p&gt;“It’s not good Oli, I’m not sure how we managed to be so behind with the transfer but you really need to step up your game.”&lt;/p&gt;]
+(if: $deleted &gt;=40)[&lt;p&gt;“It’s not good Oli, I’m not sure how we managed to be so behind with the transfer, you really need to step up your game.”&lt;/p&gt;]
 
 (else:)[&lt;p&gt;”It’s going really well Oli, we might actually pull through this one. It’s certainly been tough this merger.”&lt;/p&gt;]
 
@@ -127,20 +147,23 @@
 &lt;p&gt;[[Next-&gt;Day 2.10]]&lt;/p&gt;
 (set: $Oli to 1)
 }</tw-passagedata>
-<tw-passagedata pid="9" name="Day 2.10" tags="" position="1450.0001,500">{
+<tw-passagedata pid="9" name="Day 2.10" tags="" position="1450,500">{
+&lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-(if: $Oli is 1)[&lt;p&gt;Settling yourself into the emptying office you check the intranet for the number of servers that need their data to be transferred.(if: $deleted &gt;0)[You have to do a double take as the number has gone up from what it was yesterday there is another (print: $deleted) server to transfer.]&lt;/p&gt;]
+(if: $Oli is 1)[&lt;p&gt;Settling yourself into the emptying office you check the intranet for the number of servers that need their data to be transferred. You have to do a double take as the number has gone up again from what it was yesterday there is another  (print: $deleted) servers to transfer.]&lt;/p&gt;]
 
 &lt;p&gt;You stop staring blankly at the computer and:&lt;/p&gt;
 
 
-&lt;p&gt;[[Open Terminal-&gt;Day 2.11]]||[[Leave-&gt;Day 2.20]]&lt;/p&gt;
+&lt;p&gt;[[Transfer Servers -&gt;Day 2.11]]||[[Leave-&gt;Day 2.20]]&lt;/p&gt;
 
 }
 </tw-passagedata>
 <tw-passagedata pid="10" name="Day 2.11" tags="" position="1200,350">{
+&lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-&lt;p&gt;Finding the host you are transferring the files into you ssh into it, double checking what’s inside then recursively add all the data from the old server.&lt;/p&gt;
+
+&lt;p&gt;Finding the right server you remotely log in and double check what’s inside then recursively removing all the data. &lt;/p&gt;
 
 (if:$time is &quot;afternoon&quot;)[&lt;p&gt;[[Next-&gt;Day 2.10]]&lt;/p&gt;]
 (else:)[&lt;p&gt;[[Next-&gt;Day 2.30]]&lt;/p&gt;]
@@ -151,18 +174,20 @@
 
 }
 </tw-passagedata>
-<tw-passagedata pid="11" name="Day 2.20" tags="" position="1200,500">{
+<tw-passagedata pid="11" name="Day 2.20" tags="" position="1200,501">{
+&lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-&lt;p&gt;You had almost forgotten the meeting you had booked with Harry and rush over to the conference room, luckily he isn’t there yet and you make yourself comfortable.&lt;/p&gt;
 
-&lt;p&gt;A greasy handprint appears on the window as a figure doubles over trying to catch their breath, you burst open the door revealing Harry.&lt;/p&gt;
+&lt;p&gt;You rush over to the conference room remembering that you had booked a meeting with Harry, luckily he isn’t there yet and you make yourself comfortable. &lt;/p&gt;
 
-&lt;p&gt;“Harry good to see, you how are you? The strangest thing happened this morning there seemed to be even more files for me to transfer and I thought we were on top of things. Anyway catch your breath and site down in here. How has work been?”&lt;/p&gt;
+&lt;p&gt;A greasy handprint appears on the window and a figure doubles over, trying to catch their breath, you burst open the door revealing Harry.&lt;/p&gt;
 
-&lt;p&gt;Harry stumbles into a chair, “I almost forgot about the meeting, 
+&lt;p&gt;“Harry good to see you, how are you? The strangest thing happened this morning there seemed to be even more files for me to transfer and I thought we were on top of things. Anyway catch your breath and sit down in here. How has work been?”&lt;/p&gt;
+
+&lt;p&gt; Harry stumbles into a chair, “I almost forgot about the meeting, 
 (if: $deleted is 0)[work is going great there has been nothing extra to transfer.]
-(else-if: $deleted &lt; $added)[work hasn’t been going well at all, I had transferred (print: $deleted) number yesterday and when I got in this morning I had another (print: $added) to remove.]
-(else-if: $deleted is $added)[work has been going OK, there’s a steady stream of files which I need to remove but I think I’m on top of them.]
+(else-if: $deleted &lt; $added)[work hasn’t been going well at all, I had transferred (print: $deleted) yesterday and when I got in this morning I had another (print: $added) to remove.]
+(else-if: $deleted is $added)[work has been going O.K., there’s a steady stream of files which I need to remove but I think I’m on top of them.]
 (else:)[work has been going really well, I’ve managed to stay on top of all the files which need removing.]&lt;/p&gt;
 
 &lt;p&gt;[[Next-&gt;Day 2.30]]&lt;/p&gt;
@@ -172,12 +197,14 @@
 }
 </tw-passagedata>
 <tw-passagedata pid="12" name="Day 2.30" tags="" position="950,500">{
+&lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-&lt;p&gt;(if: $backwards is 2)[You remember back to the time you interned at this company, it wasn’t that long ago but much has changed during this merger as well as other things. Maybe it will be worth moving or looking for another job expanding your horizons and what not, regardless google has a play area.]&lt;/p&gt;
+
+&lt;p&gt;(if: $backwards is 2)[You head back to your desk, reminiscing the days interned at this company, so much has changed during this merger. Maybe it will be worth moving or looking for another job expanding your horizons and what not.]&lt;/p&gt;
 
 &lt;p&gt;Better do some (if: $backwards is 1)[more] work here first though:&lt;/p&gt;
 
-&lt;p&gt;[[Open Termainal-&gt;Day 2.11]]||[[Leave-&gt;Day 2.40]]&lt;/p&gt;
+&lt;p&gt;[[Transfer Servers -&gt;Day 2.11]]||[[Leave-&gt;Day 2.40]]&lt;/p&gt;
 &lt;p&gt;&lt;/p&gt;
 
 }
@@ -186,7 +213,7 @@
 
 &lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
-&lt;p&gt;The sun starts to rise as you dump your bag down onto the desk and turn on your computer, ready for another day’s work. You notice how quiet the office is remarking how different this job is from your last in HR when everyone would be in before 7. The computer finally boots up and you log in checking todays emails. &lt;/p&gt;
+&lt;p&gt;The sun starts to rise as you dump your bag down onto the desk and turn on your computer, ready for another day’s work. You notice how quiet the office is remarking how different this job is from your last in HR when everyone would be in before 7. The computer finally boots up and you log in checking todays emails.  &lt;/p&gt;
 
 &lt;p&gt;Picking out the automated service report from yesterday, you take a look at progress. (print: $totalAdded) files have been transferred so far and (print: -$totalDeleted) deleted.&lt;/p&gt;
 
@@ -200,18 +227,19 @@
 }
 </tw-passagedata>
 <tw-passagedata pid="14" name="Day 3.10" tags="" position="900,700">{
+&lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
 &lt;p&gt;You hear the knock at the door and head over, opening the door you greet Harry.&lt;/p&gt;
 
 &lt;p&gt;“Good Morning, how is work going?”&lt;/p&gt;
 
-&lt;p&gt;“Ok I think, (if: $delted &gt;0)[although I haven’t really done any work](else:)[I’m getting through the work slowly].&quot;&lt;/p&gt;
+&lt;p&gt;“O.K. I think, (if: $delted &gt;0)[although I haven’t really done any work](else:)[I’m getting through the work slowly].&quot;&lt;/p&gt;
 
 &lt;p&gt;&quot;Well I really think 
 
 (if: $sarah is &quot;praise&quot;)[you are doing a fantastic job, you should easily get it done before the deadline(set: $totalDeleted *=4)]
 (if: $sarah is &quot;encourage&quot;)[you are doing really well I just need you to keep this up a little longer, the deadline is only the end of this week(set: $totalDeleted *=2)]
-(if: $sarah is &quot;tellOf&quot;)[you could be doing a lot better, you may be an intern but that doesn’t mean it is easy bacon. Now I want you to step up the work and really put your heart into, just until we get past this deadline(set: $totalDeleted *=0.5)]
+(if: $sarah is &quot;tellOf&quot;)[you could be doing a lot better, you may be an intern but that doesn’t mean it&#39;s easy bacon. Now I want you to step up the work and really put your heart into, just until we get past this deadline(set: $totalDeleted *=0.5)]
 .&quot;&lt;/p&gt;
 
 &lt;p&gt;[[Next-&gt;Day 3.20]]&lt;/p&gt;
@@ -220,7 +248,8 @@
 }
 
 </tw-passagedata>
-<tw-passagedata pid="15" name="Day 3.20" tags="" position="1100.0001,700">{
+<tw-passagedata pid="15" name="Day 3.20" tags="" position="1100,700">{
+&lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
 &lt;p&gt;Finally lunch time, you set Harry of on his errands and pick up your lunchbox to eat your sandwiches outside. As you sit in the park you get a nagging feeling that something isn’t quite right with this migration.&lt;/p&gt;
 
@@ -228,7 +257,8 @@
 
 }
 </tw-passagedata>
-<tw-passagedata pid="16" name="Day 3.30" tags="" position="1300.0001,700">{
+<tw-passagedata pid="16" name="Day 3.30" tags="" position="1300,700">{
+&lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
 &lt;p&gt;You head back to your office leaving your lunch box then head into the office facing yours, (if: $end is &quot;bad&quot;)[Clark&#39;s] (else:)[Daves’s].&lt;/p&gt;
 
@@ -261,7 +291,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 
 }
 (set: $percentage to ($totalDeleted+$totalAdded)/1)</tw-passagedata>
-<tw-passagedata pid="18" name="Day 4.10" tags="" position="1450.0001,1000">{
+<tw-passagedata pid="18" name="Day 4.10" tags="" position="1450,1000">{
+&lt;h4&gt;Day 4:(if: $end is &quot;bad&quot;)[Clark] (else:)[Dave]&lt;/h4&gt;
 
 &lt;p&gt;“Good afternoon Sarah, how was lunch?”&lt;/p&gt;
 
@@ -288,7 +319,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 (set: $plusTime to &quot;I need a little more time, we have run into some snags which need ironing out&quot;)
 
 }</tw-passagedata>
-<tw-passagedata pid="19" name="Day 4.20" tags="" position="1200.0001,1000">{
+<tw-passagedata pid="19" name="Day 4.20" tags="" position="1200,1000">{
+&lt;h4&gt;Day 4:(if: $end is &quot;bad&quot;)[Clark] (else:)[Dave]&lt;/h4&gt;
 
 &lt;p&gt;The door clicks shut after Sarah just as the phone rings, it’s the Houston office your new partners. It’s going to be one of those days.&lt;/p&gt;
 
@@ -314,6 +346,7 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 
 </tw-passagedata>
 <tw-passagedata pid="20" name="Day 4.30" tags="" position="950,1000">{
+&lt;h4&gt;Day 4:(if: $end is &quot;bad&quot;)[Clark] (else:)[Dave]&lt;/h4&gt;
 
 &lt;p&gt;The tone in Tony’s voice worried you a little bit, maybe you should check the figures again.&lt;/p&gt;
 
@@ -325,7 +358,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 (if: $sarah is &quot;tellOf&quot;)[(set: $totalDeleted *=0.5)]
 }
 </tw-passagedata>
-<tw-passagedata pid="21" name="Day 4.41" tags="" position="950.0001,850">{
+<tw-passagedata pid="21" name="Day 4.41" tags="" position="950,850">{
+&lt;h4&gt;Day 4:(if: $end is &quot;bad&quot;)[Clark] (else:)[Dave]&lt;/h4&gt;
 
 &lt;p&gt;You refresh the migration calculator it&#39;s (print: $percentage)%&lt;/p&gt;
 
@@ -334,7 +368,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 (set: $percentage to ($totalDeleted+$totalAdded)/1)
 }
 </tw-passagedata>
-<tw-passagedata pid="22" name="Day 4.42" tags="" position="700.0001,1000">{
+<tw-passagedata pid="22" name="Day 4.42" tags="" position="700,1000">{
+&lt;h4&gt;Day 4:(if: $end is &quot;bad&quot;)[Clark] (else:)[Dave]&lt;/h4&gt;
 
 &lt;p&gt;You leave Oli in the office and head home, worried what the Houston team will think of your management. &lt;/p&gt;
 
@@ -355,6 +390,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 
 
 &lt;/p&gt;
+
+(set: $new to 1)
 }
 </tw-passagedata>
 <tw-passagedata pid="24" name="End A" tags="" position="900,1200">END</tw-passagedata>
@@ -379,6 +416,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 
 (set: $added += $deleted)</tw-passagedata>
 <tw-passagedata pid="27" name="Day 2.40" tags="" position="700,500">{
+&lt;h4&gt;Day 2: Oli&lt;/h4&gt;
+
 
 &lt;p&gt;The security guards must have changed shifts as a guy you don’t recognise pokes his head round the office door checking who is in.&lt;/p&gt;&lt;p&gt;Time to go home and play (either: &quot;Fall Out&quot;, &quot;Skyrim&quot;, &quot;Witcher&quot;).&lt;/p&gt;
 
@@ -389,6 +428,7 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 (set: $totalDeleted to -($deleted1 + $deleted2))
 }</tw-passagedata>
 <tw-passagedata pid="28" name="Day 3.40" tags="" position="1500,700">{
+&lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
 &lt;p&gt;Back in your office you wait for Oli to arrive for your final meeting. He still has turned up at work, maybe he really has turned nocturnal you wonder how best to help:&lt;/p&gt;
 
@@ -397,7 +437,8 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 (if: $totalAdded &gt;= 0)[[[Tell Of-&gt;Day 3.50]](set: $sarah to &quot;tellOf&quot;)]
 
 }</tw-passagedata>
-<tw-passagedata pid="29" name="Day 3.50" tags="" position="1700.0001,700">{
+<tw-passagedata pid="29" name="Day 3.50" tags="" position="1699,699">{
+&lt;h4&gt;Day 3: Sarah&lt;/h4&gt;
 
 &lt;p&gt;Oli bursts into your office a worried look across his face.&lt;/p&gt;
 
