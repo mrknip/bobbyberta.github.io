@@ -21,7 +21,13 @@
 
 
 
+
+
+
 </style><script role="script" id="twine-user-script" type="text/twine-javascript">
+
+
+
 
 
 
@@ -150,7 +156,7 @@
 <tw-passagedata pid="9" name="Day 2.10" tags="" position="1450,500">{
 &lt;h4&gt;Day 2: Oli&lt;/h4&gt;
 
-(if: $Oli is 1)[&lt;p&gt;Settling yourself into the emptying office you check the intranet for the number of servers that need their data to be transferred. You have to do a double take as the number has gone up again from what it was yesterday there is another  (print: $deleted) servers to transfer.]&lt;/p&gt;]
+(if: $Oli is 1)[&lt;p&gt;Settling yourself into the emptying office you check the intranet for the number of servers that need their data to be transferred. You have to do a double take as the number has gone up again from what it was yesterday there is another  (print: $deleted) servers to transfer.&lt;/p&gt;]
 
 &lt;p&gt;You stop staring blankly at the computer and:&lt;/p&gt;
 
@@ -286,8 +292,6 @@ I shall see you tomorrow Sarah in case anything has changed.”&lt;/p&gt;
 
 &lt;p&gt;[[Next-&gt;Day 4.10]]&lt;/p&gt;
 
-(print: $totalDeleted)
-(print: $totalAdded)
 
 }
 (set: $percentage to ($totalDeleted+$totalAdded)/1)</tw-passagedata>
