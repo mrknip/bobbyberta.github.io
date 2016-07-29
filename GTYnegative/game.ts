@@ -84,7 +84,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         //this.physics.arcade.collide(this.dusts);
 
         //move to mouse
-        if (this.game.input.mousePointer.isDown)
+        if (this.game.input.activePointer.isDown)
         {
             //  400 is the speed it will move towards the mouse
             this.game.physics.arcade.moveToPointer(this.head, this.config.youSpeed);
