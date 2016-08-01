@@ -307,7 +307,7 @@ Game.prototype = {
 
     create: function () {
 
-        var levelId = 1;
+        var levelId = 2;
 
         this.addWorld();
 
