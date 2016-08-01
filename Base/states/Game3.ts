@@ -1,9 +1,9 @@
-var Game3 = function () {};
+var Game3 = function () {
+};
 
 Game3.prototype = {
 
     config: {
-        stageName: "Adding to 10",
 
         //Background Animation
         dustNumber: 200,
@@ -12,80 +12,312 @@ Game3.prototype = {
         //These have to be the same as the canvas size
         worldSizeX: 1200,
         worldSizeY: 800,
+
+
         //Where to place the Question answered text
         textPlace: 30,
 
         //Players Information
-        startValue: 0,
-        currentValue: 0,
+        //startValue: 0,
         startSpeed: 400,
+        endValue: 10,
 
         //State of the Player
         alive: true,
         lives: 3,
-        answered: 0,
-        currentSpeed: 400,
+        answerStart: 0,
+        startSpeed: 400,
 
 
-        //Piece of things that affect you
-        collectValue1: -1,
-        collectText1: '-1',
-        collectAmount1: 10,
+        levels: {
+            1: {
+                startValue: 1,
+                endValue: 10,
+                sharks: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 10,
+                    },
+                    {
+                        value: 5,
+                        initialCount: 5
+                    },
+                    {
+                        value: 7,
+                        initialCount: 5
+                    },
+                    {
+                        value: 10,
+                        initialCount: 5
+                    }
+                ],
+                eats: [
+                    {
+                        value: 1,
+                        text: '+1',
+                        initialCount: 20
+                    },
+                ]
+            },
+            2: {
+                startValue: 50,
+                endValue: 0,
+                sharks: [
+                    {
+                        value: 0,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 9,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 19,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 24,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 25,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 33,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 37,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 50,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 48,
+                        initialCount: 2,
+                    }
+                ],
+                eats: [
+                    {
+                        value: -1,
+                        text: '-1',
+                        initialCount: 20
+                    },
+                    {
+                        value: -2,
+                        text: '-2',
+                        initialCount: 20
+                    },
+                    {
+                        value: -5,
+                        text: '-5',
+                        initialCount: 20
+                    },
+                ],
+            },
+            3: {
+                startValue: 0,
+                endValue: 50,
+                sharks: [
+                    {
+                        value: 0,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 9,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 19,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 24,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 25,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 33,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 37,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 50,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 48,
+                        initialCount: 1,
+                    },
 
-        collectValue2: -1,
-        collectText2: '-1',
-        collectAmount2: 10,
-
-        //Less Than you AI
-        jellyStart1: 10,
-        jellyValue1: -1,
-        jellyRemain: 10,
-
-        jellyStart2: 10,
-        jellyValue2: -2,
-        jellyRemain2: 10,
-
-        jellyStart3: 10,
-        jellyValue3: -3,
-        jellyRemain3: 10,
-
-        jellyStart4: 10,
-        jellyValue4: -4,
-        jellyRemain4: 10,
-
-        jellyStart5: 10,
-        jellyValue5: -5,
-        jellyRemain5: 10,
-
+                    {
+                        value: 99,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 77,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 91,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 68,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 84,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -33,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -49,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -28,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -18,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -14,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -6,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 7,
+                        initialCount: 1,
+                    }
+                ],
+                eats: [
+                    {
+                        value: -1,
+                        text: '-1',
+                        initialCount: 5
+                    },
+                    {
+                        value: -2,
+                        text: '-2',
+                        initialCount: 5
+                    },
+                    {
+                        value: -5,
+                        text: '-5',
+                        initialCount: 5
+                    },
+                    {
+                        value: -10,
+                        text: '-10',
+                        initialCount: 5
+                    },
+                    {
+                        value: 1,
+                        text: '+1',
+                        initialCount: 5
+                    },
+                    {
+                        value: 2,
+                        text: '+2',
+                        initialCount: 5
+                    },
+                    {
+                        value: 5,
+                        text: '+5',
+                        initialCount: 5
+                    },
+                    {
+                        value: 10,
+                        text: '+10',
+                        initialCount: 5
+                    },
+                ],
+            },
+        },
     },
+
+    gameState: {},
 
 
     create: function () {
 
+        var levelId = 3;
+
         this.addWorld();
-        this.addPlayer();
 
-        this.addCollectables1();
-        //this.addCollectables2();
+        this.gameState = {
+            currentLevel: levelId,
+            currentValue: this.config.levels[levelId].startValue,
+            endValue: this.config.levels[levelId].endValue,
+            alive: this.config.alive,
+            lives: this.config.lives,
+            currentSpeed: this.config.startSpeed,
+            answered: this.config.answerStart,
+            textPlace: this.config.textPlace,
+            physicsGroup: this.add.group(),
+            sharkGroups: [],
+            jellyGroups: [],
+            eatGroups: [],
+        };
 
-        this.addJelly1();
-        this.addJelly2();
-        this.addJelly3();
-        this.addJelly4();
-        this.addJelly5();
+        this._createEntities();
 
-        //has to be added last
-        //otherwise things swim over it
+        //has to be added last otherwise things swim over it
         this.addUI();
-
     },
 
-    update: function () {
 
+    update: function () {
         //Player movement
         if (this.game.input.activePointer.isDown) {
             //  400 is the speed it will move towards the mouse
-            this.game.physics.arcade.moveToPointer(this.player, this.config.currentSpeed);
+            this.game.physics.arcade.moveToPointer(this.player, this.gameState.currentSpeed);
 
             //  if it's overlapping the mouse, don't move any more
             if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
@@ -97,74 +329,76 @@ Game3.prototype = {
         }
 
 
-        if (this.config.alive == false) {
+        if (this.gameState.alive == false) {
 
         } else {
-            //removing Collectables on collision with them
-            this.game.physics.arcade.overlap(this.player, this.colls1, this.removeCol1, null, this);
-            this.game.physics.arcade.overlap(this.player, this.colls2, this.removeCol2, null, this);
 
-            //if you collide with Jelly's
-            this.game.physics.arcade.overlap(this.player, this.jellys1, this.jellyAttack1, null, this);
-            this.game.physics.arcade.overlap(this.player, this.jellys2, this.jellyAttack2, null, this);
-            this.game.physics.arcade.overlap(this.player, this.jellys3, this.jellyAttack3, null, this);
-            this.game.physics.arcade.overlap(this.player, this.jellys4, this.jellyAttack4, null, this);
-            this.game.physics.arcade.overlap(this.player, this.jellys5, this.jellyAttack5, null, this);
-        }
+            for (var i = 0; i < this.gameState.eatGroups.length; ++i) {
+                var currentEatGroup = this.gameState.eatGroups[i];
 
-    },
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentEatGroup,
+                    function (player, eats) {
+                        this.eatsCollected(
+                            player,
+                            eats,
+                            currentEatGroup,
+                            currentEatGroup.value,
+                            currentEatGroup.text,
+                            'block'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
 
 
-    //Game Play Functions
+            for (var i = 0; i < this.gameState.sharkGroups.length; ++i) {
+                var currentSharkGroup = this.gameState.sharkGroups[i];
 
-    moreLives: function () {
-        if (this.config.lives < 5) {
-            this.config.lives += 1;
-            this.livesSprite.frame -= 1;
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentSharkGroup,
+                    function (player, shark) {
+                        this.sharkAttack(
+                            player,
+                            shark,
+                            currentSharkGroup,
+                            currentSharkGroup.value,
+                            'enemy'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
 
-            //if you have more lives you go slower
-            this.config.currentSpeed -= 80;
+            for (var i = 0; i < this.gameState.jellyGroups.length; ++i) {
+                var currentJellyGroup = this.gameState.jellyGroups[i];
 
-        } else {
-            this.config.lives = 5;
-        }
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentJellyGroup,
+                    function (player, jelly) {
+                        this.jellyAttack(
+                            player,
+                            jelly,
+                            currentJellyGroup,
+                            currentJellyGroup.value,
+                            'jelly'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
 
-        this.tenToWin();
-        console.log(this.config.currentSpeed);
 
-    },
+            //A colision with a clam
+            this.game.physics.arcade.overlap(this.player, this.clamSprite, this.nextLevel, null, this);
 
-    died: function () {
-        this.player.frame = 1;
-        this.config.alive = false;
-        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.reBorn, this);
-
-        this.config.lives -= 1;
-
-        if (this.config.lives <= 0) {
-            game.state.start('Loose1');
-  
-        } else {
-            //you have less lives so you go faster
-            this.config.currentSpeed += 80;
-            this.livesSprite.frame += 1;
-        }
-        console.log(this.config.currentSpeed);
-
-    },
-
-    reBorn: function () {
-        this.player.frame = 0;
-        this.config.alive = true;
-
-        console.log(this.config.lives);
-    },
-
-    tenToWin: function () {
-        if (this.config.answered < 10) {
-            this.config.answered += 1;
-        } else {
-            game.state.start('Game5');
         }
 
     },
@@ -186,6 +420,7 @@ Game3.prototype = {
 
         //The Background aninimated dust particles
         this.dusts = this.add.group();
+        this.dustPhysicsGroup = this.game.make.group();
 
         for (var i = 0; i < this.config.dustNumber; i++) {
             this.dust = this.dusts.create(this.bounds.randomX, this.bounds.randomY, 'blob');
@@ -194,15 +429,7 @@ Game3.prototype = {
             this.dust.body.velocity.y = game.rnd.integerInRange(-220, 200);
         }
 
-        //Group information for Dust Partciles
-        this.dustGroupB = this.game.make.group();
-        this.dustGroupB.create(-50, -50, 'blob');
-        this.dusts.add(this.dustGroupB);
-
-        this.dusts.setAll('body.collideWorldBounds', true);
-        this.dusts.setAll('body.bounce.x', 1);
-        this.dusts.setAll('body.bounce.y', 1);
-        this.dusts.setAll('body.minBounceVelocity', 0);
+        this._createGroupPhyscis(this.dusts, this.dustPhysicsGroup);
 
 
     },
@@ -215,13 +442,43 @@ Game3.prototype = {
         this.livesSprite.frame = 2;
 
         //Score Board - Top Eats
-        this.topEatsUI = this.add.image(600, 500, 'eatsUI')
+        this.topEatsUI = this.add.image(500, 500, 'eatsUI')
         this.topEatsUI.fixedToCamera = true;
         this.topEatsUI.cameraOffset.setTo(this.config.worldSizeX - 200, 10);
 
         this.config.scoreValue += 25;
 
+    },
 
+    _createEntities: function () {
+
+
+        if (this.config.levels[this.gameState.currentLevel].eats){
+            var eats = this.config.levels[this.gameState.currentLevel].eats;
+            for (var i=0; i < eats.length; ++i){
+                var eatsConfig = eats[i];
+                this._addAllStaticObjects(eatsConfig.initialCount, this.gameState.eatGroups, eatsConfig.value, eatsConfig.text, 'block')
+            }
+        }
+
+        if (this.config.levels[this.gameState.currentLevel].sharks){
+            var sharks = this.config.levels[this.gameState.currentLevel].sharks;
+            for (var i = 0; i < sharks.length; ++i) {
+                var sharkConfig = sharks[i];
+                this._addAllMovingObjects(sharkConfig.initialCount, this.gameState.sharkGroups, sharkConfig.value, 'enemy');
+            }
+        }
+
+        if (this.config.levels[this.gameState.currentLevel].jellys) {
+
+            var jellys = this.config.levels[this.gameState.currentLevel].jellys;
+            for (var i = 0; i < jellys.length; ++i) {
+                var jellyConfig = jellys[i];
+                this._addAllMovingObjects(sharkConfig.initialCount, this.gameState.jellyGroups, jellyConfig.value, 'jelly');
+            }
+        }
+
+        this.addPlayer();
     },
 
     addPlayer: function () {
@@ -239,372 +496,238 @@ Game3.prototype = {
         this.game.camera.follow(this.player);
 
         //Text on Player - Showing the players value
-        this.Number = this.make.text(25, 20, this.config.startValue, {fill: '#000000'});
+        this.Number = this.make.text(25, 20, this.config.levels[this.gameState.currentLevel].startValue, {fill: '#000000'});
         this.player.addChild(this.Number);
 
     },
 
 
-    //Adding Collectables to the Game
+    //Game Play Functions
 
-    addCollectables1: function () {
+    moreLives: function () {
+        if (this.gameState.lives < 5) {
+            this.gameState.lives += 1;
+            this.livesSprite.frame -= 1;
 
-        //create things for the player to collect
-        this.colls1 = this.add.group();
-        this.colls1.enableBody = true;
-        this.colls1.physicsBodyType = Phaser.Physics.ARCADE;
+            //if you have more lives you go slower
+            this.gameState.currentSpeed -= 80;
 
-        for (var colect1Index = 0; colect1Index < this.config.collectAmount1; colect1Index++) {
-            this.col1 = this.colls1.create(this.bounds.randomX, this.bounds.randomY, 'block');
-
-            //Text on the collectable blocks
-            this.shownColls1Value = this.make.text(7, 8, this.config.collectText1, {fill: '#000000'});
-            this.col1.addChild(this.shownColls1Value);
+        } else {
+            this.gameState.lives = 5;
         }
 
-        //Physics Properties for the collectables
-        this.col1Group = this.game.make.group();
-        this.col1Group.create(-50, -50, 'block');
-        this.colls1.add(this.col1Group);
-
-        this.colls1.setAll('body.collideWorldBounds', true);
-        this.colls1.setAll('body.bounce.x', 1);
-        this.colls1.setAll('body.bounce.y', 1);
-        this.colls1.setAll('body.minBounceVelocity', 0);
-
+        this.tenToWin();
+        console.log(this.gameState.currentSpeed);
 
     },
 
-    addCollectables2: function () {
+    died: function () {
+        this.player.frame = 1;
+        this.gameState.alive = false;
+        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.reBorn, this);
 
-        //create things for the player to collect
-        this.colls2 = this.add.group();
-        this.colls2.enableBody = true;
-        this.colls2.physicsBodyType = Phaser.Physics.ARCADE;
+        this.gameState.lives -= 1;
 
-        for (var colect2Index = 0; colect2Index < this.config.collectAmount2; colect2Index++) {
-            this.col2 = this.colls2.create(this.bounds.randomX, this.bounds.randomY, 'block');
+        if (this.gameState.lives <= 0) {
+            //you now have full lives and you speed is reset to fastest
 
-            //Text on the collectable blocks
-            this.shownColls2Value = this.make.text(7, 8, this.config.collectText2, {fill: '#000000'});
-            this.col2.addChild(this.shownColls2Value);
+            this.gameState.currentSpeed = 0;
+            this.gameState.currentSpeed += this.config.startSpeed;
+            this.gameState.lives = 5;
+        } else {
+            //you have less lives so you go faster
+            this.gameState.currentSpeed += 80;
+            this.livesSprite.frame += 1;
         }
-        //Physics Properties for the collectables
-        this.col2Group = this.game.make.group();
-        this.col2Group.create(-50, -50, 'block');
-        this.colls2.add(this.col2Group);
-
-        this.colls2.setAll('body.collideWorldBounds', true);
-        this.colls2.setAll('body.bounce.x', 1);
-        this.colls2.setAll('body.bounce.y', 1);
-        this.colls2.setAll('body.minBounceVelocity', 0);
-
+        console.log(this.gameState.currentSpeed);
 
     },
 
-
-    //Functions for what happens when you collide with Collectables
-
-    removeCol1: function (_player, _col1) {
-        _col1.kill();
-        this.config.currentValue += (this.config.collectValue1);
-        this.Number.setText(this.config.currentValue);
+    reBorn: function () {
+        this.player.frame = 0;
+        this.gameState.alive = true;
     },
 
-    removeCol2: function (_player, _col2) {
-        _col2.kill();
-        this.config.currentValue += (this.config.collectValue2);
-        this.Number.setText(this.config.currentValue);
-    },
+    tenToWin: function () {
+        if (this.gameState.answered < 10) {
+            this.gameState.answered += 1;
+        } else {
 
-
-    //Adding Jellys into the Game
-    addJelly1: function(){
-        this.jellys1 = this.add.group();
-
-        for (var i = 0; i < this.config.jellyStart1; i++) {
-
-            this.jelly1 = this.jellys1.create(this.bounds.randomX, this.bounds.randomY, 'jelly');
-            //Physics Information about the Jelly
-            this.physics.enable(this.jelly1, Phaser.Physics.ARCADE);
-            this.jelly1.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.jelly1.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Jelly
-            this.jellyText1 = this.make.text(25, 25, this.config.jellyValue1, {fill: '#FFFFFF'});
-            this.jelly1.addChild(this.jellyText1);
+            this.addClam();
         }
-        //Some more physics information for the Jelly
-        this.jellyGroup1 = this.game.make.group();
-        this.jellyGroup1.create(-50, -50, 'block');
-        this.jellys1.add(this.jellyGroup1);
 
-        this.jellys1.setAll('body.collideWorldBounds', true);
-        this.jellys1.setAll('body.bounce.x', 1);
-        this.jellys1.setAll('body.bounce.y', 1);
-        this.jellys1.setAll('body.minBounceVelocity', 0);
+    },
 
-        console.log('there is a jelly here...');
+    addClam: function () {
+
+        this.clamSprite = this.add.sprite(250, 250, 'clam');
+        this.physics.enable(this.clamSprite, Phaser.Physics.ARCADE);
+        this.clamSprite.enableBody = true;
+
+        this.clamText = this.make.text(65, 50, this.gameState.endValue, {fill: '#FFFFFF'});
+        this.clamSprite.addChild(this.clamText);
+
+        this.endingText = this.add.text(400, 600, 'Become ' + this.gameState.endValue + ' and Get to the Clam!', {fill: '#000000'});
+        this.endingText.fixedToCamera = true;
+
+        console.log('there is a clam')
+        console.log(this.clamSprite.body);
 
 
     },
 
-    addJelly2: function () {
-        //The Greater Than You Enemys
-        this.jellys2 = this.add.group();
-
-        for (var i = 0; i < this.config.jellyStart2; i++) {
-
-            this.jelly2 = this.jellys2.create(this.bounds.randomX, this.bounds.randomY, 'jelly');
-            //Physics Information about the Jelly
-            this.physics.enable(this.jelly2, Phaser.Physics.ARCADE);
-            this.jelly2.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.jelly2.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Jelly
-            this.jellyText2 = this.make.text(25, 25, this.config.jellyValue2, {fill: '#FFFFFF'});
-            this.jelly2.addChild(this.jellyText2);
+    nextLevel: function () {
+        if (this.gameState.currentValue < this.gameState.endValue){
+        }else{
+            game.state.start('Win');
+            console.log('Go to the next level!')
         }
-        //Some more physics information for the Jelly
-        this.jellyGroup2 = this.game.make.group();
-        this.jellyGroup2.create(-50, -50, 'block');
-        this.jellys2.add(this.jellyGroup2);
-
-        this.jellys2.setAll('body.collideWorldBounds', true);
-        this.jellys2.setAll('body.bounce.x', 1);
-        this.jellys2.setAll('body.bounce.y', 1);
-        this.jellys2.setAll('body.minBounceVelocity', 0);
-
     },
 
-    addJelly3: function () {
-        //The Greater Than You Enemys
-        this.jellys3 = this.add.group();
 
-        for (var i = 0; i < this.config.jellyStart3; i++) {
 
-            this.jelly3 = this.jellys3.create(this.bounds.randomX, this.bounds.randomY, 'jelly');
-            //Physics Information about the Jelly
-            this.physics.enable(this.jelly3, Phaser.Physics.ARCADE);
-            this.jelly3.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.jelly3.body.velocity.y = game.rnd.integerInRange(-220, 200);
+//Creating Moving Objects - Such as sharks or jelly fish or dust
+    _addAllMovingObjects: function (amount, groupName, value, image) {
+        var group = this.add.group();
 
-            //Text Value of the Jelly
-            this.jellyText3 = this.make.text(25, 25, this.config.jellyValue3, {fill: '#FFFFFF'});
-            this.jelly3.addChild(this.jellyText3);
+        group.value = value;
+
+        groupName.push(group);
+
+        this._createMovingObject(amount, group, value, image);
+        this._createGroupPhyscis(group, this.gameState.physicsGroup);
+    },
+
+    _createMovingObject: function (amount, groupName, value, image) {
+        for (var i = 0; i < amount; i++) {
+            this._createMovingObjectAndAddToGroup(groupName, value, image);
         }
-        //Some more physics information for the Jelly
-        this.jellyGroup3 = this.game.make.group();
-        this.jellyGroup3.create(-50, -50, 'block');
-        this.jellys3.add(this.jellyGroup3);
+    },
 
-        this.jellys3.setAll('body.collideWorldBounds', true);
-        this.jellys3.setAll('body.bounce.x', 1);
-        this.jellys3.setAll('body.bounce.y', 1);
-        this.jellys3.setAll('body.minBounceVelocity', 0);
+    _createMovingObjectAndAddToGroup: function(groupName, value, image){
+        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+
+        this.physics.enable(object, Phaser.Physics.ARCADE);
+
+        //give the object a random speed
+        object.body.velocity.x = game.rnd.integerInRange(-200, 200);
+        object.body.velocity.y = game.rnd.integerInRange(-220, 200);
+
+        var text = this.make.text(25, 25, value, {fill: '#FFFFFF'});
+        object.addChild(text);
 
     },
 
-    addJelly4: function () {
-        //The Greater Than You Enemys
-        this.jellys4 = this.add.group();
 
-        for (var i = 0; i < this.config.jellyStart4; i++) {
 
-            this.jelly4 = this.jellys4.create(this.bounds.randomX, this.bounds.randomY, 'jelly');
-            //Physics Information about the Jelly
-            this.physics.enable(this.jelly4, Phaser.Physics.ARCADE);
-            this.jelly4.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.jelly4.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Jelly
-            this.jellyText4 = this.make.text(25, 25, this.config.jellyValue4, {fill: '#FFFFFF'});
-            this.jelly4.addChild(this.jellyText4);
+//Creating Static Objects - Such as collectabled 'eats'
+    _createStaticObject: function (amount, groupName, value, textValue, image) {
+        for (var i = 0; i < amount; i++) {
+            this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
         }
-        //Some more physics information for the Jelly
-        this.jellyGroup4 = this.game.make.group();
-        this.jellyGroup4.create(-50, -50, 'block');
-        this.jellys4.add(this.jellyGroup4);
+    },
 
-        this.jellys4.setAll('body.collideWorldBounds', true);
-        this.jellys4.setAll('body.bounce.x', 1);
-        this.jellys4.setAll('body.bounce.y', 1);
-        this.jellys4.setAll('body.minBounceVelocity', 0);
+    _createStaticObjectAndAddToGroup: function(groupName, value, textValue, image){
+        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+
+        this.physics.enable(object, Phaser.Physics.ARCADE);
+
+        var text = this.make.text(5, 5, textValue, {fill: '#000000'});
+        object.addChild(text);
 
     },
 
-    addJelly5: function () {
-        //The Greater Than You Enemys
-        this.jellys5 = this.add.group();
+    _addAllStaticObjects: function (amount, groupName, value, textValue, image) {
+        var group = this.add.group();
 
-        for (var i = 0; i < this.config.jellyStart5; i++) {
+        group.value = value;
 
-            this.jelly5 = this.jellys5.create(this.bounds.randomX, this.bounds.randomY, 'jelly');
-            //Physics Information about the Jelly
-            this.physics.enable(this.jelly5, Phaser.Physics.ARCADE);
-            this.jelly5.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.jelly5.body.velocity.y = game.rnd.integerInRange(-220, 200);
+        groupName.push(group);
 
-            //Text Value of the Jelly
-            this.jellyText5 = this.make.text(25, 25, this.config.jellyValue5, {fill: '#FFFFFF'});
-            this.jelly5.addChild(this.jellyText5);
-        }
-        //Some more physics information for the Jelly
-        this.jellyGroup5 = this.game.make.group();
-        this.jellyGroup5.create(-50, -50, 'block');
-        this.jellys5.add(this.jellyGroup5);
-
-        this.jellys5.setAll('body.collideWorldBounds', true);
-        this.jellys5.setAll('body.bounce.x', 1);
-        this.jellys5.setAll('body.bounce.y', 1);
-        this.jellys5.setAll('body.minBounceVelocity', 0);
-
+        this._createStaticObject(amount, group, value, textValue, image);
+        this._createGroupPhyscis(group, this.gameState.physicsGroup);
     },
 
 
-    //Functions on what happens when Jellys Eat You
+//This physics is used for both static and moving objects
+    _createGroupPhyscis: function (groupName, physicsGroup) {
+        //Some more physics information for the Shark
+        physicsGroup = this.game.make.group();
+        physicsGroup.create(-50, -50, 'block');
+        groupName.add(physicsGroup);
 
-    jellyAttack1: function (_player, _jelly1) {
+        groupName.setAll('body.collideWorldBounds', true);
+        groupName.setAll('body.bounce.x', 1);
+        groupName.setAll('body.bounce.y', 1);
+        groupName.setAll('body.minBounceVelocity', 0);
+    },
 
-        if (this.config.currentValue >= this.config.jellyValue1) {
+
+    //Functions that happen when a group of object e.g. sharks, jellys, eats have been colldied with
+
+    _addSharkSolvedMath: function (currentValue, sharkValue, worldSizeX, textPlace) {
+        this.scoreUI = game.add.text(600, 500, currentValue + ' > ' + sharkValue, {
+            fill: "#000000",
+            align: "center"
+        });
+        this.scoreUI.fixedToCamera = true;
+        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
+
+    },
+
+    _addJellySolvedMath: function (currentValue, jellyValue, worldSizeX, textPlace) {
+        this.scoreUI = game.add.text(600, 500, currentValue + ' < ' + jellyValue, {
+            fill: "#000000",
+            align: "center"
+        });
+        this.scoreUI.fixedToCamera = true;
+        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
+
+    },
+
+    sharkAttack: function (player, shark, sharkGroup, sharkValue, image) {
+
+        if (this.gameState.currentValue <= sharkValue) {
             this.died();
         }
         else {
-            _jelly1.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' < ' + this.config.jellyValue1, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+            shark.kill();
+            this._addSharkSolvedMath(this.gameState.currentValue, sharkValue, this.config.worldSizeX, this.gameState.textPlace);
 
-            this.config.textPlace += 25;
-            this.config.jellyRemain1 -= 1;
-
-            //gain a life for killing a
+            this.gameState.textPlace += 25;
             this.moreLives();
 
-            if (this.config.jellyRemain1 <= 0) {
-                this.addJelly1();
-
-                this.config.jellyRemain1 += this.config.jellyStart1;
-            }
+            this._createMovingObjectAndAddToGroup(sharkGroup, sharkValue, image);
         }
-
     },
 
-    jellyAttack2: function (_player, _jelly2) {
+    jellyAttack: function (player, jelly, jellyGroup, jellyValue, image) {
 
-        if (this.config.currentValue >= this.config.jellyValue2) {
+        if (this.gameState.currentValue >= jellyValue) {
             this.died();
         }
         else {
-            _jelly2.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' < ' + this.config.jellyValue2, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+            jelly.kill();
+            this._addJellySolvedMath(this.gameState.currentValue, jellyValue, this.config.worldSizeX, this.gameState.textPlace);
 
-            this.config.textPlace += 25;
-            this.config.jellyRemain2 -= 1;
-
-            //gain a life for killing a
+            this.gameState.textPlace += 25;
             this.moreLives();
 
-            if (this.config.jellyRemain2 <= 0) {
-                this.addJelly2();
-
-                this.config.jellyRemain2 += this.config.jellyStart2;
-            }
-        }
-
-    },
-
-    jellyAttack3: function (_player, _jelly3) {
-
-        if (this.config.currentValue >= this.config.jellyValue3) {
-            this.died();
-        }
-        else {
-            _jelly3.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' < ' + this.config.jellyValue3, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
-
-            this.config.textPlace += 25;
-            this.config.jellyRemain3 -= 1;
-
-            //gain a life for killing a
-            this.moreLives();
-
-            if (this.config.jellyRemain3 <= 0) {
-                this.addJelly3();
-
-                this.config.jellyRemain3 += this.config.jellyStart3;
-            }
-        }
-
-    },
-
-    jellyAttack4: function (_player, _jelly4) {
-
-        if (this.config.currentValue >= this.config.jellyValue4) {
-            this.died();
-        }
-        else {
-            _jelly4.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' < ' + this.config.jellyValue4, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
-
-            this.config.textPlace += 25;
-            this.config.jellyRemain4 -= 1;
-
-            //gain a life for killing a
-            this.moreLives();
-
-            if (this.config.jellyRemain4 <= 0) {
-                this.addJelly4();
-
-                this.config.jellyRemain4 += this.config.jellyStart4;
-            }
+            this._createMovingObjectAndAddToGroup(jellyGroup, jellyValue, image);
         }
     },
 
-    jellyAttack5: function (_player, _jelly5) {
+    eatsCollected: function(player, eats, groupName, value, textValue, image){
+        eats.kill();
 
-        if (this.config.currentValue >= this.config.jellyValue5) {
-            this.died();
-        }
-        else {
-            _jelly5.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' < ' + this.config.jellyValue5, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+        this.gameState.currentValue += (value);
 
-            this.config.textPlace += 25;
-            this.config.jellyRemain5 -= 1;
+        this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
 
-            //gain a life for killing a
-            this.moreLives();
+        console.log(value);
+        console.log(this.gameState.currentValue);
 
-            if (this.config.jellyRemain5 <= 0) {
-                this.addJelly5();
+        this.Number.setText(this.gameState.currentValue);
+    }
 
-                this.config.jellyRemain5 += this.config.jellyStart5;
-            }
-        }
-    },
-    
 }

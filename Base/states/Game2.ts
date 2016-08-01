@@ -1,9 +1,9 @@
-var Game2 = function () {};
+var Game2 = function () {
+};
 
 Game2.prototype = {
 
     config: {
-        stageName: "Numbers either side of 0",
 
         //Background Animation
         dustNumber: 200,
@@ -12,92 +12,167 @@ Game2.prototype = {
         //These have to be the same as the canvas size
         worldSizeX: 1200,
         worldSizeY: 800,
+
+
         //Where to place the Question answered text
         textPlace: 30,
 
         //Players Information
-        startValue: 10,
-        currentValue: 0,
+        //startValue: 0,
         startSpeed: 400,
-        endValue: 25,
+        endValue: 10,
 
         //State of the Player
         alive: true,
         lives: 3,
-        answered: 0,
-        currentSpeed: 400,
+        answerStart: 0,
+        startSpeed: 400,
 
 
-        //Piece of things that affect you
-        collectValue1: 5,
-        collectText1: '+5',
-        collectAmount1: 10,
-
-        collectValue2: 10,
-        collectText2: '+10',
-        collectAmount2: 5,
-
-        collectValue3: -5,
-        collectText3: '-5',
-        collectAmount3: 5,
-
-        collectValue4: -10,
-        collectText4: '-10',
-        collectAmount4: 5,
-
-
-        //Greater Than you AI
-        sharkStart1: 5,
-        sharkValue1: 5,
-        sharkRemain1: 5,
-
-        sharkStart2: 10,
-        sharkValue2: 15,
-        sharkRemain2: 10,
-
-        sharkStart3: 5,
-        sharkValue3: 25,
-        sharkRemain3: 5,
-
-        sharkStart4: 5,
-        sharkValue4: 30,
-        sharkRemain4: 5,
-
-        sharkStart5: 5,
-        sharkValue5: 45,
-        sharkRemain5: 5,
-
+        levels: {
+            1: {
+                startValue: 1,
+                endValue: 10,
+                sharks: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 10,
+                    },
+                    {
+                        value: 5,
+                        initialCount: 5
+                    },
+                    {
+                        value: 7,
+                        initialCount: 5
+                    },
+                    {
+                        value: 10,
+                        initialCount: 5
+                    }
+                ],
+                eats: [
+                    {
+                        value: 1,
+                        text: '+1',
+                        initialCount: 20
+                    },
+                ]
+            },
+            2: {
+                startValue: 50,
+                endValue: 0,
+                sharks: [
+                    {
+                        value: 0,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 9,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 19,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 24,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 25,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 33,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 37,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 50,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 48,
+                        initialCount: 2,
+                    }
+                ],
+                eats: [
+                    {
+                        value: -1,
+                        text: '-1',
+                        initialCount: 20
+                    },
+                    {
+                        value: -2,
+                        text: '-2',
+                        initialCount: 20
+                    },
+                    {
+                        value: -5,
+                        text: '-5',
+                        initialCount: 20
+                    },
+                    ],
+            },
+        },
     },
+
+    gameState: {},
 
 
     create: function () {
 
+        var levelId = 2;
+
         this.addWorld();
-        this.addPlayer();
 
-        this.addCollectables1();
-        this.addCollectables2();
-        this.addCollectables3();
-        this.addCollectables4();
+        this.gameState = {
+            currentLevel: levelId,
+            currentValue: this.config.levels[levelId].startValue,
+            endValue: this.config.levels[levelId].endValue,
+            alive: this.config.alive,
+            lives: this.config.lives,
+            currentSpeed: this.config.startSpeed,
+            answered: this.config.answerStart,
+            textPlace: this.config.textPlace,
+            physicsGroup: this.add.group(),
+            sharkGroups: [],
+            jellyGroups: [],
+            eatGroups: [],
+        };
 
-        this.addShark1();
-        this.addShark2();
-        this.addShark3();
-        this.addShark4();
-        this.addShark5();
+        this._createEntities();
 
-        //has to be added last
-        //otherwise things swim over it
+        //has to be added last otherwise things swim over it
         this.addUI();
-
     },
 
-    update: function () {
 
+    update: function () {
         //Player movement
         if (this.game.input.activePointer.isDown) {
             //  400 is the speed it will move towards the mouse
-            this.game.physics.arcade.moveToPointer(this.player, this.config.currentSpeed);
+            this.game.physics.arcade.moveToPointer(this.player, this.gameState.currentSpeed);
 
             //  if it's overlapping the mouse, don't move any more
             if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
@@ -109,110 +184,78 @@ Game2.prototype = {
         }
 
 
-        if (this.config.alive == false) {
+        if (this.gameState.alive == false) {
 
         } else {
-            //removing Collectables on collision with them
-            this.game.physics.arcade.overlap(this.player, this.colls1, this.removeCol1, null, this);
-            this.game.physics.arcade.overlap(this.player, this.colls2, this.removeCol2, null, this);
-            this.game.physics.arcade.overlap(this.player, this.colls3, this.removeCol3, null, this);
-            this.game.physics.arcade.overlap(this.player, this.colls4, this.removeCol4, null, this);
 
-            //if you collide with Shark's
-            this.game.physics.arcade.overlap(this.player, this.sharks1, this.sharkAttack1, null, this);
-            this.game.physics.arcade.overlap(this.player, this.sharks2, this.sharkAttack2, null, this);
-            this.game.physics.arcade.overlap(this.player, this.sharks3, this.sharkAttack3, null, this);
-            this.game.physics.arcade.overlap(this.player, this.sharks4, this.sharkAttack4, null, this);
-            this.game.physics.arcade.overlap(this.player, this.sharks5, this.sharkAttack5, null, this);
+            for (var i = 0; i < this.gameState.eatGroups.length; ++i) {
+                var currentEatGroup = this.gameState.eatGroups[i];
+
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentEatGroup,
+                    function (player, eats) {
+                        this.eatsCollected(
+                            player,
+                            eats,
+                            currentEatGroup,
+                            currentEatGroup.value,
+                            currentEatGroup.text,
+                            'block'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
+
+
+            for (var i = 0; i < this.gameState.sharkGroups.length; ++i) {
+                var currentSharkGroup = this.gameState.sharkGroups[i];
+
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentSharkGroup,
+                    function (player, shark) {
+                        this.sharkAttack(
+                            player,
+                            shark,
+                            currentSharkGroup,
+                            currentSharkGroup.value,
+                            'enemy'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
+
+            for (var i = 0; i < this.gameState.jellyGroups.length; ++i) {
+                var currentJellyGroup = this.gameState.jellyGroups[i];
+
+                this.game.physics.arcade.overlap(
+                    this.player,
+                    currentJellyGroup,
+                    function (player, jelly) {
+                        this.jellyAttack(
+                            player,
+                            jelly,
+                            currentJellyGroup,
+                            currentJellyGroup.value,
+                            'jelly'
+                        );
+                    },
+                    null,
+                    this
+                );
+            }
+
 
             //A colision with a clam
             this.game.physics.arcade.overlap(this.player, this.clamSprite, this.nextLevel, null, this);
 
         }
 
-    },
-
-
-    //Game Play Functions
-
-    moreLives: function () {
-        if (this.config.lives < 5) {
-            this.config.lives += 1;
-            this.livesSprite.frame -= 1;
-
-            //if you have more lives you go slower
-            this.config.currentSpeed -= 80;
-
-        } else {
-            this.config.lives = 5;
-        }
-
-        this.tenToWin();
-        console.log(this.config.currentSpeed);
-
-    },
-
-    died: function () {
-        this.player.frame = 1;
-        this.config.alive = false;
-        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.reBorn, this);
-
-        this.config.lives -= 1;
-
-        if (this.config.lives <= 0) {
-
-            this.config.currentSpeed = 0;
-            this.config.currentSpeed += this.config.startSpeed;
-            this.config.lives = 5;
-
-            //game.state.start('Loose1');
-            
-        } else {
-            //you have less lives so you go faster
-            this.config.currentSpeed += 80;
-            this.livesSprite.frame += 1;
-        }
-        console.log(this.config.currentSpeed);
-
-    },
-
-    reBorn: function () {
-        this.player.frame = 0;
-        this.config.alive = true;
-    },
-
-    tenToWin: function () {
-        if (this.config.answered < 10) {
-            this.config.answered += 1;
-        } else {
-
-            this.addClam();
-        }
-
-    },
-
-    addClam: function(){
-
-        this.clamSprite = this.add.sprite(250, 250, 'clam');
-        this.physics.enable(this.clamSprite, Phaser.Physics.ARCADE);
-        this.clamSprite.enableBody = true;
-
-        this.clamText = this.make.text(65, 50, this.config.endValue, {fill: '#FFFFFF' });
-        this.clamSprite.addChild(this.clamText);
-
-        this.endingText = this.add.text(400, 600, 'Become '+ this.config.endValue + ' and Get to the Clam!', {fill: '#000000' });
-        this.endingText.fixedToCamera = true;
-
-        console.log('there is a clam')
-        console.log(this.clamSprite.body);
-
-
-    },
-
-    nextLevel: function(){
-        if(this.config.endValue = this.config.currentValue) {
-            game.state.start('Win2');
-        }
     },
 
 
@@ -232,6 +275,7 @@ Game2.prototype = {
 
         //The Background aninimated dust particles
         this.dusts = this.add.group();
+        this.dustPhysicsGroup = this.game.make.group();
 
         for (var i = 0; i < this.config.dustNumber; i++) {
             this.dust = this.dusts.create(this.bounds.randomX, this.bounds.randomY, 'blob');
@@ -240,15 +284,7 @@ Game2.prototype = {
             this.dust.body.velocity.y = game.rnd.integerInRange(-220, 200);
         }
 
-        //Group information for Dust Partciles
-        this.dustGroupB = this.game.make.group();
-        this.dustGroupB.create(-50, -50, 'blob');
-        this.dusts.add(this.dustGroupB);
-
-        this.dusts.setAll('body.collideWorldBounds', true);
-        this.dusts.setAll('body.bounce.x', 1);
-        this.dusts.setAll('body.bounce.y', 1);
-        this.dusts.setAll('body.minBounceVelocity', 0);
+        this._createGroupPhyscis(this.dusts, this.dustPhysicsGroup);
 
 
     },
@@ -267,7 +303,37 @@ Game2.prototype = {
 
         this.config.scoreValue += 25;
 
+    },
 
+    _createEntities: function () {
+
+
+        if (this.config.levels[this.gameState.currentLevel].eats) {
+            var eats = this.config.levels[this.gameState.currentLevel].eats;
+            for (var i = 0; i < eats.length; ++i) {
+                var eatsConfig = eats[i];
+                this._addAllStaticObjects(eatsConfig.initialCount, this.gameState.eatGroups, eatsConfig.value, eatsConfig.text, 'block')
+            }
+        }
+
+        if (this.config.levels[this.gameState.currentLevel].sharks) {
+            var sharks = this.config.levels[this.gameState.currentLevel].sharks;
+            for (var i = 0; i < sharks.length; ++i) {
+                var sharkConfig = sharks[i];
+                this._addAllMovingObjects(sharkConfig.initialCount, this.gameState.sharkGroups, sharkConfig.value, 'enemy');
+            }
+        }
+
+        if (this.config.levels[this.gameState.currentLevel].jellys) {
+
+            var jellys = this.config.levels[this.gameState.currentLevel].jellys;
+            for (var i = 0; i < jellys.length; ++i) {
+                var jellyConfig = jellys[i];
+                this._addAllMovingObjects(sharkConfig.initialCount, this.gameState.jellyGroups, jellyConfig.value, 'jelly');
+            }
+        }
+
+        this.addPlayer();
     },
 
     addPlayer: function () {
@@ -285,431 +351,237 @@ Game2.prototype = {
         this.game.camera.follow(this.player);
 
         //Text on Player - Showing the players value
-        this.Number = this.make.text(25, 20, this.config.startValue, {fill: '#000000'});
+        this.Number = this.make.text(25, 20, this.config.levels[this.gameState.currentLevel].startValue, {fill: '#000000'});
         this.player.addChild(this.Number);
 
     },
 
-    //Adding Collectables to the Game
 
-    addCollectables1: function () {
+    //Game Play Functions
 
-        //create things for the player to collect
-        this.colls1 = this.add.group();
-        this.colls1.enableBody = true;
-        this.colls1.physicsBodyType = Phaser.Physics.ARCADE;
+    moreLives: function () {
+        if (this.gameState.lives < 5) {
+            this.gameState.lives += 1;
+            this.livesSprite.frame -= 1;
 
-        for (var colect1Index = 0; colect1Index < this.config.collectAmount1; colect1Index++) {
-            this.col1 = this.colls1.create(this.bounds.randomX, this.bounds.randomY, 'block');
+            //if you have more lives you go slower
+            this.gameState.currentSpeed -= 80;
 
-            //Text on the collectable blocks
-            this.shownColls1Value = this.make.text(7, 8, this.config.collectText1, {fill: '#000000'});
-            this.col1.addChild(this.shownColls1Value);
+        } else {
+            this.gameState.lives = 5;
         }
 
-        //Physics Properties for the collectables
-        this.col1Group = this.game.make.group();
-        this.col1Group.create(-50, -50, 'block');
-        this.colls1.add(this.col1Group);
-
-        this.colls1.setAll('body.collideWorldBounds', true);
-        this.colls1.setAll('body.bounce.x', 1);
-        this.colls1.setAll('body.bounce.y', 1);
-        this.colls1.setAll('body.minBounceVelocity', 0);
-
+        this.tenToWin();
+        console.log(this.gameState.currentSpeed);
 
     },
 
-    addCollectables2: function () {
+    died: function () {
+        this.player.frame = 1;
+        this.gameState.alive = false;
+        this.game.time.events.add(Phaser.Timer.SECOND * 4, this.reBorn, this);
 
-        //create things for the player to collect
-        this.colls2 = this.add.group();
-        this.colls2.enableBody = true;
-        this.colls2.physicsBodyType = Phaser.Physics.ARCADE;
+        this.gameState.lives -= 1;
 
-        for (var colect2Index = 0; colect2Index < this.config.collectAmount2; colect2Index++) {
-            this.col2 = this.colls2.create(this.bounds.randomX, this.bounds.randomY, 'block');
+        if (this.gameState.lives <= 0) {
+            //you now have full lives and you speed is reset to fastest
 
-            //Text on the collectable blocks
-            this.shownColls2Value = this.make.text(7, 8, this.config.collectText2, {fill: '#000000'});
-            this.col2.addChild(this.shownColls2Value);
+            this.gameState.currentSpeed = 0;
+            this.gameState.currentSpeed += this.config.startSpeed;
+            this.gameState.lives = 5;
+        } else {
+            //you have less lives so you go faster
+            this.gameState.currentSpeed += 80;
+            this.livesSprite.frame += 1;
         }
-        //Physics Properties for the collectables
-        this.col2Group = this.game.make.group();
-        this.col2Group.create(-50, -50, 'block');
-        this.colls2.add(this.col2Group);
-
-        this.colls2.setAll('body.collideWorldBounds', true);
-        this.colls2.setAll('body.bounce.x', 1);
-        this.colls2.setAll('body.bounce.y', 1);
-        this.colls2.setAll('body.minBounceVelocity', 0);
-
+        console.log(this.gameState.currentSpeed);
 
     },
 
-    addCollectables3: function () {
+    reBorn: function () {
+        this.player.frame = 0;
+        this.gameState.alive = true;
+    },
 
-        //create things for the player to collect
-        this.colls3 = this.add.group();
-        this.colls3.enableBody = true;
-        this.colls3.physicsBodyType = Phaser.Physics.ARCADE;
+    tenToWin: function () {
+        if (this.gameState.answered < 10) {
+            this.gameState.answered += 1;
+        } else {
 
-        for (var colect3Index = 0; colect3Index < this.config.collectAmount3; colect3Index++) {
-            this.col3 = this.colls3.create(this.bounds.randomX, this.bounds.randomY, 'block');
-
-            //Text on the collectable blocks
-            this.shownColls3Value = this.make.text(7, 8, this.config.collectText3, {fill: '#000000'});
-            this.col3.addChild(this.shownColls3Value);
+            this.addClam();
         }
-        //Physics Properties for the collectables
-        this.col3Group = this.game.make.group();
-        this.col3Group.create(-50, -50, 'block');
-        this.colls3.add(this.col3Group);
-
-        this.colls3.setAll('body.collideWorldBounds', true);
-        this.colls3.setAll('body.bounce.x', 1);
-        this.colls3.setAll('body.bounce.y', 1);
-        this.colls3.setAll('body.minBounceVelocity', 0);
 
     },
 
-    addCollectables4: function () {
+    addClam: function () {
 
-        //create things for the player to collect
-        this.colls4 = this.add.group();
-        this.colls4.enableBody = true;
-        this.colls4.physicsBodyType = Phaser.Physics.ARCADE;
+        this.clamSprite = this.add.sprite(250, 250, 'clam');
+        this.physics.enable(this.clamSprite, Phaser.Physics.ARCADE);
+        this.clamSprite.enableBody = true;
 
-        for (var i = 0; i < this.config.collectAmount4; i++) {
-            this.col4 = this.colls4.create(this.bounds.randomX, this.bounds.randomY, 'block');
+        this.clamText = this.make.text(65, 50, this.gameState.endValue, {fill: '#FFFFFF'});
+        this.clamSprite.addChild(this.clamText);
 
-            //Text on the collectable blocks
-            this.shownColls4Value = this.make.text(7, 8, this.config.collectText4, {fill: '#000000'});
-            this.col4.addChild(this.shownColls4Value);
+        this.endingText = this.add.text(400, 600, 'Become 10 or (Greater) and Get to the Clam!', {fill: '#000000'});
+        this.endingText.fixedToCamera = true;
+
+        console.log('there is a clam')
+        console.log(this.clamSprite.body);
+
+
+    },
+    
+    nextLevel: function () {
+        if (this.gameState.currentValue < this.gameState.endValue){
+        }else{
+            game.state.start('Win2');
+            console.log('Go to the next level!')
         }
-        //Physics Properties for the collectables
-        this.col4Group = this.game.make.group();
-        this.col4Group.create(-50, -50, 'block');
-        this.colls4.add(this.col4Group);
-
-        this.colls4.setAll('body.collideWorldBounds', true);
-        this.colls4.setAll('body.bounce.x', 1);
-        this.colls4.setAll('body.bounce.y', 1);
-        this.colls4.setAll('body.minBounceVelocity', 0);
-
-    },
-
-    //Functions for what happens when you collide with Collectables
-
-    removeCol1: function (_player, _col1) {
-        _col1.kill();
-        this.config.currentValue += (this.config.collectValue1);
-        this.Number.setText(this.config.currentValue);
-    },
-
-    removeCol2: function (_player, _col2) {
-        _col2.kill();
-        this.config.currentValue += (this.config.collectValue2);
-        this.Number.setText(this.config.currentValue);
-    },
-
-    removeCol3: function (_player, _col3) {
-        _col3.kill();
-        this.config.currentValue += (this.config.collectValue3);
-        this.Number.setText(this.config.currentValue);
-    },
-
-    removeCol4: function (_player, _col4) {
-        _col4.kill();
-        this.config.currentValue += (this.config.collectValue4);
-        this.Number.setText(this.config.currentValue);
     },
 
 
-    //Adding Sharks to the game
-    addShark1: function () {
-        //The Greater Than You Enemys
-        this.sharks1 = this.add.group();
 
-        for (var i = 0; i < this.config.sharkStart1; i++) {
+//Creating Moving Objects - Such as sharks or jelly fish or dust
+    _addAllMovingObjects: function (amount, groupName, value, image) {
+        var group = this.add.group();
 
-            this.shark1 = this.sharks1.create(this.bounds.randomX, this.bounds.randomY, 'enemy');
-            //Physics Information about the Shark
-            this.physics.enable(this.shark1, Phaser.Physics.ARCADE);
-            this.shark1.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.shark1.body.velocity.y = game.rnd.integerInRange(-220, 200);
+        group.value = value;
 
-            //Text Value of the Shark
-            this.sharkValue1 = this.make.text(25, 25, this.config.sharkValue1, {fill: '#FFFFFF'});
-            this.shark1.addChild(this.sharkValue1);
+        groupName.push(group);
+
+        this._createMovingObject(amount, group, value, image);
+        this._createGroupPhyscis(group, this.gameState.physicsGroup);
+    },
+
+    _createMovingObject: function (amount, groupName, value, image) {
+        for (var i = 0; i < amount; i++) {
+            this._createMovingObjectAndAddToGroup(groupName, value, image);
         }
+    },
+
+    _createMovingObjectAndAddToGroup: function (groupName, value, image) {
+        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+
+        this.physics.enable(object, Phaser.Physics.ARCADE);
+
+        //give the object a random speed
+        object.body.velocity.x = game.rnd.integerInRange(-200, 200);
+        object.body.velocity.y = game.rnd.integerInRange(-220, 200);
+
+        var text = this.make.text(25, 25, value, {fill: '#FFFFFF'});
+        object.addChild(text);
+
+    },
+
+
+//Creating Static Objects - Such as collectabled 'eats'
+    _createStaticObject: function (amount, groupName, value, textValue, image) {
+        for (var i = 0; i < amount; i++) {
+            this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
+        }
+    },
+
+    _createStaticObjectAndAddToGroup: function (groupName, value, textValue, image) {
+        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+
+        this.physics.enable(object, Phaser.Physics.ARCADE);
+
+        var text = this.make.text(5, 5, textValue, {fill: '#000000'});
+        object.addChild(text);
+
+    },
+
+    _addAllStaticObjects: function (amount, groupName, value, textValue, image) {
+        var group = this.add.group();
+
+        group.value = value;
+
+        groupName.push(group);
+
+        this._createStaticObject(amount, group, value, textValue, image);
+        this._createGroupPhyscis(group, this.gameState.physicsGroup);
+    },
+
+
+//This physics is used for both static and moving objects
+    _createGroupPhyscis: function (groupName, physicsGroup) {
         //Some more physics information for the Shark
-        this.sharkGroup1 = this.game.make.group();
-        this.sharkGroup1.create(-50, -50, 'block');
-        this.sharks1.add(this.sharkGroup1);
+        physicsGroup = this.game.make.group();
+        physicsGroup.create(-50, -50, 'block');
+        groupName.add(physicsGroup);
 
-        this.sharks1.setAll('body.collideWorldBounds', true);
-        this.sharks1.setAll('body.bounce.x', 1);
-        this.sharks1.setAll('body.bounce.y', 1);
-        this.sharks1.setAll('body.minBounceVelocity', 0);
+        groupName.setAll('body.collideWorldBounds', true);
+        groupName.setAll('body.bounce.x', 1);
+        groupName.setAll('body.bounce.y', 1);
+        groupName.setAll('body.minBounceVelocity', 0);
+    },
+
+
+    //Functions that happen when a group of object e.g. sharks, jellys, eats have been colldied with
+
+    _addSharkSolvedMath: function (currentValue, sharkValue, worldSizeX, textPlace) {
+        this.scoreUI = game.add.text(600, 500, currentValue + ' > ' + sharkValue, {
+            fill: "#000000",
+            align: "center"
+        });
+        this.scoreUI.fixedToCamera = true;
+        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
 
     },
 
-    addShark2: function () {
-        //The Greater Than You Enemys
-        this.sharks2 = this.add.group();
-
-        for (var i = 0; i < this.config.sharkStart2; i++) {
-
-            this.shark2 = this.sharks2.create(this.bounds.randomX, this.bounds.randomY, 'enemy');
-            //Physics Information about the Shark
-            this.physics.enable(this.shark2, Phaser.Physics.ARCADE);
-            this.shark2.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.shark2.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Shark
-            this.sharkValue2 = this.make.text(25, 25, this.config.sharkValue2, {fill: '#FFFFFF'});
-            this.shark2.addChild(this.sharkValue2);
-        }
-        //Some more physics information for the Shark
-        this.sharkGroup2 = this.game.make.group();
-        this.sharkGroup2.create(-50, -50, 'block');
-        this.sharks2.add(this.sharkGroup2);
-
-        this.sharks2.setAll('body.collideWorldBounds', true);
-        this.sharks2.setAll('body.bounce.x', 1);
-        this.sharks2.setAll('body.bounce.y', 1);
-        this.sharks2.setAll('body.minBounceVelocity', 0);
+    _addJellySolvedMath: function (currentValue, jellyValue, worldSizeX, textPlace) {
+        this.scoreUI = game.add.text(600, 500, currentValue + ' < ' + jellyValue, {
+            fill: "#000000",
+            align: "center"
+        });
+        this.scoreUI.fixedToCamera = true;
+        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
 
     },
 
-    addShark3: function () {
-        //The Greater Than You Enemys
-        this.sharks3 = this.add.group();
+    sharkAttack: function (player, shark, sharkGroup, sharkValue, image) {
 
-        for (var i = 0; i < this.config.sharkStart3; i++) {
-
-            this.shark3 = this.sharks3.create(this.bounds.randomX, this.bounds.randomY, 'enemy');
-            //Physics Information about the Shark
-            this.physics.enable(this.shark3, Phaser.Physics.ARCADE);
-            this.shark3.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.shark3.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Shark
-            this.sharkText3 = this.make.text(25, 25, this.config.sharkValue3, {fill: '#FFFFFF'});
-            this.shark3.addChild(this.sharkText3);
-        }
-        //Some more physics information for the Shark
-        this.sharkGroup3 = this.game.make.group();
-        this.sharkGroup3.create(-50, -50, 'block');
-        this.sharks3.add(this.sharkGroup3);
-
-        this.sharks3.setAll('body.collideWorldBounds', true);
-        this.sharks3.setAll('body.bounce.x', 1);
-        this.sharks3.setAll('body.bounce.y', 1);
-        this.sharks3.setAll('body.minBounceVelocity', 0);
-
-    },
-
-    addShark4: function () {
-        //The Greater Than You Enemys
-        this.sharks4 = this.add.group();
-
-        for (var i = 0; i < this.config.sharkStart4; i++) {
-
-            this.shark4 = this.sharks4.create(this.bounds.randomX, this.bounds.randomY, 'enemy');
-            //Physics Information about the Shark
-            this.physics.enable(this.shark4, Phaser.Physics.ARCADE);
-            this.shark4.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.shark4.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Shark
-            this.sharkText4 = this.make.text(25, 25, this.config.sharkValue4, {fill: '#FFFFFF'});
-            this.shark4.addChild(this.sharkText4);
-        }
-        //Some more physics information for the Shark
-        this.sharkGroup4 = this.game.make.group();
-        this.sharkGroup4.create(-50, -50, 'block');
-        this.sharks4.add(this.sharkGroup4);
-
-        this.sharks4.setAll('body.collideWorldBounds', true);
-        this.sharks4.setAll('body.bounce.x', 1);
-        this.sharks4.setAll('body.bounce.y', 1);
-        this.sharks4.setAll('body.minBounceVelocity', 0);
-
-    },
-
-    addShark5: function () {
-        //The Greater Than You Enemys
-        this.sharks5 = this.add.group();
-
-        for (var i = 0; i < this.config.sharkStart5; i++) {
-
-            this.shark5 = this.sharks5.create(this.bounds.randomX, this.bounds.randomY, 'enemy');
-            //Physics Information about the Shark
-            this.physics.enable(this.shark5, Phaser.Physics.ARCADE);
-            this.shark5.body.velocity.x = game.rnd.integerInRange(-200, 200);
-            this.shark5.body.velocity.y = game.rnd.integerInRange(-220, 200);
-
-            //Text Value of the Shark
-            this.sharkText5 = this.make.text(25, 25, this.config.sharkValue5, {fill: '#FFFFFF'});
-            this.shark5.addChild(this.sharkText5);
-        }
-        //Some more physics information for the Shark
-        this.sharkGroup5 = this.game.make.group();
-        this.sharkGroup5.create(-50, -50, 'block');
-        this.sharks5.add(this.sharkGroup5);
-
-        this.sharks5.setAll('body.collideWorldBounds', true);
-        this.sharks5.setAll('body.bounce.x', 1);
-        this.sharks5.setAll('body.bounce.y', 1);
-        this.sharks5.setAll('body.minBounceVelocity', 0);
-
-    },
-
-    //Functions on what happens when Sharks Eat You
-
-    sharkAttack1: function (_player, _shark1) {
-
-        if (this.config.currentValue <= this.config.sharkValue1) {
+        if (this.gameState.currentValue <= sharkValue) {
             this.died();
         }
         else {
-            _shark1.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' > ' + this.config.sharkValue1, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+            shark.kill();
+            this._addSharkSolvedMath(this.gameState.currentValue, sharkValue, this.config.worldSizeX, this.gameState.textPlace);
 
-            this.config.textPlace += 25;
-            this.config.sharkRemain1 -= 1;
-
-            //gain a life for killing a
+            this.gameState.textPlace += 25;
             this.moreLives();
 
-            if (this.config.sharkRemain1 <= 0) {
-                this.addShark1();
-
-                this.config.sharkRemain1 += this.config.sharkStart1;
-            }
+            this._createMovingObjectAndAddToGroup(sharkGroup, sharkValue, image);
         }
-
     },
 
-    sharkAttack2: function (_player, _shark2) {
+    jellyAttack: function (player, jelly, jellyGroup, jellyValue, image) {
 
-        if (this.config.currentValue <= this.config.sharkValue2) {
+        if (this.gameState.currentValue >= jellyValue) {
             this.died();
         }
         else {
-            _shark2.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' > ' + this.config.sharkValue2, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+            jelly.kill();
+            this._addJellySolvedMath(this.gameState.currentValue, jellyValue, this.config.worldSizeX, this.gameState.textPlace);
 
-            this.config.textPlace += 25;
-            this.config.sharkRemain2 -= 1;
-
-            //gain a life for killing a
+            this.gameState.textPlace += 25;
             this.moreLives();
 
-            if (this.config.sharkRemain2 <= 0) {
-                this.addShark2();
-
-                this.config.sharkRemain2 += this.config.sharkStart2;
-            }
-        }
-
-    },
-
-    sharkAttack3: function (_player, _shark3) {
-
-        if (this.config.currentValue <= this.config.sharkValue3) {
-            this.died();
-        }
-        else {
-            _shark3.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' > ' + this.config.sharkValue3, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
-
-            this.config.textPlace += 25;
-            this.config.sharkRemain3 -= 1;
-
-            //gain a life for killing a
-            this.moreLives();
-
-            if (this.config.sharkRemain3 <= 0) {
-                this.addShark3();
-
-                this.config.sharkRemain3 += this.config.sharkStart3;
-            }
-        }
-
-    },
-
-    sharkAttack4: function (_player, _shark4) {
-
-        if (this.config.currentValue <= this.config.sharkValue4) {
-            this.died();
-        }
-        else {
-            _shark4.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' > ' + this.config.sharkValue4, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
-
-            this.config.textPlace += 25;
-            this.config.sharkRemain4 -= 1;
-
-            //gain a life for killing a
-            this.moreLives();
-
-            if (this.config.sharkRemain4 <= 0) {
-                this.addShark4();
-
-                this.config.sharkRemain4 += this.config.sharkStart4;
-            }
+            this._createMovingObjectAndAddToGroup(jellyGroup, jellyValue, image);
         }
     },
 
-    sharkAttack5: function (_player, _shark5) {
+    eatsCollected: function (player, eats, groupName, value, textValue, image) {
+        eats.kill();
 
-        if (this.config.currentValue <= this.config.sharkValue5) {
-            this.died();
-        }
-        else {
-            _shark5.kill();
-            this.scoreUI = game.add.text(600, 500, this.config.currentValue + ' > ' + this.config.sharkValue5, {
-                fill: "#000000",
-                align: "center"
-            });
-            this.scoreUI.fixedToCamera = true;
-            this.scoreUI.cameraOffset.setTo(this.config.worldSizeX - 150, 10 + this.config.textPlace);
+        this.gameState.currentValue += (value);
 
-            this.config.textPlace += 25;
-            this.config.sharkRemain5 -= 1;
+        this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
 
-            //gain a life for killing a
-            this.moreLives();
+        console.log(value);
+        console.log(this.gameState.currentValue);
 
-            if (this.config.sharkRemain5 <= 0) {
-                this.addShark5();
-
-                this.config.sharkRemain5 += this.config.sharkStart5;
-            }
-        }
-    },
-
+        this.Number.setText(this.gameState.currentValue);
+    }
 }
+
