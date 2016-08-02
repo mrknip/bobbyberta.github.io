@@ -25,7 +25,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         answerStart: 0,
         startSpeed: 400,
 
-        currentLevel: 4,
+        currentLevel: 1,
         finalLevel: 4,
         clamStart: false,
 
