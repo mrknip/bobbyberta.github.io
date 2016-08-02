@@ -2,9 +2,6 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     config: {
 
-        //Background Animation
-        dustNumber: 200,
-
         //Size of the world - used for UI elements
         //These have to be the same as the canvas size
         worldSizeX: 1200,
@@ -26,7 +23,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         startSpeed: 400,
 
         currentLevel: 1,
-        finalLevel: 4,
+        finalLevel: 5,
         clamStart: false,
 
 
@@ -37,6 +34,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 endValue: 10,
                 playerMaxValue: 10,
                 playerMinValue: 0,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
                 sharks: [
                     {
                         value: 1,
@@ -73,6 +72,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 endValue: 10,
                 playerMaxValue: 50,
                 playerMinValue: 10,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
                 sharks: [
                     {
                         value: 0,
@@ -147,6 +148,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 endValue: 50,
                 playerMaxValue: 100,
                 playerMinValue: -50,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
                 sharks: [
                     {
                         value: 0,
@@ -295,6 +298,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 endValue: 10,
                 playerMaxValue: 10,
                 playerMinValue: 0,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
                 sharks: [
                     {
                         value: 0,
@@ -393,6 +398,143 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                     },
                 ],
             },
+            5: {
+                levelName: 'Level 5',
+                startValue: 10,
+                endValue: 50,
+                playerMaxValue: 100,
+                playerMinValue: -100,
+                worldSizeX: 10000,
+                worldSizeY: 10000,
+                sharks: [
+                    {
+                        value: -100,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -51,
+                        initialCount: 3,
+                    },
+                    {
+                        value: -18,
+                        initialCount: 14,
+                    },
+                    {
+                        value: -4,
+                        initialCount: 33,
+                    },
+                    {
+                        value: -1,
+                        initialCount: 50,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 50,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 33,
+                    },
+                    {
+                        value: 18,
+                        initialCount: 14,
+                    },
+                    {
+                        value: 51,
+                        initialCount: 3,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 1,
+                    },
+                ],
+
+                jellys: [
+                    {
+                        value: -100,
+                        initialCount: 1,
+                    },
+                    {
+                        value: -51,
+                        initialCount: 3,
+                    },
+                    {
+                        value: -18,
+                        initialCount: 14,
+                    },
+                    {
+                        value: -4,
+                        initialCount: 33,
+                    },
+                    {
+                        value: -1,
+                        initialCount: 50,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 50,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 33,
+                    },
+                    {
+                        value: 18,
+                        initialCount: 14,
+                    },
+                    {
+                        value: 51,
+                        initialCount: 3,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 1,
+                    },
+                ],
+
+                eats: [
+                    {
+                        value: -1,
+                        text: '-1',
+                        initialCount: 50
+                    },
+                    {
+                        value: 1,
+                        text: '+1',
+                        initialCount: 50
+                    },
+                    {
+                        value: -2,
+                        text: '-2',
+                        initialCount: 40
+                    },
+                    {
+                        value: 2,
+                        text: '+2',
+                        initialCount: 40
+                    },
+                    {
+                        value: -5,
+                        text: '-5',
+                        initialCount: 30
+                    },
+                    {
+                        value: 5,
+                        text: '+5',
+                        initialCount: 30
+                    },
+                    {
+                        value: -10,
+                        text: '-10',
+                        initialCount: 20
+                    },
+                    {
+                        value: 10,
+                        text: '+10',
+                        initialCount: 20
+                    },
+                ],
+            },
 
         },
     },
@@ -425,7 +567,6 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         var levelId = this.config.currentLevel;
 
-        this.addWorld();
 
         this.gameState = {
             currentLevel: levelId,
@@ -434,6 +575,10 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             endValue: this.config.levels[levelId].endValue,
             playerMaxValue: this.config.levels[levelId].playerMaxValue,
             playerMinValue: this.config.levels[levelId].playerMinValue,
+            worldSizeX: this.config.levels[levelId].worldSizeX,
+            worldSizeY: this.config.levels[levelId].worldSizeY,
+            //the number of background animations is 10% of the world size
+            dustNumber: this.config.levels[levelId].worldSizeX/10,
             toBig: false,
             toSmall: false,
             alive: this.config.alive,
@@ -447,6 +592,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             jellyGroups: [],
             eatGroups: [],
         };
+
+        this.addWorld();
 
         this._createEntities();
 
@@ -557,8 +704,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     addWorld: function () {
 
         //create world bounds, background image and lock to camera
-        this.game.world.setBounds(0, 0, 2500, 2500);
-        this.bounds = new Phaser.Rectangle(100, 100, 2500, 2500);
+        this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
+        this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX/1.2, this.gameState.worldSizeY/1.2);
         this.background = game.add.tileSprite(0, 0, 1200, 800, 'bg');
         this.background.fixedToCamera = true;
 
@@ -570,7 +717,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.dusts = this.add.group();
         this.dustPhysicsGroup = this.game.make.group();
 
-        for (var i = 0; i < this.config.dustNumber; i++) {
+        for (var i = 0; i < this.gameState.dustNumber; i++) {
             this.dust = this.dusts.create(this.bounds.randomX, this.bounds.randomY, 'blob');
             this.physics.enable(this.dust, Phaser.Physics.ARCADE);
             this.dust.body.velocity.x = game.rnd.integerInRange(-200, 200);
@@ -631,7 +778,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             var jellys = this.config.levels[this.gameState.currentLevel].jellys;
             for (var i = 0; i < jellys.length; ++i) {
                 var jellyConfig = jellys[i];
-                this._addAllMovingObjects(sharkConfig.initialCount, this.gameState.jellyGroups, jellyConfig.value, 'jelly');
+                this._addAllMovingObjects(jellyConfig.initialCount, this.gameState.jellyGroups, jellyConfig.value, 'jelly');
             }
         }
 
@@ -665,9 +812,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         this.config.currentLevel ++;
 
-        this.background = game.add.tileSprite(0, 0, 1200, 800, 'bg');
-
-        this.levelUp = game.add.tileSprite(0, 0, 1200, 800, 'up');
+        game.stage.backgroundColor = "#6f9695";
+        this.levelUp = game.add.sprite(0, 0, 'up');
+        this.levelUp.fixedToCamera = true;
 
         game.add.tween(this.levelUp).to( { alpha: 0 }, 4000, Phaser.Easing.Linear.None, true);
 
@@ -783,7 +930,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
             console.log(this.gameState.answered + ' Questions have been answered');
             console.log(this.config.currentLevel + ' this is the config current level');
-        } else {
+        } else if(this.gameState.clamExist == false) {
             this.addClam();
         }
 
@@ -791,7 +938,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     addClam: function () {
 
-        this.clamSprite = this.add.sprite(250, 250, 'clam');
+        this.clamSprite = this.add.sprite(this.gameState.worldSizeX/2, this.gameState.worldSizeY/2, 'clam');
         this.physics.enable(this.clamSprite, Phaser.Physics.ARCADE);
         this.clamSprite.enableBody = true;
 
@@ -807,11 +954,14 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         console.log(this.clamSprite.body);
         console.log(this.gameState.clamExist);
 
+        console.log(this.gameState.currentValue + ' is my current value')
+        console.log(this.gameState.endValue + ' is my end value')
+
 
     },
 
     nextLevel: function () {
-        if (this.gameState.currentValue = this.gameState.endValue && this.config.currentLevel < this.config.finalLevel){
+        if (this.gameState.currentValue == this.gameState.endValue){
             
             this.config.currentLevel = this.gameState.currentLevel;
             this.clamSprite.destroy();
@@ -823,7 +973,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             console.log(this.config.currentLevel);
         }
 
-        else if (this.gameState.currentValue = this.gameState.endValue && this.config.currentLevel == this.config.finalLevel){
+        else if (this.gameState.currentValue == this.gameState.endValue){
             this.game.world.removeAll();
 
             this.addEndScreen();
