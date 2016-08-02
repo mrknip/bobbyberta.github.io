@@ -12,7 +12,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
 
         //Where to place the Question answered text
-        textPlace: 30,
+        textPlace: 90,
 
         //Players Information
         //startValue: 0,
@@ -31,6 +31,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         levels: {
             1: {
+                levelName: 'Level 1',
                 startValue: 1,
                 endValue: 10,
                 playerMaxValue: 10,
@@ -66,6 +67,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 ]
             },
             2: {
+                levelName: 'Level 2',
                 startValue: 50,
                 endValue: 0,
                 playerMaxValue: 50,
@@ -139,6 +141,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 ],
             },
             3: {
+                levelName: 'Level 3',
                 startValue: 0,
                 endValue: 50,
                 playerMaxValue: 100,
@@ -305,7 +308,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         game.load.image('enemy', 'assets/shark1.png');
         game.load.image('jelly', 'assets/jelly1.png');
         game.load.image('end', 'assets/credits.png');
-        game.load.image('loose', 'assets/loose.png');
+        game.load.image('down', 'assets/loose.png');
+        game.load.image('title', 'assets/TitleBar.png');
 
         game.load.image('clam', 'assets/clam.png');
     },
@@ -319,6 +323,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         this.gameState = {
             currentLevel: levelId,
+            levelName: this.config.levels[levelId].levelName,
             currentValue: this.config.levels[levelId].startValue,
             endValue: this.config.levels[levelId].endValue,
             playerMaxValue: this.config.levels[levelId].playerMaxValue,
@@ -479,9 +484,18 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.livesSprite.frame = 2;
 
         //Score Board - Top Eats
-        this.topEatsUI = this.add.image(500, 500, 'eatsUI')
+        this.topEatsUI = this.add.image(500, 500, 'eatsUI');
         this.topEatsUI.fixedToCamera = true;
-        this.topEatsUI.cameraOffset.setTo(this.config.worldSizeX - 200, 10);
+        this.topEatsUI.cameraOffset.setTo(this.config.worldSizeX - 200, 50);
+
+        //title Bar - name of level
+        this.titleUI = this.add.image(500, 500, 'title');
+        this.titleUI.fixedToCamera = true;
+        this.titleUI.cameraOffset.setTo(this.config.worldSizeX - 200, 10);
+
+        this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#000000'});
+        this.titleUI.addChild(this.titleText);
+
 
         this.config.scoreValue += 25;
 
@@ -548,14 +562,29 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         game.add.tween(this.levelUp).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
 
-        game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevelUp, this)
+        game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
 
 
     },
 
-    _endLevelUp: function(){
+    _endLevel: function(){
         this.game.world.removeAll();
         this.create();
+
+    },
+
+    addLevelDownScreen: function (){
+
+        this.config.currentLevel --;
+
+        this.background = game.add.image(0, 0, 'bg');
+
+        this.levelDown = game.add.image(0, 0, 'down');
+
+        game.add.tween(this.levelDown).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
+
+        game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
+
 
     },
 
@@ -593,9 +622,10 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             
             //go down to easier dificulty
             if(this.config.currentLevel > 1){
-                this.config.currentLevel -= 1;
+                this.config.currentLevel = this.gameState.currentLevel;
+
                 this.game.world.removeAll();
-                this.addLevelUpScreen();
+                this.addLevelDownScreen();
             }else{
                 // //you now have full lives and you speed is reset to fastest
                 this.gameState.currentSpeed = 0;
