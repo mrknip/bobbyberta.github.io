@@ -25,7 +25,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         answerStart: 0,
         startSpeed: 400,
 
-        currentLevel: 1,
+        currentLevel: 4,
+        finalLevel: 4,
         clamStart: false,
 
 
@@ -69,9 +70,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             2: {
                 levelName: 'Level 2',
                 startValue: 50,
-                endValue: 0,
+                endValue: 10,
                 playerMaxValue: 50,
-                playerMinValue: 0,
+                playerMinValue: 10,
                 sharks: [
                     {
                         value: 0,
@@ -288,6 +289,110 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                     },
                 ],
             },
+            4: {
+                levelName: 'Level 4',
+                startValue: 0,
+                endValue: 10,
+                playerMaxValue: 10,
+                playerMinValue: 0,
+                sharks: [
+                    {
+                        value: 0,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 1,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 3,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 5,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 6,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 7,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 8,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 9,
+                        initialCount: 1,
+                    },
+                ],
+                jellys: [
+                    {
+                        value: 1,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 1,
+                    },
+
+                    {
+                        value: 3,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 5,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 6,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 7,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 8,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 9,
+                        initialCount: 1,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 1,
+                    },
+                ],
+                eats: [
+                    {
+                        value: -1,
+                        text: '-1',
+                        initialCount: 25
+                    },
+                    {
+                        value: 1,
+                        text: '+1',
+                        initialCount: 25
+                    },
+                ],
+            },
 
         },
     },
@@ -308,7 +413,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         game.load.image('enemy', 'assets/shark1.png');
         game.load.image('jelly', 'assets/jelly1.png');
         game.load.image('end', 'assets/credits.png');
-        game.load.image('down', 'assets/loose.png');
+        game.load.image('end', 'assets/credits.png');
+        game.load.image('loose', 'assets/loose.png');
         game.load.image('title', 'assets/TitleBar.png');
 
         game.load.image('clam', 'assets/clam.png');
@@ -493,7 +599,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.titleUI.fixedToCamera = true;
         this.titleUI.cameraOffset.setTo(this.config.worldSizeX - 200, 10);
 
-        this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#000000'});
+        this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#24475b'});
         this.titleUI.addChild(this.titleText);
 
 
@@ -552,6 +658,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     },
 
+
+    //Functions for changing between levels
+
     addLevelUpScreen: function (){
 
         this.config.currentLevel ++;
@@ -560,7 +669,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         this.levelUp = game.add.tileSprite(0, 0, 1200, 800, 'up');
 
-        game.add.tween(this.levelUp).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
+        game.add.tween(this.levelUp).to( { alpha: 0 }, 4000, Phaser.Easing.Linear.None, true);
 
         game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
 
@@ -575,17 +684,38 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     addLevelDownScreen: function (){
 
-        this.config.currentLevel --;
 
-        this.background = game.add.image(0, 0, 'bg');
+        game.stage.backgroundColor = "#6f9695";
 
-        this.levelDown = game.add.image(0, 0, 'down');
+        this.levelDown = game.add.image(0, 0, 'loose');
+        this.levelDown.fixedToCamera = true;
 
         game.add.tween(this.levelDown).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
 
-        game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
+        this.config.currentLevel --;;
+
+        game.time.events.add(Phaser.Timer.SECOND * 3, this._endLevel, this)
 
 
+
+    },
+
+    addEndScreen: function(){
+        game.stage.backgroundColor = "#6f9695";
+
+        this.levelEnd = game.add.sprite(0, 0, 'splash');
+        this.levelEnd.fixedToCamera = true;
+        this.levelEnd.inputEnabled = true;
+
+        this.levelEnd.events.onInputDown.add(this.startGame, this);
+
+    },
+
+    startGame: function(){
+        this.config.currentLevel = 1;
+        this.game.world.removeAll();
+
+        this.create();
     },
 
 
@@ -675,31 +805,34 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         console.log('there is a clam')
         console.log(this.clamSprite.body);
+        console.log(this.gameState.clamExist);
 
 
     },
 
     nextLevel: function () {
-        if (this.gameState.currentValue < this.gameState.endValue){
-        }else{
-            if(this.config.currentLevel = this.config.finalLevel){
+        if (this.gameState.currentValue = this.gameState.endValue && this.config.currentLevel < this.config.finalLevel){
+            
+            this.config.currentLevel = this.gameState.currentLevel;
+            this.clamSprite.destroy();
 
-            }else{
-                this.config.currentLevel = this.gameState.currentLevel;
-                this.clamSprite.destroy();
+            this.game.world.removeAll();
 
-                this.game.world.removeAll();
+            this.addLevelUpScreen();
 
-                this.addLevelUpScreen();
+            console.log(this.config.currentLevel);
+        }
 
-                console.log(this.config.currentLevel);
-            }
+        else if (this.gameState.currentValue = this.gameState.endValue && this.config.currentLevel == this.config.finalLevel){
+            this.game.world.removeAll();
+
+            this.addEndScreen();
         }
     },
     
 
 
-//Creating Moving Objects - Such as sharks or jelly fish or dust
+    //Creating Moving Objects - Such as sharks or jelly fish or dust
     _addAllMovingObjects: function (amount, groupName, value, image) {
         var group = this.add.group();
 
@@ -733,36 +866,37 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
 
 
-//Creating Static Objects - Such as collectables 'eats'
-    _createStaticObject: function (amount, groupName, value, textValue, image) {
+    //Creating Static Objects - Such as collectables 'eats'
+    _createStaticObject: function (amount, groupName, value, text, image) {
         for (var i = 0; i < amount; i++) {
-            this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
+            this._createStaticObjectAndAddToGroup(groupName, value, text, image);
         }
     },
 
-    _createStaticObjectAndAddToGroup: function(groupName, value, textValue, image){
+    _createStaticObjectAndAddToGroup: function(groupName, value, text, image){
         var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
 
         this.physics.enable(object, Phaser.Physics.ARCADE);
 
-        var text = this.make.text(5, 5, textValue, {fill: '#000000'});
-        object.addChild(text);
+        var textValue = this.make.text(5, 5, text, {fill: '#000000'});
+        object.addChild(textValue);
+
 
     },
 
-    _addAllStaticObjects: function (amount, groupName, value, textValue, image) {
+    _addAllStaticObjects: function (amount, groupName, value, text, image) {
         var group = this.add.group();
 
         group.value = value;
 
         groupName.push(group);
 
-        this._createStaticObject(amount, group, value, textValue, image);
+        this._createStaticObject(amount, group, value, text, image);
         this._createGroupPhyscis(group, this.gameState.physicsGroup);
     },
 
 
-//This physics is used for both static and moving objects
+    //This physics is used for both static and moving objects
     _createGroupPhyscis: function (groupName, physicsGroup) {
         //Some more physics information for the Shark
         physicsGroup = this.game.make.group();
@@ -776,21 +910,41 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     },
 
 
-    //Functions that happen when a group of object e.g. sharks, jellys, eats have been colldied with
+    //Sub-Functions that happen when a group of object e.g. sharks, jellys, eats have been colldied with
 
     _addSharkSolvedMath: function (currentValue, sharkValue, worldSizeX, textPlace) {
         this.scoreUI = game.add.text(600, 500, currentValue + ' > ' + sharkValue, {
-            fill: "#000000",
+            fill: "#24475b",
             align: "center"
         });
         this.scoreUI.fixedToCamera = true;
         this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
+
+    },
+
+    _aniamtionSharkSolvedMath: function(currentValue, sharkValue, player){
+       this.solvedEquation = game.add.text(player.x, player.y,  currentValue + ' > ' + sharkValue, {fill: "#24475b"});
+
+    },
+
+    _animationSharkError: function(currentValue, sharkValue, player){
+        this.wrongEquation = game.add.text(player.x, player.y,  currentValue + ' < ' + sharkValue, {fill: "#5b2447"});
+
+    },
+
+    _aniamtionJellySolvedMath: function(currentValue, jellyValue, player){
+        this.solvedEquation = game.add.text(player.x, player.y,  currentValue + ' < ' + jellyValue, {fill: "#5b2447"});
+
+    },
+
+    _animationJellyError: function(currentValue, jellyValue, player){
+        this.wrongEquation = game.add.text(player.x, player.y,  currentValue + ' > ' + jellyValue, {fill: "#24475b"});
 
     },
 
     _addJellySolvedMath: function (currentValue, jellyValue, worldSizeX, textPlace) {
         this.scoreUI = game.add.text(600, 500, currentValue + ' < ' + jellyValue, {
-            fill: "#000000",
+            fill: "#5b2447",
             align: "center"
         });
         this.scoreUI.fixedToCamera = true;
@@ -798,14 +952,19 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     },
 
+
+    //what happens when you collid with something
+
     sharkAttack: function (player, shark, sharkGroup, sharkValue, image) {
 
         if (this.gameState.currentValue <= sharkValue) {
+            this._animationSharkError(this.gameState.currentValue, sharkValue, player);
             this.died();
         }
         else {
             shark.kill();
             this._addSharkSolvedMath(this.gameState.currentValue, sharkValue, this.config.worldSizeX, this.gameState.textPlace);
+            this._aniamtionSharkSolvedMath(this.gameState.currentValue, sharkValue, player);
 
             this.gameState.textPlace += 25;
             this.moreLives();
@@ -817,11 +976,13 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     jellyAttack: function (player, jelly, jellyGroup, jellyValue, image) {
 
         if (this.gameState.currentValue >= jellyValue) {
+            this._animationJellyError(this.gameState.currentValue, jellyValue, player);
             this.died();
         }
         else {
             jelly.kill();
             this._addJellySolvedMath(this.gameState.currentValue, jellyValue, this.config.worldSizeX, this.gameState.textPlace);
+            this._aniamtionJellySolvedMath(this.gameState.currentValue, jellyValue, player);
 
             this.gameState.textPlace += 25;
             this.moreLives();
@@ -830,14 +991,14 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         }
     },
 
-    eatsCollected: function(player, eats, groupName, value, textValue, image){
+    eatsCollected: function(player, eats, groupName, value, text, image){
         eats.kill();
 
         var possibleValue = value + this.gameState.currentValue
 
         if( possibleValue >= this.gameState.playerMinValue &&  possibleValue <= this.gameState.playerMaxValue ){
             this.gameState.currentValue += (value);
-            this._createStaticObjectAndAddToGroup(groupName, value, textValue, image);
+            this._createStaticObjectAndAddToGroup(groupName, value, text, image);
 
         }else{
             console.log('You cannot pick up anymore')
