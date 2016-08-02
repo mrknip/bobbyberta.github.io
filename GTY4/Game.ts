@@ -655,7 +655,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             if(this.config.currentLevel = this.config.finalLevel){
 
             }else{
-                this.config.currentLevel =1;
+                this.config.currentLevel = this.gameState.currentLevel;
                 this.clamSprite.destroy();
 
                 this.game.world.removeAll();
