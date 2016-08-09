@@ -541,20 +541,23 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     gameState: {},
 
+    //Phaser functions
+
     preload: function () {
         game.load.image('splash', 'assets/startScreen.png');
 
         game.load.spritesheet('you', 'assets/IconYouSprite.png', 75, 75, 2);
         game.load.spritesheet('lives', 'assets/LivesGreaterThan.png', 150, 30, 5);
-        game.load.spritesheet('tailSwish', 'assets/tailSpriteSheet2.png', 150, 150, 8);
+        game.load.spritesheet('tailSwish', 'assets2/tail.png', 150, 150, 16);
+        game.load.spritesheet('headFace', 'assets2/headFace.png', 150, 150, 2);
 
         game.load.image('bg', 'assets/background.png');
         game.load.image('up', 'assets/levelUp.png');
         game.load.image('eatsUI', 'assets/eatsUI.png');
         game.load.image('blob', 'assets/bgDust.png');
         game.load.image('block', 'assets/collectable.png');
-        game.load.image('enemy', 'assets/shark1.png');
-        game.load.image('jelly', 'assets/jelly1.png');
+        game.load.image('enemy', 'assets2/shark.png');
+        game.load.image('jelly', 'assets2/jelly.png');
         game.load.image('end', 'assets/credits.png');
         game.load.image('end', 'assets/credits.png');
         game.load.image('loose', 'assets/loose.png');
@@ -842,8 +845,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         //this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 30, true).play();
 
         //create a head
-        this.head = this.add.sprite(1000, 1000, 'head');
-        this.head.anchor.setTo(-0.9, 0.5);
+        this.head = this.add.sprite(1000, 1000, 'headFace');
+        this.head.anchor.setTo(-0.1, 0.5);
+        this.head.frame = 1;
 
     },
 
@@ -928,7 +932,12 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     },
 
     died: function () {
+        //change animations
         this.player.frame = 1;
+        this.head.frame = 2;
+        this.tail.animations.add('tailSwish', [8, 9, 10, 11, 12, 13, 14 ,15], 10, true).play();
+
+        //change states
         this.gameState.alive = false;
         this.game.time.events.add(Phaser.Timer.SECOND * 4, this.reBorn, this);
 
@@ -959,6 +968,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     reBorn: function () {
         this.player.frame = 0;
+        this.head.frame = 1;
+        this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
         this.gameState.alive = true;
     },
 
@@ -1042,7 +1053,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         object.body.velocity.x = game.rnd.integerInRange(-200, 200);
         object.body.velocity.y = game.rnd.integerInRange(-220, 200);
 
-        var text = this.make.text(25, 25, value, {fill: '#FFFFFF'});
+        var text = this.make.text(42, 22, value, {fill: '#f4f0ce'});
         object.addChild(text);
 
         this._createGroupPhyscis(groupName, this.gameState.physicsGroup);
@@ -1144,7 +1155,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     sharkAttack: function (player, shark, sharkGroup, sharkValue, image) {
 
         if (this.gameState.currentValue <= sharkValue) {
-            this._animationSharkError(this.gameState.currentValue, sharkValue, player);
+            //this._animationSharkError(this.gameState.currentValue, sharkValue, player);
             this.died();
         }
         else {
@@ -1162,7 +1173,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     jellyAttack: function (player, jelly, jellyGroup, jellyValue, image) {
 
         if (this.gameState.currentValue >= jellyValue) {
-            this._animationJellyError(this.gameState.currentValue, jellyValue, player);
+            //this._animationJellyError(this.gameState.currentValue, jellyValue, player);
             this.died();
         }
         else {
