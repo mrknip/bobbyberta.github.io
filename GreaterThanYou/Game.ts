@@ -22,8 +22,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         answerStart: 0,
         startSpeed: 400,
 
-        currentLevel: 1,
-        finalLevel: 5,
+        currentLevel: 8,
+        finalLevel: 9,
         clamStart: false,
 
 
@@ -143,7 +143,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 ],
             },
             3: {
-                levelName: 'Level 3',
+                levelName: 'Sharks',
                 startValue: 0,
                 endValue: 50,
                 playerMaxValue: 100,
@@ -293,7 +293,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 ],
             },
             4: {
-                levelName: 'Level 4',
+                levelName: ' B < x < R',
                 startValue: 0,
                 endValue: 10,
                 playerMaxValue: 10,
@@ -399,7 +399,299 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 ],
             },
             5: {
-                levelName: 'Level 5',
+                levelName: 'Double&Half',
+                startValue: 1,
+                endValue: 64,
+                playerMaxValue: 129,
+                playerMinValue: 1,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
+                sharks: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 8,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 16,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 32,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 64,
+                        initialCount: 2,
+                    },
+                ],
+                jellys: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 2,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 8,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 16,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 32,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 64,
+                        initialCount: 2,
+                    },
+                ],
+                eats: [
+                    {
+                        value: 'Double',
+                        text: 'x2',
+                        initialCount: 10
+                    },
+                    {
+                        value: 'Half',
+                        text: 'x0.5',
+                        initialCount: 10
+                    },
+                ],
+            },
+            6: {
+                levelName: 'Square&Half',
+                startValue: 2,
+                endValue: 64,
+                playerMaxValue: 257,
+                playerMinValue: 2,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
+                sharks: [
+                    {
+                        value: 2,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 16,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 32,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 64,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 128,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 256,
+                        initialCount: 2,
+                    },
+                ],
+                jellys: [
+                    {
+                        value: 2,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 4,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 16,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 32,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 64,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 128,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 256,
+                        initialCount: 2,
+                    },
+                ],
+                eats: [
+                    {
+                        value: 'Square',
+                        text: 'x^2',
+                        initialCount: 10
+                    },
+                    {
+                        value: 'Half',
+                        text: 'x/2',
+                        initialCount: 10
+                    },
+                ],
+            },
+            7: {
+                levelName: '10',
+                startValue: 1,
+                endValue: 100,
+                playerMaxValue: 10000,
+                playerMinValue: 1,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
+                sharks: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1000,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10000,
+                        initialCount: 2,
+                    },
+                ],
+                jellys: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1000,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10000,
+                        initialCount: 2,
+                    },
+                ],
+                eats: [
+                    {
+                        value: 'Times10',
+                        text: 'x10',
+                        initialCount: 10
+                    },
+                    {
+                        value: 'Divide10',
+                        text: 'x/10',
+                        initialCount: 10
+                    },
+                ],
+            },
+            8: {
+                levelName: '10 of Power',
+                startValue: 1,
+                endValue: 100,
+                playerMaxValue: 10000,
+                playerMinValue: 1,
+                worldSizeX: 2500,
+                worldSizeY: 2500,
+                sharks: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1000,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10000,
+                        initialCount: 2,
+                    },
+                ],
+                jellys: [
+                    {
+                        value: 1,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 100,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 1000,
+                        initialCount: 2,
+                    },
+                    {
+                        value: 10000,
+                        initialCount: 2,
+                    },
+                ],
+                eats: [
+                    {
+                        value: 'Power10',
+                        text: 'x10^1',
+                        initialCount: 10
+                    },
+                    {
+                        value: 'Power-10',
+                        text: 'x10^-1',
+                        initialCount: 10
+                    },
+                ],
+            },
+            9: {
+                levelName: 'Big Map!',
                 startValue: 10,
                 endValue: 50,
                 playerMaxValue: 100,
@@ -546,7 +838,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     preload: function () {
         game.load.image('splash', 'assets/startScreen.png');
 
-        game.load.spritesheet('you', 'assets/IconYouSprite.png', 75, 75, 2);
+        game.load.spritesheet('you', 'assets2/body6.png', 75, 75, 4);
         game.load.spritesheet('lives', 'assets/LivesGreaterThan.png', 150, 30, 5);
         game.load.spritesheet('tailSwish', 'assets2/tail.png', 150, 150, 16);
         game.load.spritesheet('headFace', 'assets2/headFace.png', 150, 150, 2);
@@ -593,6 +885,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             answered: this.config.answerStart,
             clams: 0,
             textPlace: this.config.textPlace,
+            fullUp: false,
             physicsGroup: this.add.group(),
             sharkGroups: [],
             jellyGroups: [],
@@ -662,7 +955,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                         this.player,
                         currentEatGroup,
                         function (player, eats) {
-                            this.eatsCollected(
+                            this.checkeatsValueCollected(
                                 eats,
                                 currentEatGroup,
                                 currentEatGroup.value,
@@ -932,8 +1225,16 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     },
 
     died: function () {
+
+        if(this.gameState.fullUp == false){
+            this.player.frame = 1;
+        }else if(this.gameState.fullUp == true){
+            this.player.frame = 3;
+        }
+
+        console.log(this.gameState.fullUp);
+
         //change animations
-        this.player.frame = 1;
         this.head.frame = 2;
         this.tail.animations.add('tailSwish', [8, 9, 10, 11, 12, 13, 14 ,15], 10, true).play();
 
@@ -967,7 +1268,13 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     },
 
     reBorn: function () {
-        this.player.frame = 0;
+
+        if(this.gameState.fullUp == false){
+            this.player.frame = 0;
+        }else if(this.gameState.fullUp == true){
+            this.player.frame = 2;
+        }
+
         this.head.frame = 1;
         this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
         this.gameState.alive = true;
@@ -1028,24 +1335,24 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
 
     //Creating Moving Objects - Such as sharks or jelly fish or dust
-    _addAllMovingObjects: function (amount, groupName, value, image) {
-        var group = this.add.group();
+    _addAllMovingObjects: function (amount, listOfGroups, value, image) {
+        var objectGroup = this.add.group();
 
-        group.value = value;
+        objectGroup.value = value;
 
-        groupName.push(group);
+        listOfGroups.push(objectGroup);
 
-        this._createMovingObject(amount, group, value, image);
+        this._createMovingObject(amount, objectGroup, value, image);
     },
 
-    _createMovingObject: function (amount, groupName, value, image) {
+    _createMovingObject: function (amount, objectGroup, value, image) {
         for (var i = 0; i < amount; i++) {
-            this._createMovingObjectAndAddToGroup(groupName, value, image);
+            this._createMovingObjectAndAddToGroup(objectGroup, value, image);
         }
     },
 
-    _createMovingObjectAndAddToGroup: function(groupName, value, image){
-        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+    _createMovingObjectAndAddToGroup: function(objectGroup, value, image){
+        var object = objectGroup.create(this.bounds.randomX, this.bounds.randomY, image);
 
         this.physics.enable(object, Phaser.Physics.ARCADE);
 
@@ -1056,54 +1363,57 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         var text = this.make.text(42, 22, value, {fill: '#f4f0ce'});
         object.addChild(text);
 
-        this._createGroupPhyscis(groupName, this.gameState.physicsGroup);
+        this._createGroupPhyscis(objectGroup, this.gameState.physicsGroup);
 
     },
 
 
 
     //Creating Static Objects - Such as collectables 'eats'
-    _createStaticObject: function (amount, groupName, value, text, image) {
+    _createStaticObject: function (amount, objectGroup, value, textValue, image) {
         for (var i = 0; i < amount; i++) {
-            this._createStaticObjectAndAddToGroup(groupName, text, image);
+            this._createStaticObjectAndAddToGroup(objectGroup, textValue, image);
         }
     },
 
-    _createStaticObjectAndAddToGroup: function(groupName, text, image){
-        var object = groupName.create(this.bounds.randomX, this.bounds.randomY, image);
+    _createStaticObjectAndAddToGroup: function(objectGroup, textValue, image){
+        var object = objectGroup.create(this.bounds.randomX, this.bounds.randomY, image);
 
         this.physics.enable(object, Phaser.Physics.ARCADE);
 
-        var textValue = this.make.text(5, 5, text , {fill: '#000000'});
-        object.addChild(textValue);
+        var textShown = this.make.text(5, 5, textValue, {fill: '#000000'});
+        object.addChild(textShown);
 
-        this._createGroupPhyscis(groupName, this.gameState.physicsGroup);
+        console.log(textValue)
+
+        this._createGroupPhyscis(objectGroup, this.gameState.physicsGroup);
 
 
     },
 
-    _addAllStaticObjects: function (amount, groupName, value, text, image) {
-        var group = this.add.group();
+    _addAllStaticObjects: function (amount, listOfGroups, value, textValue, image) {
+        var staticObjectGroup = this.add.group();
 
-        group.value = value;
+        staticObjectGroup.value = value;
+        staticObjectGroup.text = textValue;
 
-        groupName.push(group);
+        listOfGroups.push(staticObjectGroup);
 
-        this._createStaticObject(amount, group, value, text, image);
+        this._createStaticObject(amount, staticObjectGroup, value, textValue, image);
     },
 
 
     //This physics is used for both static and moving objects
-    _createGroupPhyscis: function (groupName, physicsGroup) {
+    _createGroupPhyscis: function (objectGroup, physicsGroup) {
         //Some more physics information for the Shark
         physicsGroup = this.game.make.group();
         physicsGroup.create(-50, -50, 'block');
-        groupName.add(physicsGroup);
+        objectGroup.add(physicsGroup);
 
-        groupName.setAll('body.collideWorldBounds', true);
-        groupName.setAll('body.bounce.x', 1);
-        groupName.setAll('body.bounce.y', 1);
-        groupName.setAll('body.minBounceVelocity', 0);
+        objectGroup.setAll('body.collideWorldBounds', true);
+        objectGroup.setAll('body.bounce.x', 1);
+        objectGroup.setAll('body.bounce.y', 1);
+        objectGroup.setAll('body.minBounceVelocity', 0);
     },
 
 
@@ -1188,20 +1498,108 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         }
     },
 
-    eatsCollected: function(eats, groupName, value, text, image){
-        eats.kill();
+    checkeatsValueCollected: function(eats, eatsObjectGroup, value, textValue, image){
 
-        var possibleValue = value + this.gameState.currentValue
+        var eatsValue = value;
 
+        if(eatsValue == 'Double'){
+            var possibleValue = this.gameState.currentValue *2;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+        else if(eatsValue == 'Half'){
+            var possibleValue = this.gameState.currentValue *0.5;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+        else if(eatsValue == 'Square'){
+            var possibleValue = this.gameState.currentValue * this.gameState.currentValue;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+        else if(eatsValue == 'Times10'){
+            var possibleValue = this.gameState.currentValue * 10;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+        else if(eatsValue == 'Divide10'){
+            var possibleValue = this.gameState.currentValue /10;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+        else if(eatsValue == 'Power10'){
+            var possibleValue = this.gameState.currentValue * 10;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+        else if(eatsValue == 'Power-10'){
+            var possibleValue = this.gameState.currentValue /10;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+
+
+
+            //HOW ON EARTH DO YOU WORK OUT ROOTS????? IN A NICE CLEAN FUNCTION D: D: D:
+        else if(eatsValue == 'Root'){
+
+            if(this.gameState.currentValue == 4){
+                var possibleValue = 2
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 9){
+                var possibleValue = 3
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 16){
+                var possibleValue = 4
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 25){
+                var possibleValue = 5
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 36){
+                var possibleValue = 6
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 49){
+                var possibleValue = 7
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+            else if(this.gameState.currentValue == 64){
+                var possibleValue = 8
+                this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+            }
+
+
+            else
+            {
+                console.log('You cannot pick up anymore')
+            }
+        }
+        //else deals with the 'normal' case where eatsValue is an integer and not a string
+        else{
+            var possibleValue = value + this.gameState.currentValue;
+            this._eatsCollected(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image);
+        }
+    },
+
+    _eatsCollected: function(eatsValue, possibleValue, eats, eatsObjectGroup, value, textValue, image){
         if( possibleValue >= this.gameState.playerMinValue &&  possibleValue <= this.gameState.playerMaxValue ){
-            this.gameState.currentValue += value;
-            this._createStaticObjectAndAddToGroup(groupName, text, image);
+            eats.kill();
+            this.gameState.currentValue = possibleValue;
+            this._createStaticObjectAndAddToGroup(eatsObjectGroup, textValue, image);
+
+            this.gameState.fullUp = false;
+            this.player.frame = 0;
 
         }else{
+            this.gameState.fullUp = true;
+            this.player.frame = 2;
             console.log('You cannot pick up anymore')
         }
 
         this.Number.setText(this.gameState.currentValue);
+
     }
 
 });
