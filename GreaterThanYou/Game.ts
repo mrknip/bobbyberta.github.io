@@ -9,7 +9,13 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
 
         //Where to place the Question answered text
-        textPlace: 90,
+        textPlace: 86,
+
+        //How many points you start with
+        startPoints: '0',
+
+        //Medal you won in the last round  - this changes
+        medal: 'none',
 
         //Players Information
         //startValue: 0,
@@ -843,9 +849,17 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         game.load.spritesheet('tailSwish', 'assets2/tail.png', 150, 150, 16);
         game.load.spritesheet('headFace', 'assets2/headFace.png', 150, 150, 2);
 
+        //game.load.spritesheet('medals', 'assets3/medals.png', 300, 260, 3);
+        game.load.image('bronze', 'assets3/bronze.png');
+        game.load.image('silver', 'assets3/silver.png');
+        game.load.image('gold', 'assets3/gold.png');
+        game.load.image('complete', 'assets3/depthCompleted.png');
+        game.load.image('play', 'assets3/playButton.png');
+        //game.load.spritesheet('enemy', 'assets3/SharkSpriteSheet.png', 50, 50, 15);
+
         game.load.image('bg', 'assets/background.png');
         game.load.image('up', 'assets/levelUp.png');
-        game.load.image('eatsUI', 'assets/eatsUI.png');
+        game.load.image('eatsUI', 'assets3/uiBar.png');
         game.load.image('blob', 'assets/bgDust.png');
         game.load.image('block', 'assets/collectable.png');
         game.load.image('enemy', 'assets2/shark.png');
@@ -858,6 +872,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         game.load.image('clam', 'assets/clam.png');
         game.load.image('waves', 'assets/waves.png');
         game.load.image('head', 'assets/head.png');
+
+
     },
 
 
@@ -885,6 +901,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             answered: this.config.answerStart,
             clams: 0,
             textPlace: this.config.textPlace,
+            startPoints: this.config.startPoints,
+            combo: 0,
+            points: 0,
             fullUp: false,
             physicsGroup: this.add.group(),
             sharkGroups: [],
@@ -908,6 +927,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             this.game.physics.arcade.moveToPointer(this.player, this.gameState.currentSpeed);
 
             //  if it's overlapping the mouse, don't move any more
+            //this only works for top left corner where this is true - because the game world is bigger than the screen
+            //this dose not work !!! need to find a different way to calculate the position of the mouse is over the player.
             if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
                 this.player.body.velocity.setTo(0, 0);
             }
@@ -917,14 +938,14 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         }
 
         //player animation
-        this.tail.x = this.player.x
-        this.tail.y = this.player.y
-
-        this.head.x = this.player.x
-        this.head.y = this.player.y
-
-        this.tail.rotation = game.physics.arcade.angleToPointer(this.tail);
-        this.head.rotation = game.physics.arcade.angleToPointer(this.head);
+        // this.tail.x = this.player.x
+        // this.tail.y = this.player.y
+        //
+        // this.head.x = this.player.x
+        // this.head.y = this.player.y
+        //
+        // this.tail.rotation = game.physics.arcade.angleToPointer(this.tail);
+        // this.head.rotation = game.physics.arcade.angleToPointer(this.head);
 
         //arrow key movement
         if (this.game.cursors.left.isDown) {
@@ -1074,6 +1095,25 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#24475b'});
         this.titleUI.addChild(this.titleText);
 
+        this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#24475b'});
+        this.titleUI.addChild(this.titleText);
+
+        //points UI
+        this.pointsText = game.add.text(600, 500, this.gameState.startPoints, {
+            fill: "#24475b",
+            align: "center"
+        });
+        this.pointsText.fixedToCamera = true;
+        this.pointsText.cameraOffset.setTo(this.config.worldSizeX - 130, 370);
+
+        //combo UI
+        this.comboText = game.add.text(600, 500, this.gameState.combo, {
+            fill: "#24475b",
+            align: "center"
+        });
+        this.comboText.fixedToCamera = true;
+        this.comboText.cameraOffset.setTo(this.config.worldSizeX - 100, 475);
+
 
         this.config.scoreValue += 25;
 
@@ -1129,18 +1169,18 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.Number = this.make.text(-10, -15, this.config.levels[this.gameState.currentLevel].startValue, {fill: '#000000'});
         this.player.addChild(this.Number);
 
-        //create a tail
-
-        this.tail = this.add.sprite(1000, 1000, 'tailSwish');
-        this.tail.anchor.setTo(1, 0.55);
-        this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
-
-        //this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 30, true).play();
-
-        //create a head
-        this.head = this.add.sprite(1000, 1000, 'headFace');
-        this.head.anchor.setTo(-0.1, 0.5);
-        this.head.frame = 1;
+        // //create a tail
+        //
+        // this.tail = this.add.sprite(1000, 1000, 'tailSwish');
+        // this.tail.anchor.setTo(1, 0.55);
+        // this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
+        //
+        // //this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 30, true).play();
+        //
+        // //create a head
+        // this.head = this.add.sprite(1000, 1000, 'headFace');
+        // this.head.anchor.setTo(-0.1, 0.5);
+        // this.head.frame = 1;
 
     },
 
@@ -1152,12 +1192,23 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
         this.config.currentLevel ++;
 
         game.stage.backgroundColor = "#6f9695";
-        this.levelUp = game.add.sprite(0, 0, 'up');
+        this.levelUp = game.add.sprite(220, 170, 'complete');
         this.levelUp.fixedToCamera = true;
 
-        game.add.tween(this.levelUp).to( { alpha: 0 }, 4000, Phaser.Easing.Linear.None, true);
+        this.medal = game.add.sprite(260, 290, this.config.medal);
+        this.medal.fixedToCamera = true;
 
-        game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
+        this.playButton = game.add.button(630, 280, 'play', this._endLevel, this);
+
+        this.playButton.fixedToCamera = true;
+
+        console.log(this.config.medal);
+
+
+        //
+        // game.add.tween(this.levelUp).to( { alpha: 0 }, 4000, Phaser.Easing.Linear.None, true);
+        //
+        // game.time.events.add(Phaser.Timer.SECOND * 4, this._endLevel, this)
 
 
     },
@@ -1214,7 +1265,9 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             this.livesSprite.frame -= 1;
 
             //if you have more lives you go slower
-            this.gameState.currentSpeed -= 80;
+            //this.gameState.currentSpeed -= 80;
+
+            console.log('my speed= ' + this.gameState.currentSpeed);
 
         } else {
             this.gameState.lives = 5;
@@ -1226,17 +1279,22 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
     died: function () {
 
+        console.log('my speed= ' + this.gameState.currentSpeed);
+
         if(this.gameState.fullUp == false){
             this.player.frame = 1;
         }else if(this.gameState.fullUp == true){
             this.player.frame = 3;
         }
 
+        this.gameState.combo = 0;
+        this.checkCombo();
+
         console.log(this.gameState.fullUp);
 
-        //change animations
-        this.head.frame = 2;
-        this.tail.animations.add('tailSwish', [8, 9, 10, 11, 12, 13, 14 ,15], 10, true).play();
+        // //change animations
+        // this.head.frame = 2;
+        // this.tail.animations.add('tailSwish', [8, 9, 10, 11, 12, 13, 14 ,15], 10, true).play();
 
         //change states
         this.gameState.alive = false;
@@ -1254,16 +1312,17 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
                 this.addLevelDownScreen();
             }else{
                 // //you now have full lives and you speed is reset to fastest
-                this.gameState.currentSpeed = 0;
-                this.gameState.currentSpeed += this.config.startSpeed;
+                //this.gameState.currentSpeed = 0;
+                //this.gameState.currentSpeed += this.config.startSpeed;
                 this.gameState.lives = 5;
             }
 
         } else {
             //you have less lives so you go faster
-            this.gameState.currentSpeed += 80;
+            //this.gameState.currentSpeed += 80;
             this.livesSprite.frame += 1;
         }
+
 
     },
 
@@ -1275,16 +1334,16 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             this.player.frame = 2;
         }
 
-        this.head.frame = 1;
-        this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
+        // this.head.frame = 1;
+        // this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
         this.gameState.alive = true;
     },
 
     tenToWin: function () {
-        if (this.gameState.answered < 9) {
+        if (this.gameState.answered <= 9) {
             this.gameState.answered += 1;
             }
-        else if( this.gameState.answered = 10 && this.gameState.clams < 1){
+        else if( this.gameState.answered == 10 && this.gameState.clams < 1){
             this.gameState.clams = 1;
             this.addClam();
 
@@ -1314,6 +1373,20 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     },
 
     nextLevel: function () {
+
+        //Calculate medal won
+        this.config.medal = 'none';
+        console.log(this.config.medal);
+
+        if(this.gameState.points <=1000){
+            this.config.medal = 'bronze';
+        }else if (this.gameState.points >=1000 && this.gameState.points <= 2000){
+            this.config.medal = 'silver';
+        }else{
+            this.config.medal = 'gold';
+        }
+        console.log(this.config.medal);
+
         if (this.gameState.currentValue == this.gameState.endValue){
             
             this.config.currentLevel = this.gameState.currentLevel;
@@ -1323,12 +1396,6 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
             this.addLevelUpScreen();
 
-        }
-
-        else if (this.gameState.currentValue == this.gameState.endValue){
-            this.game.world.removeAll();
-
-            this.addEndScreen();
         }
     },
     
@@ -1362,6 +1429,8 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
 
         var text = this.make.text(42, 22, value, {fill: '#f4f0ce'});
         object.addChild(text);
+
+        //object.animations.add(object + 'aniamtion', [0, 1, 2, 3, 4,5,6,7, 8, 9, 10, 11, 12 ,13, 14, 15], 15, true).play();
 
         this._createGroupPhyscis(objectGroup, this.gameState.physicsGroup);
 
@@ -1420,13 +1489,21 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
     //Sub-Functions that happen when a group of object e.g. sharks, jellys, eats have been colldied with
 
     _addSharkSolvedMath: function (currentValue, sharkValue, worldSizeX, textPlace) {
-        this.scoreUI = game.add.text(600, 500, currentValue + ' > ' + sharkValue, {
-            fill: "#24475b",
-            align: "center"
-        });
-        this.scoreUI.fixedToCamera = true;
-        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
 
+        if (this.gameState.answered <= 9) {
+
+            this.scoreUI = game.add.text(600, 500, currentValue + ' > ' + sharkValue, {
+                fill: "#24475b",
+                align: "center",
+                fontSize: 15
+            });
+            this.scoreUI.fixedToCamera = true;
+            this.scoreUI.cameraOffset.setTo(worldSizeX - 160, 10 + textPlace);
+
+            console.log('game state answered = ' + this.gameState.answered);
+
+            this._addPoints();
+        }
     },
 
     _aniamtionSharkSolvedMath: function(currentValue, sharkValue, player){
@@ -1455,7 +1532,38 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             align: "center"
         });
         this.scoreUI.fixedToCamera = true;
-        this.scoreUI.cameraOffset.setTo(worldSizeX - 150, 10 + textPlace);
+        this.scoreUI.cameraOffset.setTo(worldSizeX - 160, 10 + textPlace);
+
+        this._addPoints();
+
+    },
+
+    //add score 100 for each eat (capped at 10 eats)
+    //need to animate the enemies to fade them out when they reach 10 eats - to show you cannot interact
+
+    _addPoints: function(){
+
+
+        this.comboCount = 100 + (this.gameState.combo * 50);
+
+
+        this.gameState.points += this.comboCount;
+
+        this.pointsText.setText(this.gameState.points);
+
+        this.checkCombo();
+
+        this.gameState.combo +=1;
+
+        // console.log('how big is my combo count? ' + this.comboCount );
+        // console.log('how big is my combo count? ' + this.gameState.combo );
+        // console.log('what is my score? ' + this.gameState.points );
+
+    },
+
+    checkCombo: function(){
+
+        this.comboText.setText(this.gameState.combo);
 
     },
 
@@ -1473,7 +1581,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             this._addSharkSolvedMath(this.gameState.currentValue, sharkValue, this.config.worldSizeX, this.gameState.textPlace);
             this._aniamtionSharkSolvedMath(this.gameState.currentValue, sharkValue, player);
 
-            this.gameState.textPlace += 25;
+            this.gameState.textPlace += 21;
             this.moreLives();
 
             this._createMovingObjectAndAddToGroup(sharkGroup, sharkValue, image);
@@ -1491,7 +1599,7 @@ var game = new Phaser.Game(1200, 800, Phaser.AUTO, 'container', {
             this._addJellySolvedMath(this.gameState.currentValue, jellyValue, this.config.worldSizeX, this.gameState.textPlace);
             this._aniamtionJellySolvedMath(this.gameState.currentValue, jellyValue, player);
 
-            this.gameState.textPlace += 25;
+            this.gameState.textPlace += 21;
             this.moreLives();
 
             this._createMovingObjectAndAddToGroup(jellyGroup, jellyValue, image);
