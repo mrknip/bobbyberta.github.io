@@ -10,7 +10,7 @@ GreaterThan.Preload.prototype = {
     create: function () {},
     update: function () {
         
-        this.game.state.start("menu", true);
+        this.game.state.start("title", true);
     }
     
 };

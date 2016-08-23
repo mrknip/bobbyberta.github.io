@@ -26,7 +26,7 @@ GreaterThan.Boot.prototype = {
             // this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
         this.scale.pageAlignHorizontally = true;
-        this.scale.pageAlignVertically = true;
+        //this.scale.pageAlignVertically = true;
         
         
         this.game.state.start("preload")

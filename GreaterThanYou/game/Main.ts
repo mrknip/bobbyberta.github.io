@@ -5,7 +5,7 @@ window.onload = function () {
     game.state.add("boot", GreaterThan.Boot,true);
     game.state.add("preload", GreaterThan.Preload, false);
     game.state.add("menu", GreaterThan.Menu, false);
-    game.state.add("game", GreaterThan.Game,false);
+    game.state.add("title", GreaterThan.Title, false);
 };
 
 console.log('Main State');
