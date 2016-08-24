@@ -17,7 +17,7 @@ GreaterThan.Boot.prototype = {
         if (game.device.desktop) {
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
             this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-            document.body.style.backgroundSize = "" + game.scale.width * 3.1796875 + "px 100%";
+            document.body.style.backgroundSize = "" + game.scale.hegith * 3.1796875 + "px 100%";
             document.body.style.backgroundPosition = "center"
         } else {
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -33,8 +33,8 @@ GreaterThan.Boot.prototype = {
         this.game.state.start("preload")
 
     },
-
-    ////Code from Mohameds Tangled Web Demo for screen rotation
+    
+    
     enterIncorrectOrientation: function () {
         if (!needToTurn) {
             needToTurn = false;
