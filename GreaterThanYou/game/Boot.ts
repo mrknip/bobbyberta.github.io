@@ -22,7 +22,7 @@ GreaterThan.Boot.prototype = {
         } else {
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
             this.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
-            this.scale.forceOrientation(false, true);
+            this.scale.forceOrientation(true, false);
             this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
             this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
@@ -40,7 +40,7 @@ GreaterThan.Boot.prototype = {
             needToTurn = true;
             game.input.maxPointers = 0;
             if (rotate != null && rotate != undefined)rotate.destroy();
-            rotate = game.add.sprite(0, game.camera.y, "rotate");
+            rotate = game.add.sprite(0, game.camera.x, "rotate");
             game.world.bringToTop(rotate);
             game.physics.arcade.isPaused = true
         }
