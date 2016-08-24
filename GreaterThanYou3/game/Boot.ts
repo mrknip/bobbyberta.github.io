@@ -8,6 +8,8 @@ GreaterThan.Boot.prototype = {
 
     preload: function () {
         game.load.image('rotate', 'assets3/rotate.png');
+        game.load.image('level', 'assets3/levelIconRed.png');
+        game.load.image('level2', 'assets3/levelIconBlue.png');
         //should probably add some nice graphics to tell you to change the rotation of the device if it is wrong
         //and graphics of the loading bar for the preload state
     },
