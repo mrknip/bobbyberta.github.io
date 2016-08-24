@@ -33,20 +33,6 @@ GreaterThan.Boot.prototype = {
         this.game.state.start("preload")
 
     },
-    
-        gameResized: function (width, height) {
-        
-        
-        var _game = this.game;
-        setTimeout(function () {
-            _game.scale.refresh();
-            setTimeout(function () {
-                _game.scale.refresh()
-            },400)
-        }, 400)
-    
-    
-    }, 
 
     ////Code from Mohameds Tangled Web Demo for screen rotation
     enterIncorrectOrientation: function () {
@@ -61,13 +47,13 @@ GreaterThan.Boot.prototype = {
     },
 
     leaveIncorrectOrientation: function () {
-        if (needToTurn) {
-            if (!gamePaused)
-                game.physics.arcade.isPaused = false;
+         if (!needToTurn) {
+            needToTurn = false;
+            game.input.maxPointers = 0;
+            if (rotate != null && rotate != undefined)rotate.destroy();
+            rotate = game.add.sprite(0, game.camera.x, "rotate");
+            game.world.bringToTop(rotate);
+            game.physics.arcade.isPaused = true
         }
-        needToTurn = true;
-        game.input.maxPointers = 1;
-        rotate.destroy()
-    }
 
 };
