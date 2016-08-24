@@ -47,14 +47,13 @@ GreaterThan.Boot.prototype = {
     },
 
     leaveIncorrectOrientation: function () {
-         if (!needToTurn) {
-            needToTurn = true;
-            game.input.maxPointers = 0;
-            if (rotate != null && rotate != undefined)rotate.destroy();
-            rotate = game.add.sprite(0, game.camera.x, "rotate");
-            game.world.bringToTop(rotate);
-            game.physics.arcade.isPaused = true
-        },
+         if (needToTurn) {
+            if (!gamePaused)
+                game.physics.arcade.isPaused = false;
+        }
+        needToTurn = false;
+        game.input.maxPointers = 1;
+        rotate.destroy()
     }
 
 };
