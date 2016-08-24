@@ -22,7 +22,7 @@ GreaterThan.Boot.prototype = {
         } else {
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
             this.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
-            this.scale.forceOrientation(true, false);
+            this.scale.forceOrientation(false, true);
             this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
             this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
         }
