@@ -54,6 +54,6 @@ GreaterThan.Boot.prototype = {
         needToTurn = false;
         game.input.maxPointers = 1;
         rotate.destroy()
-    }
+    },
 
 };
