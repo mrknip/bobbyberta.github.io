@@ -54,6 +54,7 @@ GreaterThan.Boot.prototype = {
             rotate = game.add.sprite(0, game.camera.x, "rotate");
             game.world.bringToTop(rotate);
             game.physics.arcade.isPaused = true
-        },
+        }
+    }
 
 };
