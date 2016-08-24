@@ -1,4 +1,4 @@
-var needToTurn = false;
+var needToTurn = true;
 
 GreaterThan.Boot = function (game) {
 };
@@ -37,7 +37,7 @@ GreaterThan.Boot.prototype = {
     ////Code from Mohameds Tangled Web Demo for screen rotation
     enterIncorrectOrientation: function () {
         if (!needToTurn) {
-            needToTurn = true;
+            needToTurn = false;
             game.input.maxPointers = 0;
             if (rotate != null && rotate != undefined)rotate.destroy();
             rotate = game.add.sprite(0, game.camera.x, "rotate");
@@ -51,7 +51,7 @@ GreaterThan.Boot.prototype = {
             if (!gamePaused)
                 game.physics.arcade.isPaused = false;
         }
-        needToTurn = false;
+        needToTurn = true;
         game.input.maxPointers = 1;
         rotate.destroy()
     }
