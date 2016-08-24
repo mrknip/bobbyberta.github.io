@@ -17,7 +17,7 @@ GreaterThan.Boot.prototype = {
         if (game.device.desktop) {
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
             this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-            document.body.style.backgroundSize = "" + game.scale.hegith * 3.1796875 + "px 100%";
+            document.body.style.backgroundSize = "" + game.scale.height * 3.1796875 + "px 100%";
             document.body.style.backgroundPosition = "center"
         } else {
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
