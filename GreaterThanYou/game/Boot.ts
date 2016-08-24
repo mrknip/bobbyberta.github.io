@@ -33,6 +33,20 @@ GreaterThan.Boot.prototype = {
         this.game.state.start("preload")
 
     },
+    
+        gameResized: function (width, height) {
+        
+        
+        var _game = this.game;
+        setTimeout(function () {
+            _game.scale.refresh();
+            setTimeout(function () {
+                _game.scale.refresh()
+            },400)
+        }, 400)
+    
+    
+    }, 
 
     ////Code from Mohameds Tangled Web Demo for screen rotation
     enterIncorrectOrientation: function () {
