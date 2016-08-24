@@ -1,4 +1,4 @@
-var needToTurn = true;
+var needToTurn = false;
 
 GreaterThan.Boot = function (game) {
 };
@@ -17,7 +17,7 @@ GreaterThan.Boot.prototype = {
         if (game.device.desktop) {
             this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
             this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-            document.body.style.backgroundSize = "" + game.scale.height * 3.1796875 + "px 100%";
+            document.body.style.backgroundSize = "" + game.scale.width * 3.1796875 + "px 100%";
             document.body.style.backgroundPosition = "center"
         } else {
             this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
@@ -37,18 +37,18 @@ GreaterThan.Boot.prototype = {
     
     enterIncorrectOrientation: function () {
         if (!needToTurn) {
-            needToTurn = false;
+            needToTurn = true;
             game.input.maxPointers = 0;
             if (rotate != null && rotate != undefined)rotate.destroy();
             rotate = game.add.sprite(0, game.camera.x, "rotate");
             game.world.bringToTop(rotate);
-            game.physics.arcade.isPaused = true
+            game.physics.arcade.isPaused = false;
         }
     },
 
     leaveIncorrectOrientation: function () {
          if (!needToTurn) {
-            needToTurn = false;
+            needToTurn = true;
             game.input.maxPointers = 0;
             if (rotate != null && rotate != undefined)rotate.destroy();
             rotate = game.add.sprite(0, game.camera.x, "rotate");
