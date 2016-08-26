@@ -87,6 +87,9 @@ GreaterThan.Game.prototype = {
             levelName: levels[levelId].levelName,
             currentValue: levels[levelId].startValue,
             endValue: levels[levelId].endValue,
+            nextLevelBronze: levels[levelId].nextLevelBronze,
+            nextLevelSilver: levels[levelId].nextLevelSilver,
+            nextLevelGold: levels[levelId].nextLevelGold,
             playerMaxValue: levels[levelId].playerMaxValue,
             playerMinValue: levels[levelId].playerMinValue,
             worldSizeX: levels[levelId].worldSizeX,
@@ -389,7 +392,7 @@ GreaterThan.Game.prototype = {
 
     addLevelUpScreen: function (){
 
-        this.config.currentLevel ++;
+        //this.config.currentLevel ++;
 
         game.stage.backgroundColor = "#6f9695";
         this.levelUp = game.add.sprite(220, 170, 'complete');
@@ -419,6 +422,12 @@ GreaterThan.Game.prototype = {
 
     },
 
+    _goToMainMenu: function(){
+        this.game.world.removeAll();
+        this.game.state.start("title")
+
+    },
+
     addLevelDownScreen: function (){
 
 
@@ -431,7 +440,7 @@ GreaterThan.Game.prototype = {
 
         this.config.currentLevel --;;
 
-        game.time.events.add(Phaser.Timer.SECOND * 3, this._endLevel, this)
+        game.time.events.add(Phaser.Timer.SECOND * 3, this._goToMainMenu, this)
 
 
 
@@ -504,18 +513,21 @@ GreaterThan.Game.prototype = {
 
         if (this.gameState.lives <= 0) {
 
-            //go down to easier dificulty
-            if(this.config.currentLevel > 0){
-                this.config.currentLevel = this.gameState.currentLevel;
-
-                this.game.world.removeAll();
-                this.addLevelDownScreen();
-            }else{
-                // //you now have full lives and you speed is reset to fastest
-                //this.gameState.currentSpeed = 0;
-                //this.gameState.currentSpeed += this.config.startSpeed;
-                this.gameState.lives = 5;
-            }
+            this.game.world.removeAll();
+            this.addLevelDownScreen();
+            //
+            // //go down to easier dificulty
+            // if(this.config.currentLevel > 0){
+            //     this.config.currentLevel = this.gameState.currentLevel;
+            //
+            //     this.game.world.removeAll();
+            //     this.addLevelDownScreen();
+            // }else{
+            //     // //you now have full lives and you speed is reset to fastest
+            //     //this.gameState.currentSpeed = 0;
+            //     //this.gameState.currentSpeed += this.config.startSpeed;
+            //     this.gameState.lives = 5;
+            // }
 
         } else {
             //you have less lives so you go faster
@@ -537,6 +549,8 @@ GreaterThan.Game.prototype = {
         // this.head.frame = 1;
         // this.tail.animations.add('tailSwish', [0, 1, 2, 3, 4,5,6,7], 10, true).play();
         this.gameState.alive = true;
+
+        console.log('current level = ' + this.config.currentLevel);
     },
 
     tenToWin: function () {
@@ -576,20 +590,27 @@ GreaterThan.Game.prototype = {
 
         //Calculate medal won
         this.config.medal = 'none';
+        console.log('current level = ' + this.config.currentLevel);
+
         console.log(this.config.medal);
 
         if(this.gameState.points <=1000){
             this.config.medal = 'bronze';
+            this.config.currentLevel = this.gameState.nextLevelBronze;
         }else if (this.gameState.points >=1000 && this.gameState.points <= 2000){
             this.config.medal = 'silver';
+            this.config.currentLevel = this.gameState.nextLevelSilver;
         }else{
             this.config.medal = 'gold';
+            this.config.currentLevel = this.gameState.nextLevelGold;
         }
         console.log(this.config.medal);
 
         if (this.gameState.currentValue == this.gameState.endValue){
 
-            this.config.currentLevel = this.gameState.currentLevel;
+            console.log('current level = ' + this.config.currentLevel);
+
+            //this.config.currentLevel = this.config.currentLevel;
             this.clamSprite.destroy();
 
             this.game.world.removeAll();
