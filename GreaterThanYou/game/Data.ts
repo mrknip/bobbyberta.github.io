@@ -2,7 +2,8 @@ GreaterThan = {};
 
 data = [
     {
-    numberOfLevels: 19
+    numberOfLevels: 19,
+        startLevel: 0
     }
 ]
 
@@ -11,36 +12,36 @@ menu = [
         world: 'Greater Than',
         worldUnlocked: true,
         easyUnlocked: true,
-        mediumUnlocked: false,
+        mediumUnlocked: true,
         hardUnlocked: false,
         easy: [
             {
                 name: 'Range 0 to 10',
                 unlocked: true,
                 points: 0,
-                bronze: false,
-                silver: false,
-                gold: false,
+                bronze: true,
+                silver: true,
+                gold: true,
             },
             {
                 name: 'Range 0 to 20',
-                unlocked: false,
+                unlocked: true,
                 points: 0,
-                bronze: false,
-                silver: false,
+                bronze: true,
+                silver: true,
                 gold: false,
             },
             {
                 name: 'Range -10 to 0',
-                unlocked: false,
+                unlocked: true,
                 points: 0,
-                bronze: false,
+                bronze: true,
                 silver: false,
                 gold: false,
             },
             {
                 name: 'Range -20 to 0',
-                unlocked: false,
+                unlocked: true,
                 points: 0,
                 bronze: false,
                 silver: false,
@@ -66,7 +67,7 @@ menu = [
         medium: [
                     {
                         name: 'Range 0 to 10',
-                        unlocked: false,
+                        unlocked: true,
                         points: 0,
                         bronze: false,
                         silver: false,
@@ -75,7 +76,7 @@ menu = [
 
             {
                         name: 'Range 0 to 20',
-                        unlocked: false,
+                        unlocked: true,
                         points: 0,
                         bronze: false,
                         silver: false,
@@ -143,8 +144,8 @@ menu = [
     },
     {
         world: 'Less Than',
-        worldUnlocked: false,
-        easyUnlocked: false,
+        worldUnlocked: true,
+        easyUnlocked: true,
         mediumUnlocked: false,
         hardUnlocked: false,
         easy: [
@@ -152,15 +153,15 @@ menu = [
                         name: 'Range 0 to 10',
                         unlocked: true,
                         points: 0,
-                        bronze: false,
-                        silver: false,
+                        bronze: true,
+                        silver: true,
                         gold: false,
                     },
                     {
                         name: 'Range 0 to 20',
-                        unlocked: false,
+                        unlocked: true,
                         points: 0,
-                        bronze: false,
+                        bronze: true,
                         silver: false,
                         gold: false,
                     },
@@ -182,7 +183,7 @@ menu = [
                     },
                     {
                         name: 'Range -10 to 10',
-                        unlocked: true,
+                        unlocked: false,
                         points: 0,
                         bronze: false,
                         silver: false,

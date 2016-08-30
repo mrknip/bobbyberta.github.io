@@ -30,8 +30,8 @@ GreaterThan.Game.prototype = {
         answerStart: 0,
         startSpeed: 400,
 
-        currentLevel: 0,
-        finalLevel: 9,
+        currentLevel: data[0].startLevel,
+        finalLevel: 28,
         clamStart: false,
 
 
@@ -42,46 +42,14 @@ GreaterThan.Game.prototype = {
     //Phaser functions
 
     preload: function () {
-        game.load.image('splash', 'assets/startScreen.png');
-
-        game.load.spritesheet('you', 'assets2/body6.png', 75, 75, 4);
-        game.load.spritesheet('lives', 'assets/LivesGreaterThan.png', 150, 30, 5);
-        game.load.spritesheet('tailSwish', 'assets2/tail.png', 150, 150, 16);
-        game.load.spritesheet('headFace', 'assets2/headFace.png', 150, 150, 2);
-
-        //game.load.spritesheet('medals', 'assets3/medals.png', 300, 260, 3);
-        game.load.image('bronze', 'assets3/bronze.png');
-        game.load.image('silver', 'assets3/silver.png');
-        game.load.image('gold', 'assets3/gold.png');
-        game.load.image('complete', 'assets3/depthCompleted.png');
-        game.load.image('play', 'assets3/playButton.png');
-        //game.load.spritesheet('enemy', 'assets3/SharkSpriteSheet.png', 50, 50, 15);
-
-        game.load.image('bg', 'assets/background.png');
-        game.load.image('up', 'assets/levelUp.png');
-        game.load.image('eatsUI', 'assets3/uiBar.png');
-        game.load.image('blob', 'assets/bgDust.png');
-        game.load.image('block', 'assets/collectable.png');
-        game.load.image('enemy', 'assets2/shark.png');
-        game.load.image('jelly', 'assets2/jelly.png');
-        game.load.image('end', 'assets/credits.png');
-        game.load.image('end', 'assets/credits.png');
-        game.load.image('loose', 'assets/loose.png');
-        game.load.image('title', 'assets/TitleBar.png');
-
-        game.load.image('clam', 'assets/clam.png');
-        game.load.image('waves', 'assets/waves.png');
-        game.load.image('head', 'assets/head.png');
-
-
     },
 
 
     create: function () {
 
-        var levelId = this.config.currentLevel;
-
-
+        var levelId = data[0].startLevel
+        
+        
         this.gameState = {
             currentLevel: levelId,
             levelName: levels[levelId].levelName,

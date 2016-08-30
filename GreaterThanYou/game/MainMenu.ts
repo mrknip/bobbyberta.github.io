@@ -27,45 +27,12 @@ GreaterThan.Menu.prototype = {
         levelStartY: 360,
 
 
-
-
     },
 
-    menuState:{},
+    menuState: {},
 
 
-
-    preload: function() {
-        game.load.image('backgroundTitle', 'assets3/titleBackground.png');
-        //'selectWorld', 'bothTitle', 'lessTitle', 'greaterTitle'
-        game.load.spritesheet('title', 'assets3/stageTitle.png', 780, 160, 4);
-
-        game.load.spritesheet('greater', 'assets3/worldGreaterButton.png', 300, 300, 2);
-
-        game.load.spritesheet('less', 'assets3/worldLessButton.png', 300, 300, 2);
-        game.load.image('lessLocked', 'assets3/worldLessLocked.png');
-
-        game.load.spritesheet('both', 'assets3/worldBothButton.png', 300, 300, 2);
-        game.load.image('bothLocked', 'assets3/worldBothLocked.png');
-
-        game.load.image('home', 'assets3/homeButton.png');
-
-        game.load.image('box1', 'assets3/levelSelectBox.png');
-
-        game.load.spritesheet('easy', 'assets3/easyMenuButton1.png', 250, 60, 2);
-        game.load.spritesheet('medium', 'assets3/mediumMenuButton.png', 250, 60, 3);
-        game.load.spritesheet('hard', 'assets3/hardMenuButton.png', 250, 60, 3);
-
-        game.load.image('locked', 'assets3/levelLocked.png');
-        game.load.spritesheet('unlocked', 'assets3/levelUnlocked.png', 150, 150, 4);
-
-        game.load.spritesheet('levels', 'assets3/levelSprite.png', 150, 150, 5);
-
-        game.load.image('bothLocked', 'assets3/worldBothLocked.png');
-        game.load.image('lessLocked', 'assets3/worldLessLocked.png');
-
-
-
+    preload: function () {
     },
 
 
@@ -88,13 +55,12 @@ GreaterThan.Menu.prototype = {
             levelX: this.menuInfo.levelStarX,
             levelY: this.menuInfo.levelStartY,
 
-
-
+            levelsGreaterEasy: [],
 
         }
 
         this.background = game.add.sprite(0, 0, 'backgroundTitle');
-        this.title = game.add.sprite(250, 70, 'title');
+        this.title = game.add.sprite(250, 70, 'titleMenu');
         this.homeButton = game.add.button(10, 700, 'home', this.goHome, this);
 
 
@@ -105,13 +71,56 @@ GreaterThan.Menu.prototype = {
         this.addGreaterEasyLevels();
         this.addGreaterMediumLevels();
         this.addGreaterHardLevels();
+
+        this.addLessEasyLevels();
     },
 
-    addGreaterEasyLevels: function() {
+    update: function(){
+
+
+        if ( this.levelsGreaterEasyGroup.visible == true) {
+
+        } else {
+
+
+            for (var i = 0; i < this.menuState.levelsGreaterEasy.length; ++i) {
+                var currentLevelSprite = this.menuState.levelsGreaterEasy[i];
+
+                currentLevelSprite.events.onInputDown.add(
+                    function (currentLevelSprite) {
+                        if (currentLevelSprite.value == 0) {
+                            data[0].startLevel = 0,
+                                console.log('data start level value: ' + data[0].startLevel)
+                            this.game.state.start("game");
+                        } else if (currentLevelSprite.value == 1) {
+                            data[0].startLevel = 8,
+                                console.log('data start level value: ' + data[0].startLevel)
+                            this.game.state.start("game");
+                        } else if (currentLevelSprite.value == 2) {
+                            data[0].startLevel = 17,
+                                console.log('data start level value: ' + data[0].startLevel)
+                            this.game.state.start("game");
+                        }
+                    },
+                    null,
+                        this
+            );
+            }
+        }
+    },
+
+    changeLevel: function(currentLevelNumber){
+         //var count = 0;
+        console.log('Level ' + currentLevelNumber + ' has been clicked')
+
+    },
+
+    addGreaterEasyLevels: function () {
 
         this.greaterLevelsGroup = game.add.group();
 
         this.levelsGreaterEasyGroup = game.add.group();
+
 
         for (var i = 0; i < menu[0].easy.length; ++i) {
 
@@ -120,17 +129,18 @@ GreaterThan.Menu.prototype = {
                 this.menuState.levelY += 180;
             }
 
-            this.level = game.add.sprite(this.menuState.levelX, this.menuState.levelY, 'levels');
 
+            this.level = game.add.sprite(this.menuState.levelX, this.menuState.levelY, 'levels');
 
 
             if (menu[0].easy[i].unlocked == true) {
 
-                this.levelNumber = game.make.text(65,  65, i);
+                this.levelNumber = game.make.text(65, 65, i);
                 this.level.addChild(this.levelNumber);
 
-                this.level.events.onInputDown.add(this.levelClicked, this);
+                this.level.value = i;
 
+                //this.level.events.onInputDown.add(this.levelClicked, this);
 
 
                 if (menu[0].easy[i].gold) {
@@ -149,6 +159,7 @@ GreaterThan.Menu.prototype = {
             this.menuState.levelX += 175;
             this.level.inputEnabled = true;
             this.levelsGreaterEasyGroup.add(this.level);
+            this.menuState.levelsGreaterEasy.push(this.level);
 
         }
 
@@ -157,9 +168,14 @@ GreaterThan.Menu.prototype = {
 
         this.levelsGreaterEasyGroup.visible = false;
 
+        console.log('Greater Levels Group = ' + this.greaterLevelsGroup.length)
+        console.log('Levels Greater Easy Group = ' + this.levelsGreaterEasyGroup.length)
+        console.log('level greater easy group = ' + this.menuState.levelsGreaterEasy)
+        console.log('level greater easy group length = ' + this.menuState.levelsGreaterEasy.length)
+
     },
 
-    addGreaterMediumLevels: function() {
+    addGreaterMediumLevels: function () {
 
 
         this.levelsGreaterMediumGroup = game.add.group();
@@ -175,7 +191,7 @@ GreaterThan.Menu.prototype = {
 
             if (menu[0].medium[j].unlocked == true) {
 
-                this.levelNumber = game.make.text(65,  65, j);
+                this.levelNumber = game.make.text(65, 65, j);
                 this.level.addChild(this.levelNumber);
 
 
@@ -205,7 +221,7 @@ GreaterThan.Menu.prototype = {
 
     },
 
-    addGreaterHardLevels: function() {
+    addGreaterHardLevels: function () {
 
 
         this.levelsGreaterHardGroup = game.add.group();
@@ -221,7 +237,7 @@ GreaterThan.Menu.prototype = {
 
             if (menu[0].hard[i].unlocked == true) {
 
-                this.levelNumber = game.make.text(65,  65, i);
+                this.levelNumber = game.make.text(65, 65, i);
                 this.level.addChild(this.levelNumber);
 
 
@@ -252,28 +268,78 @@ GreaterThan.Menu.prototype = {
     },
 
 
+    addLessEasyLevels: function () {
+
+        this.lessLevelsGroup = game.add.group();
+
+        this.levelsLessEasyGroup = game.add.group();
+
+        for (var i = 0; i < menu[1].easy.length; ++i) {
+
+            if (this.menuState.levelX == 1000) {
+                this.menuState.levelX = 300;
+                this.menuState.levelY += 180;
+            }
+
+            this.level = game.add.sprite(this.menuState.levelX, this.menuState.levelY, 'levels');
 
 
-    addWorldMenu: function(){
+            if (menu[1].easy[i].unlocked == true) {
+
+                this.levelNumber = game.make.text(65, 65, i);
+                this.level.addChild(this.levelNumber);
+
+                this.level.events.onInputDown.add(this.levelClicked, this);
+
+
+                if (menu[1].easy[i].gold) {
+                    this.level.frame = 4;
+                } else if (menu[1].easy[i].silver) {
+                    this.level.frame = 3;
+                } else if (menu[1].easy[i].bronze) {
+                    this.level.frame = 2;
+                } else {
+                    this.level.frame = 1;
+                }
+            } else {
+                this.level.frame = 0;
+            }
+
+            this.menuState.levelX += 175;
+            this.level.inputEnabled = true;
+            this.levelsLessEasyGroup.add(this.level);
+
+        }
+
+        this.menuState.levelX = this.menuInfo.levelStarX;
+        this.menuState.levelY = this.menuInfo.levelStartY;
+
+        this.levelsLessEasyGroup.visible = false;
+        this.lessLevelsGroup.add(this.levelsLessEasyGroup);
+
+    },
+
+
+    addWorldMenu: function () {
         this.worldButtonGroup = game.add.group();
 
 
-        for (var i = 0; i < menu.length; ++i){
-            if(menu[0].worldUnlocked == true){
+        for (var i = 0; i < menu.length; ++i) {
+            if (menu[0].worldUnlocked == true) {
                 this.greaterButton = game.add.button(100, 320, 'greater', this.goToGreaterMenu, this, 0, 0, 1);
                 this.worldButtonGroup.add(this.greaterButton);
             }
-            if(menu[1].worldUnlocked == true){
+            if (menu[1].worldUnlocked == true) {
                 this.lessButton = game.add.button(460, 320, 'less', this.goToLessMenu, this, 0, 0, 1);
                 this.worldButtonGroup.add(this.lessButton);
-            }else{
+            } else {
                 this.lessLockedIcon = game.add.sprite(460, 320, 'lessLocked');
                 this.worldButtonGroup.add(this.lessLockedIcon);
             }
-            if(menu[2].worldUnlocked == true){
+            if (menu[2].worldUnlocked == true) {
                 this.bothButton = game.add.button(820, 320, 'both', this.goToBothMenu, this, 0, 0, 1);
                 this.worldButtonGroup.add(this.bothButton);
-            }else{
+            } else {
                 this.bothLockedIcon = game.add.sprite(820, 320, 'bothLocked');
                 this.worldButtonGroup.add(this.bothLockedIcon);
             }
@@ -281,7 +347,7 @@ GreaterThan.Menu.prototype = {
 
     },
 
-    addDifficultyMenu: function(){
+    addDifficultyMenu: function () {
         //Adding in menu options for Greater Than Stage Page
         this.menuGroup = game.add.group();
 
@@ -289,20 +355,19 @@ GreaterThan.Menu.prototype = {
 
 
         this.easyButton = game.add.sprite(264, 272, 'easy');
-        this.easyButton.inputEnabled  = true;
+        this.easyButton.inputEnabled = true;
 
         this.easyButton.events.onInputDown.add(this.easyClicked, this);
 
 
-
         this.mediumButton = game.add.sprite(514, 272, 'medium')
-        this.mediumButton.inputEnabled  = true;
+        this.mediumButton.inputEnabled = true;
 
         this.mediumButton.events.onInputDown.add(this.mediumClicked, this);
 
 
         this.hardButton = game.add.sprite(764, 272, 'hard')
-        this.hardButton.inputEnabled  = true;
+        this.hardButton.inputEnabled = true;
 
         this.hardButton.events.onInputDown.add(this.hardClicked, this);
 
@@ -317,14 +382,14 @@ GreaterThan.Menu.prototype = {
 
     },
 
-    checkWhichStage: function(){
+    checkWhichStage: function () {
         //Greater Than World
-        if(this.menuState.currentMenu == 0) {
+        if (this.menuState.currentMenu == 0) {
 
             if (menu[0].easyUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'easy') {
                     this.easyButton.frame = 0;
-                    this.easyButton.inputEnabled  = false;
+                    this.easyButton.inputEnabled = false;
 
                     this.levelsGreaterHardGroup.visible = false;
                     this.levelsGreaterMediumGroup.visible = false;
@@ -332,17 +397,17 @@ GreaterThan.Menu.prototype = {
 
                 } else {
                     this.easyButton.frame = 1;
-                    this.easyButton.inputEnabled  = true;
+                    this.easyButton.inputEnabled = true;
                 }
             } else {
                 this.easyButton.frame = 2;
-                this.easyButton.inputEnabled  = false;
+                this.easyButton.inputEnabled = false;
             }
 
             if (menu[0].mediumUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'medium') {
                     this.mediumButton.frame = 0;
-                    this.mediumButton.inputEnabled  = false;
+                    this.mediumButton.inputEnabled = false;
 
                     this.levelsGreaterHardGroup.visible = false;
                     this.levelsGreaterMediumGroup.visible = true;
@@ -351,17 +416,17 @@ GreaterThan.Menu.prototype = {
 
                 } else {
                     this.mediumButton.frame = 1;
-                    this.mediumButton.inputEnabled  = true;
+                    this.mediumButton.inputEnabled = true;
                 }
             } else {
                 this.mediumButton.frame = 2;
-                this.mediumButton.inputEnabled  = false;
+                this.mediumButton.inputEnabled = false;
             }
 
             if (menu[0].hardUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'hard') {
                     this.hardButton.frame = 0;
-                    this.hardButton.inputEnabled  = false;
+                    this.hardButton.inputEnabled = false;
 
                     this.levelsGreaterHardGroup.visible = true;
                     this.levelsGreaterMediumGroup.visible = false;
@@ -369,132 +434,131 @@ GreaterThan.Menu.prototype = {
 
                 } else {
                     this.hardButton.frame = 1;
-                    this.hardButton.inputEnabled  = true;
+                    this.hardButton.inputEnabled = true;
                 }
             } else {
                 this.hardButton.frame = 2;
-                this.hardButton.inputEnabled  = false;
+                this.hardButton.inputEnabled = false;
             }
         }
 
         //Lesser than world
-        if(this.menuState.currentMenu == 1) {
+        if (this.menuState.currentMenu == 1) {
             if (menu[1].easyUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'easy') {
                     this.easyButton.frame = 0;
-                    this.easyButton.inputEnabled  = false;
+                    this.easyButton.inputEnabled = false;
                 } else {
                     this.easyButton.frame = 1;
-                    this.easyButton.inputEnabled  = true;
+                    this.easyButton.inputEnabled = true;
                 }
             } else {
                 this.easyButton.frame = 2;
-                this.easyButton.inputEnabled  = false;
+                this.easyButton.inputEnabled = false;
             }
 
             if (menu[1].mediumUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'medium') {
                     this.mediumButton.frame = 0;
-                    this.mediumButton.inputEnabled  = false;
+                    this.mediumButton.inputEnabled = false;
                 } else {
                     this.mediumButton.frame = 1;
-                    this.mediumButton.inputEnabled  = true;
+                    this.mediumButton.inputEnabled = true;
                 }
             } else {
                 this.mediumButton.frame = 2;
-                this.mediumButton.inputEnabled  = false;
+                this.mediumButton.inputEnabled = false;
             }
 
             if (menu[1].hardUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'hard') {
                     this.hardButton.frame = 0;
-                    this.hardButton.inputEnabled  = false;
+                    this.hardButton.inputEnabled = false;
                 } else {
                     this.hardButton.frame = 1;
-                    this.hardButton.inputEnabled  = true;
+                    this.hardButton.inputEnabled = true;
                 }
             } else {
                 this.hardButton.frame = 2;
-                this.hardButton.inputEnabled  = false;
+                this.hardButton.inputEnabled = false;
             }
         }
 
         //Both World
-        if(this.menuState.currentMenu == 2) {
+        if (this.menuState.currentMenu == 2) {
             if (menu[2].easyUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'easy') {
                     this.easyButton.frame = 0;
-                    this.easyButton.inputEnabled  = false;
+                    this.easyButton.inputEnabled = false;
                 } else {
                     this.easyButton.frame = 1;
-                    this.easyButton.inputEnabled  = true;
+                    this.easyButton.inputEnabled = true;
                 }
             } else {
                 this.easyButton.frame = 2;
-                this.easyButton.inputEnabled  = false;
+                this.easyButton.inputEnabled = false;
             }
 
             if (menu[2].mediumUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'medium') {
                     this.mediumButton.frame = 0;
-                    this.mediumButton.inputEnabled  = false;
+                    this.mediumButton.inputEnabled = false;
                 } else {
                     this.mediumButton.frame = 1;
-                    this.mediumButton.inputEnabled  = true;
+                    this.mediumButton.inputEnabled = true;
                 }
             } else {
                 this.mediumButton.frame = 2;
-                this.mediumButton.inputEnabled  = false;
+                this.mediumButton.inputEnabled = false;
             }
 
             if (menu[2].hardUnlocked == true) {
                 if (this.menuState.currentDifficulty == 'hard') {
                     this.hardButton.frame = 0;
-                    this.hardButton.inputEnabled  = false;
+                    this.hardButton.inputEnabled = false;
                 } else {
                     this.hardButton.frame = 1;
-                    this.hardButton.inputEnabled  = true;
+                    this.hardButton.inputEnabled = true;
                 }
             } else {
                 this.hardButton.frame = 2;
-                this.hardButton.inputEnabled  = false;
+                this.hardButton.inputEnabled = false;
             }
         }
     },
 
 
-
-easyClicked: function(){
-    if(this.menuState.currentMenu == 0){
-        if(menu[0].easyUnlocked == true){
-            this.menuState.currentDifficulty = 'easy';
+    easyClicked: function () {
+        if (this.menuState.currentMenu == 0) {
+            if (menu[0].easyUnlocked == true) {
+                this.menuState.currentDifficulty = 'easy';
+            }
+        } else if (this.menuState.currentMenu == 1) {
+            if (menu[1].easyUnlocked == true) {
+                this.menuState.currentDifficulty = 'easy';
+            }
+        } else if (this.menuState.currentMenu == 2) {
+            if (menu[2].easyUnlocked == true) {
+                this.menuState.currentDifficulty = 'easy';
+            }
         }
-    }else if(this.menuState.currentMenu == 1){
-        if(menu[1].easyUnlocked == true){
-            this.menuState.currentDifficulty = 'easy';
-        }
-    }else if(this.menuState.currentMenu == 2){
-        if(menu[2].easyUnlocked == true){
-            this.menuState.currentDifficulty = 'easy';
-        }
-    }
 
-    this.checkWhichStage();
+        this.checkWhichStage();
 
 
-},
+    },
 
-    mediumClicked: function(){
-        if(this.menuState.currentMenu == 0){
-            if(menu[0].mediumUnlocked == true){
+    mediumClicked: function () {
+        if (this.menuState.currentMenu == 0) {
+            if (menu[0].mediumUnlocked == true) {
                 this.menuState.currentDifficulty = 'medium';
             }
-        }else if(this.menuState.currentMenu == 1){
-            if(menu[1].mediumUnlocked == true){
+        } else if (this.menuState.currentMenu == 1) {
+            if (menu[1].mediumUnlocked == true) {
                 this.menuState.currentDifficulty = 'medium';
             }
-        }else if(this.menuState.currentMenu == 2){
-            if(menu[2].mediumUnlocked == true){
+        } else if (this.menuState.currentMenu == 2) {
+            if (menu[2].mediumUnlocked == true) {
                 this.menuState.currentDifficulty = 'medium';
             }
         }
@@ -502,17 +566,17 @@ easyClicked: function(){
         this.checkWhichStage();
     },
 
-    hardClicked: function(){
-        if(this.menuState.currentMenu == 0){
-            if(menu[0].hardUnlocked == true){
+    hardClicked: function () {
+        if (this.menuState.currentMenu == 0) {
+            if (menu[0].hardUnlocked == true) {
                 this.menuState.currentDifficulty = 'hard';
             }
-        }else if(this.menuState.currentMenu == 1){
-            if(menu[1].hardUnlocked == true){
+        } else if (this.menuState.currentMenu == 1) {
+            if (menu[1].hardUnlocked == true) {
                 this.menuState.currentDifficulty = 'hard';
             }
-        }else if(this.menuState.currentMenu == 2){
-            if(menu[2].hardUnlocked == true){
+        } else if (this.menuState.currentMenu == 2) {
+            if (menu[2].hardUnlocked == true) {
                 this.menuState.currentDifficulty = 'hard';
             }
         }
@@ -521,8 +585,7 @@ easyClicked: function(){
     },
 
 
-
-    goToGreaterMenu: function(){
+    goToGreaterMenu: function () {
 
         this.worldButtonGroup.visible = false;
 
@@ -536,28 +599,32 @@ easyClicked: function(){
         this.menuState.currentMenu = 0;
 
         this.menuGroup.visible = true;
+        this.lessLevelsGroup.visible = false;
 
         this.checkWhichStage();
-},
+    },
 
-    goToLessMenu: function(){
+    goToLessMenu: function () {
 
         this.title.frame = 2;
         this.menuState.currentMenu = 1;
+
+        this.menuGroup.visible = true;
+        this.lessLevelsGroup.visible = true;
+        this.levelsLessEasyGroup.visible = true;
 
 
         this.levelsGreaterHardGroup.visible = false;
         this.levelsGreaterMediumGroup.visible = false;
         this.levelsGreaterEasyGroup.visible = false;
 
-
         this.worldButtonGroup.visible = false;
-        this.menuGroup.visible = true;
+        ;
 
         this.checkWhichStage();
     },
 
-    goToBothMenu: function(){
+    goToBothMenu: function () {
 
         this.title.frame = 1;
         this.menuState.currentMenu = 2;
@@ -571,11 +638,12 @@ easyClicked: function(){
 
         this.checkWhichStage();
 
-        this.greaterLevelsGroup.visible = true;
+        this.greaterLevelsGroup.visible = false;
+        this.lessLevelsGroup.visible = false;
     },
 
 
-    goHome: function(){
+    goHome: function () {
 
         this.worldButtonGroup.visible = true;
         this.menuGroup.visible = false;
@@ -587,17 +655,18 @@ easyClicked: function(){
 
         this.menuState.currentDifficulty = 'easy'
         this.greaterLevelsGroup.visible = false;
+        this.lessLevelsGroup.visible = false;
 
 
     },
 
 
-    playGame: function(){
+    playGame: function () {
         this.game.state.start("game", true);
     },
 
 
-    levelClicked: function(){
+    levelClicked: function () {
         this.game.state.start("game", true);
     },
 
