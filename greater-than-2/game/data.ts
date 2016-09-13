@@ -10,6 +10,7 @@ ui = [
 player = [
     {
         currentLevel: 0,
+        currentDepth: 100,
         totalScore: 0,
         stageData: [
             {
@@ -60,7 +61,7 @@ levels = [
         worldSizeY: 1500,
         greater: [
             {
-                amount: 5,
+                amount: 12,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -70,7 +71,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 5,
+                amount: 0,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -80,14 +81,9 @@ levels = [
         ],
         treasure: [
             {
-                text: '+1',
-                value: 1,
-                amount: 5,
-            },
-            {
-                text: '-1',
-                value: -1,
-                amount: 5,
+                text: '+0',
+                value: 0,
+                amount: 10,
             },
         ]
     },
@@ -102,6 +98,7 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
+                proportionEqual: 0,
                 proportionBelow: 0.7,
             }
         ],
@@ -111,14 +108,15 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
+                proportionEqual: 0,
                 proportionBelow: 0.7,
             }
         ],
         treasure: [
             {
+                text: '+0',
                 value: 0,
-                initialCount: 20,
-                points: 2,
+                amount: 10,
             },
         ]
     },
@@ -129,10 +127,11 @@ levels = [
         worldSizeY: 2000,
         greater: [
             {
-                amount: 12,
+                amount: 18,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.3,
+                proportionEqual: 0,
                 proportionBelow: 0.7,
             }
         ],
@@ -142,14 +141,58 @@ levels = [
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.3,
+                proportionEqual: 0,
                 proportionBelow: 0.7,
             }
         ],
         treasure: [
             {
-                amount: 20,
+                text: '+0',
                 value: 0,
-                points: 2,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:4',
+        playerValue: 20,
+        worldSizeX: 2000,
+        worldSizeY: 2000,
+        greater: [
+            {
+                amount: 18,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
             },
         ]
     },
