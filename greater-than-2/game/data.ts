@@ -60,7 +60,7 @@ levels = [
         worldSizeY: 1500,
         greater: [
             {
-                amount: 12,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -70,7 +70,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 0,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -82,12 +82,12 @@ levels = [
             {
                 text: '+1',
                 value: 1,
-                amount: 10,
+                amount: 5,
             },
             {
                 text: '-1',
                 value: -1,
-                amount: 0,
+                amount: 5,
             },
         ]
     },
