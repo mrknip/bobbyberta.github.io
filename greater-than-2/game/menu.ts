@@ -59,12 +59,12 @@ GreaterThan.Menu.prototype = {
 
     _startLevel1: function () {
         this.game.state.start("game", true);
-        player.currentLevel = 0
+        player[0].currentLevel = 0
     },
 
     _startLevel2: function () {
         this.game.state.start("game", true);
-        player.currentLevel = 18
+        player[0].currentLevel = 4
     },
 
     _startLevel3: function () {

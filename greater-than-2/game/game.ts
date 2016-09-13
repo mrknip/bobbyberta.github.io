@@ -8,7 +8,7 @@ GreaterThan.Game.prototype = {
         arrowMove: 50,
         rightInARow: 8,
         wrongInARow: 3,
-        highestLevel: levels.length,
+        highestLevel: 5,
     },
 
     gameState: {},

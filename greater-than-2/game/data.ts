@@ -17,13 +17,17 @@ player = [
                 name: '> Positive Integers',
                 locked: false,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 3,
+                lowestLevel: 0,
             },
             {
                 name: '< Positive Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 6,
+                lowestLevel: 3,
             },
             {
                 name: '< and > Positive Integer',
@@ -192,6 +196,148 @@ levels = [
             {
                 text: '+3',
                 value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:1',
+        playerValue: 5,
+        worldSizeX: 1500,
+        worldSizeY: 1500,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 12,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.7,
+                proportionEqual: 0,
+                proportionBelow: 0.3,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:2',
+        playerValue: 10,
+        worldSizeX: 1500,
+        worldSizeY: 1500,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 12,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.7,
+                proportionEqual: 0,
+                proportionBelow: 0.1,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:3',
+        playerValue: 15,
+        worldSizeX: 2000,
+        worldSizeY: 2000,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 18,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.7,
+                proportionEqual: 0,
+                proportionBelow: 0.3,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:4',
+        playerValue: 20,
+        worldSizeX: 2000,
+        worldSizeY: 2000,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 18,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
                 amount: 3,
             },
         ]
