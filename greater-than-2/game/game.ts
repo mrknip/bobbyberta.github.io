@@ -4,6 +4,8 @@ GreaterThan.Game = function (game) {
 GreaterThan.Game.prototype = {
     config: {
         viewSizeX: 1200,
+        worldSizeX: 2000,
+        worldSizeY: 2000,
         coolDownTime: 1,
         arrowMove: 50,
         rightInARow: 8,
@@ -18,40 +20,7 @@ GreaterThan.Game.prototype = {
 
     create: function () {
 
-        var levelId = player[0].currentLevel;
-
-        this.gameState = {
-            level: levelId,
-            //World Data
-            levelName: levels[levelId].levelName,
-            worldSizeX: levels[levelId].worldSizeX,
-            worldSizeY: levels[levelId].worldSizeY,
-            depth: player[0].currentDepth,
-            //Player information
-            playerCurrentValue: levels[levelId].playerValue,
-            alive: true,
-            //Greater Than Information
-            greaterMinValue: levels[levelId].greater[0].minValue,
-            greaterMaxValue: levels[levelId].greater[0].maxValue,
-            greaterAmount: levels[levelId].greater[0].amount,
-            greaterPropAbove: levels[levelId].greater[0].proportionAbove,
-            greaterPropEqual: levels[levelId].greater[0].proportionEqual,
-            greaterPropBelow: levels[levelId].greater[0].proportionBelow,
-            greater: [],
-            //Less Than Information
-            lesserMinValue: levels[levelId].lesser[0].minValue,
-            lesserMaxValue: levels[levelId].lesser[0].maxValue,
-            lesserAmount: levels[levelId].lesser[0].amount,
-            lesserPropAbove: levels[levelId].lesser[0].proportionAbove,
-            lesserPropEqual: levels[levelId].lesser[0].proportionEqual,
-            lesserPropBelow: levels[levelId].lesser[0].proportionBelow,
-            lesser: [],
-            //Treasure Information
-            treasure: [],
-            //Level Progression Information
-            levelUp: 0,
-            levelDown: 0,
-        };
+        this.addGameInformation();
 
         this.addWorld();
         this.addTreasure();
@@ -80,6 +49,44 @@ GreaterThan.Game.prototype = {
         else {
             game.debug.text("GameOver!", 1000, 70, "#fff");
         }
+    },
+
+    addGameInformation: function(){
+        var levelId = player[0].currentLevel;
+
+        this.gameState = {
+            level: levelId,
+            //World Data
+            levelName: levels[levelId].levelName,
+            worldSizeX: this.config.worldSizeX,
+            worldSizeY: this.config.worldSizeY,
+            depth: player[0].currentDepth,
+            //Player information
+            playerCurrentValue: levels[levelId].playerValue,
+            alive: true,
+            //Greater Than Information
+            greaterMinValue: levels[levelId].greater[0].minValue,
+            greaterMaxValue: levels[levelId].greater[0].maxValue,
+            greaterAmount: levels[levelId].greater[0].amount,
+            greaterPropAbove: levels[levelId].greater[0].proportionAbove,
+            greaterPropEqual: levels[levelId].greater[0].proportionEqual,
+            greaterPropBelow: levels[levelId].greater[0].proportionBelow,
+            greater: [],
+            //Less Than Information
+            lesserMinValue: levels[levelId].lesser[0].minValue,
+            lesserMaxValue: levels[levelId].lesser[0].maxValue,
+            lesserAmount: levels[levelId].lesser[0].amount,
+            lesserPropAbove: levels[levelId].lesser[0].proportionAbove,
+            lesserPropEqual: levels[levelId].lesser[0].proportionEqual,
+            lesserPropBelow: levels[levelId].lesser[0].proportionBelow,
+            lesser: [],
+            //Treasure Information
+            treasure: [],
+            //Level Progression Information
+            levelUp: 0,
+            levelDown: 0,
+        };
+
     },
 
     addWorld: function () {
@@ -255,6 +262,7 @@ GreaterThan.Game.prototype = {
 
     },
 
+
     addTreasure(){
         var treasure = levels[player[0].currentLevel].treasure;
         for (var i = 0; i < treasure.length; ++i) {
@@ -304,6 +312,7 @@ GreaterThan.Game.prototype = {
     _checkGreater: function () {
         for (var i = 0; i < this.gameState.greater.length; ++i) {
             var currentGreater = this.gameState.greater[i];
+            var location = i;
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -311,6 +320,7 @@ GreaterThan.Game.prototype = {
                 function (player, greater) {
                     this._greaterCollided(
                         greater,
+                        location,
                         currentGreater,
                         currentGreater.value,
                         currentGreater.text,
@@ -326,6 +336,7 @@ GreaterThan.Game.prototype = {
     _checkLesser: function () {
         for (var i = 0; i < this.gameState.lesser.length; ++i) {
             var currentLesser = this.gameState.lesser[i];
+            var location = i;
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -333,6 +344,7 @@ GreaterThan.Game.prototype = {
                 function (player, lesser) {
                     this._lesserCollided(
                         lesser,
+                        location,
                         currentLesser,
                         currentLesser.value,
                         currentLesser.text,
@@ -349,6 +361,7 @@ GreaterThan.Game.prototype = {
 
         for (var i = 0; i < this.gameState.treasure.length; ++i) {
             var currentTreasure = this.gameState.treasure[i];
+            var location = i;
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -356,6 +369,7 @@ GreaterThan.Game.prototype = {
                 function (player, treasure) {
                     this._treasureCollided(
                         treasure,
+                        location,
                         currentTreasure.value
                     );
                 },
@@ -365,23 +379,24 @@ GreaterThan.Game.prototype = {
         }
 
     },
-    _greaterCollided: function (greater, greaterGroup, greaterValue, greaterText, image) {
-
+    _greaterCollided: function (greater, location, greaterGroup, greaterValue, greaterText, image) {
         if (this.gameState.playerCurrentValue <= greaterValue) {
             this._died();
             this._updateLevelDown();
         }
         else {
             greater.kill();
-            this._updateLevelUp();
+            this.gameState.greater.splice(location, 1);
 
             this.minValue = this.gameState.greaterMinValue;
             this.maxValue = this.gameState.playerCurrentValue;
             //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
             this._createAmountOfEntities(this.gameState.greater, 1, image, this.minValue, this.maxValue, greaterValue);
+
+            this._updateLevelUp();
         }
     },
-    _lesserCollided: function (lesser, lesserGroup, lesserValue, lesserText, image) {
+    _lesserCollided: function (lesser, location, lesserGroup, lesserValue, lesserText, image) {
 
         if (this.gameState.playerCurrentValue >= lesserValue) {
             this._died();
@@ -389,17 +404,20 @@ GreaterThan.Game.prototype = {
         }
         else {
             lesser.kill();
-            this._updateLevelUp();
+            this.gameState.lesser.splice(location, 1);
 
             this.minValue = this.gameState.playerCurrentValue;
             this.maxValue = this.gameState.lesserMaxValue;
             //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
             this._createAmountOfEntities(this.gameState.lesser, 1, image, this.minValue, this.maxValue, lesserValue);
+
+            this._updateLevelUp();
         }
     },
-    _treasureCollided: function(treasure, treasureValue){
+    _treasureCollided: function(treasure, location, treasureValue){
         this.gameState.playerCurrentValue += treasureValue;
         treasure.kill();
+        this.gameState.treasure.splice(location, 1);
 
         this.playerNumber.setText(this.gameState.playerCurrentValue);
     },
@@ -430,7 +448,6 @@ GreaterThan.Game.prototype = {
             player[0].currentLevel +=1;
             player[0].currentDepth +=this.config.arrowMove;
 
-            this.game.world.removeAll();
             this._levelUpScreen();
         }
         if(this.gameState.levelDown == this.config.wrongInARow && player[0].currentLevel > 0){
@@ -439,14 +456,27 @@ GreaterThan.Game.prototype = {
             player[0].currentDepth -=this.config.arrowMove;
 
             this.game.world.removeAll();
-            this._levelUpScreen();
+            this._nextLevel();
+        }
+    },
+    _removeGreaterLesser: function(group){
+        for (var i = 0; i < group.length; ++i) {
+            var current = group[i];
+            current.kill();
+        }
+        for (var i = 0; i < group.length; ++i) {
+            group.splice(i);
         }
     },
     _levelUpScreen: function(){
-        game.stage.backgroundColor = "#6f9695";
-        this.background = game.add.image(0, 0, 'bg');
-        game.add.tween(this.background).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
-        game.time.events.add(Phaser.Timer.SECOND * 0.5, this._nextLevel, this)
+
+        this._removeGreaterLesser(this.gameState.greater);
+        this._removeGreaterLesser(this.gameState.lesser);
+        this._removeGreaterLesser(this.gameState.treasure);
+
+
+
+        game.time.events.add(Phaser.Timer.SECOND * 1, this._nextLevel, this)
     },
     _nextLevel: function(){
         if(this.config.highestLevel == player[0].currentLevel){
@@ -454,9 +484,20 @@ GreaterThan.Game.prototype = {
             player[0].stageData[1].locked = false;
             this.game.state.start("title", true);
         }else{
-            this.game.world.removeAll();
-            this.create();
+
+            //this.game.world.removeAll();
+            this.addGameInformation();
+            this.addGreaterLesserEntities();
+            this.addTreasure();
+
+            this._setNewLevelText();
         }
+    },
+    _setNewLevelText: function(){
+        this.playerNumber.setText(this.gameState.playerCurrentValue);
+        this.titleText.setText(this.gameState.levelName);
+        this._setUIPosition(this.arrow, 100, this.gameState.depth);
+
     }
 
 };

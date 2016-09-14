@@ -61,11 +61,9 @@ levels = [
     {
         levelName: 'Stage 1:1',
         playerValue: 5,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
-                amount: 12,
+                amount: 18,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -94,11 +92,9 @@ levels = [
     {
         levelName: 'Stage 1:2',
         playerValue: 10,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
-                amount: 12,
+                amount: 18,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -127,8 +123,6 @@ levels = [
     {
         levelName: 'Stage 1:3',
         playerValue: 15,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 18,
@@ -160,8 +154,6 @@ levels = [
     {
         levelName: 'Stage 1:4',
         playerValue: 20,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 18,
@@ -203,8 +195,6 @@ levels = [
     {
         levelName: 'Stage 2:1',
         playerValue: 5,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
                 amount: 0,
@@ -236,8 +226,6 @@ levels = [
     {
         levelName: 'Stage 2:2',
         playerValue: 10,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
                 amount: 0,
@@ -269,8 +257,6 @@ levels = [
     {
         levelName: 'Stage 2:3',
         playerValue: 15,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 0,
@@ -302,8 +288,6 @@ levels = [
     {
         levelName: 'Stage 2:4',
         playerValue: 20,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 0,
@@ -345,8 +329,6 @@ levels = [
     {
         levelName: 'Stage 3:1',
         playerValue: 5,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
                 amount: 6,
@@ -378,8 +360,6 @@ levels = [
     {
         levelName: 'Stage 3:2',
         playerValue: 10,
-        worldSizeX: 1500,
-        worldSizeY: 1500,
         greater: [
             {
                 amount: 6,
@@ -411,8 +391,6 @@ levels = [
     {
         levelName: 'Stage 3:3',
         playerValue: 15,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 9,
@@ -444,8 +422,6 @@ levels = [
     {
         levelName: 'Stage 3:4',
         playerValue: 20,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
         greater: [
             {
                 amount: 9,
