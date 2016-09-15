@@ -8,8 +8,8 @@ GreaterThan.Menu.prototype = {
     create: function (){
 
         this.background = game.add.sprite(0, 0, 'backgroundTitle');
-
-        this.box1 = game.add.sprite(250, 260, 'box1');
+        this.titleText = this.add.text(500, 180, 'Select a Level:', {fill: '#f4f0ce'});
+        //this.box1 = game.add.sprite(225, 160, 'box1');
 
         this.addLevels();
 
@@ -18,75 +18,48 @@ GreaterThan.Menu.prototype = {
     update: function (){},
 
     addLevels: function () {
-        if(player[0].stageData[0].locked == false){
-            game.add.button(300, 380, 'unlocked', this._startLevel1);
+        //_addLevel: function(x, y, stage, startLevel)
+        this._addLevel(320, 270, 0, 0);
+        this._addLevel(520, 270, 1, 4);
+        this._addLevel(720, 270, 2, 8);
+        this._addLevel(320, 470, 3, 12);
+        this._addLevel(520, 470, 4, 16);
+        this._addLevel(720, 470, 5, 20);
+    },
+    _addLevel: function(x, y, stage, startLevel){
+        if(player[0].stageData[stage].locked == false){
+
+            this._addButton(x, y, stage);
+            this._checkAndAddMedal(stage);
+            this._setGameData(startLevel, stage);
+
         }else{
-            game.add.sprite(300, 380, 'locked')
+            game.add.sprite(x, y, 'locked')
         }
-
-        if(player[0].stageData[1].locked == false){
-            game.add.button(500, 380, 'unlocked', this._startLevel2);
-        }else{
-            game.add.sprite(500, 380, 'locked')
+    },
+    _addButton: function(x, y, stage){
+        this.levelButton = game.add.button(x, y, 'unlocked', this._startLevel);
+        this.stageScore = this.make.text(55, 80, + player[0].stageData[stage].score, {fill: '#f4f0ce'});
+        this.levelButton.addChild(this.stageScore);
+    },
+    _checkAndAddMedal: function(stage){
+        if(player[0].stageData[stage].medal != 'none'){
+            this.medalScore = this.make.text(35, 55, player[0].stageData[stage].medal, {fill: '#f4f0ce'});
+            this.levelButton.addChild(this.medalScore);
         }
-
-        if(player[0].stageData[2].locked == false){
-            game.add.button(700, 380, 'unlocked', this._startLevel3);
-        }else{
-            game.add.sprite(700, 380, 'locked')
-        }
-
-        if(player[0].stageData[3].locked == false){
-            game.add.button(300, 580, 'unlocked', this._startLevel4);
-        }else{
-            game.add.sprite(300, 580, 'locked')
-        }
-
-        if(player[0].stageData[4].locked == false){
-            game.add.button(500, 580, 'unlocked', this._startLevel5);
-        }else{
-            game.add.sprite(500, 580, 'locked')
-        }
-
-        if(player[0].stageData[5].locked == false){
-            game.add.button(700, 580, 'unlocked', this._startLevel6);
-        }else{
-            game.add.sprite(700, 580, 'locked')
-        }
-
     },
-
-
-    _startLevel1: function () {
+    _setGameData: function (level, stage){
+        player[0].currentLevel = level;
+        player[0].currentStage = stage;
+        player[0].currentDepth = 100;
+        player[0].currentScore = 0;
+        player[0].levelLocation = 0;
+        player[0].maxLevel = 0;
+        player[0].endLevel = player[0].stageData[stage].highestLevel;
+        player[0].startLevel = player[0].stageData[stage].lowestLevel;
+    },
+    _startLevel: function () {
         this.game.state.start("game", true);
-        player[0].currentLevel = 0
     },
-
-    _startLevel2: function () {
-        this.game.state.start("game", true);
-        player[0].currentLevel = 4
-    },
-
-    _startLevel3: function () {
-        this.game.state.start("game", true);
-        player[0].currentLevel = 8
-    },
-
-    _startLevel4: function () {
-        this.game.state.start("game", true);
-        player[0].currentLevel = 12
-    },
-
-    _startLevel5: function () {
-        this.game.state.start("game", true);
-        player[0].currentLevel = 16
-    },
-
-    _startLevel6: function () {
-        this.game.state.start("game", true);
-        player[0].currentLevel = 20
-    },
-
-
 };
 

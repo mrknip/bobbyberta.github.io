@@ -10,8 +10,17 @@ ui = [
 player = [
     {
         currentLevel: 0,
+        currentStage: 0,
+        startLevel: 0,
+        endLevel: 0,
+        levelLocation: 0,
+        levelMax: 0,
         currentDepth: 100,
+        currentScore: 0,
         totalScore: 0,
+        bronze: 600,
+        silver: 800,
+        gold: 1000,
         stageData: [
             {
                 name: '> Positive Integers',
@@ -23,17 +32,19 @@ player = [
             },
             {
                 name: '< Positive Integers',
-                locked: false,
+                locked: true,
                 medal: 'none',
                 score: 0,
-                highestLevel: 6,
-                lowestLevel: 3,
+                highestLevel: 7,
+                lowestLevel: 4,
             },
             {
                 name: '< and > Positive Integer',
-                locked: false,
+                locked: true,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 11,
+                lowestLevel: 8,
             },
             {
                 name: '> Integers',
