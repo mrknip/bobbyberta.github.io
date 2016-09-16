@@ -328,6 +328,7 @@ GreaterThan.Game.prototype = {
     },
 
 
+    //collision detection
     collisionDetection(){
         if (this.gameState.alive == true) {
             this._checkGreater();
@@ -417,9 +418,10 @@ GreaterThan.Game.prototype = {
             this.minValue = this.gameState.greaterMinValue;
             this.maxValue = this.gameState.playerCurrentValue;
             //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
+            this._textSolvedAnimation(greaterValue, '>');
             this._createAmountOfEntities(this.gameState.greater, 1, image, this.minValue, this.maxValue, greaterValue);
 
-            this._updateLevelUp();
+            this.updateLevelUp();
         }
     },
     _lesserCollided: function (lesser, location, lesserGroup, lesserValue, lesserText, image) {
@@ -434,22 +436,25 @@ GreaterThan.Game.prototype = {
 
             this.minValue = this.gameState.playerCurrentValue;
             this.maxValue = this.gameState.lesserMaxValue;
+            this._textSolvedAnimation(lesserValue, '<');
             //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
             this._createAmountOfEntities(this.gameState.lesser, 1, image, this.minValue, this.maxValue, lesserValue);
 
-            this._updateLevelUp();
+            this.updateLevelUp();
         }
     },
     _treasureCollided: function (treasure, location, treasureValue) {
         this.gameState.playerCurrentValue += treasureValue;
-        this._addPoints(2);
+        this.addPoints(2);
         treasure.kill();
         this.gameState.treasure.splice(location, 1);
 
         this.playerNumber.setText(this.gameState.playerCurrentValue);
         this.scoreText.setText('Score: ' + this.gameState.score);
     },
-    _updateLevelUp: function () {
+
+    //level progression
+    updateLevelUp: function () {
         this.gameState.levelUp += 1;
         this.gameState.levelDown = 0;
 
@@ -464,7 +469,7 @@ GreaterThan.Game.prototype = {
     _checkChangeLevel: function(){
         if(this.gameState.levelUp == this.config.rightInARow && this.gameState.currentLevel < this.gameState.highestLevel){
             if(this.gameState.levelLocation == this.gameState.maxLevel){
-                this._addPoints(200);
+                this.addPoints(200);
                 this.gameState.maxLevel += 1;
             }
             this.gameState.levelLocation += 1;
@@ -474,15 +479,6 @@ GreaterThan.Game.prototype = {
             this._levelChangeScreen();
             this.gameState.levelLocation -= 1;
         }
-    },
-    _died: function () {
-        this.gameState.alive = false;
-        this.player.frame = 1;
-        this.game.time.events.add(Phaser.Timer.SECOND * this.config.coolDownTime, this._reBorn, this);
-    },
-    _reBorn: function () {
-        this.gameState.alive = true;
-        this.player.frame = 0;
     },
     _removeGreaterLesser: function (group) {
         for (var i = 0; i < group.length; ++i) {
@@ -545,10 +541,25 @@ GreaterThan.Game.prototype = {
             player[0].currentDepth -=this.config.arrowMove;
         }
     },
-    _addPoints: function(value){
+
+    //Feedback on game progression
+    addPoints: function(value){
         if(this.gameState.levelLocation == this.gameState.maxLevel){
             this.gameState.score += value;
         }
+    },
+    _textSolvedAnimation: function(value, sign){
+        this.solvedEquation = game.add.text(this.player.x, this.player.y,  this.gameState.playerCurrentValue + sign + value, {fill: "#24475b"});
+        game.add.tween(this.solvedEquation).to( { alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
+    },
+    _died: function () {
+        this.gameState.alive = false;
+        this.player.frame = 1;
+        this.game.time.events.add(Phaser.Timer.SECOND * this.config.coolDownTime, this._reBorn, this);
+    },
+    _reBorn: function () {
+        this.gameState.alive = true;
+        this.player.frame = 0;
     },
 
 };
