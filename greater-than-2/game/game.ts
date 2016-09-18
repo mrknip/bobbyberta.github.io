@@ -29,7 +29,7 @@ GreaterThan.Game.prototype = {
         this.addPlayer();
         this.addUI();
         //addTimer - minutes and seconds
-        this.addTimer(1, 30);
+        this.addTimer(3, 00);
     },
 
 
@@ -524,7 +524,6 @@ GreaterThan.Game.prototype = {
         this.gameState.treasure.splice(location, 1);
 
         this.playerNumber.setText(this.gameState.playerCurrentValue);
-        this.scoreText.setText('Score: ' + this.gameState.score);
     },
 
     //level progression
@@ -622,9 +621,11 @@ GreaterThan.Game.prototype = {
 
     //Feedback on game progression
     addPoints: function (value) {
-        if (this.gameState.levelLocation == this.gameState.maxLevel) {
-            this.gameState.score += value;
-        }
+        this.gameState.score += value;
+        this.scoreText.setText('Score: ' + this.gameState.score);
+        // if (this.gameState.levelLocation == this.gameState.maxLevel) {
+        //     this.gameState.score += value;
+        // }
     },
     _wrongAnswer: function (entity) {
         this._animateFishEscape(entity);
@@ -642,6 +643,7 @@ GreaterThan.Game.prototype = {
 
         this.minValue = min;
         this.maxValue = max;
+        this._addEntityPoints();
         this._textSolvedAnimation(value, symbol);
         //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
         this._createAmountOfEntities(groupOfObjects, 1, image, min, max, value);
@@ -661,6 +663,17 @@ GreaterThan.Game.prototype = {
         this.gameState.alive = true;
         this.player.frame = 0;
     },
+
+    _addEntityPoints(){
+        var currentLevel =  this.gameState.currentLevel - this.gameState.lowestLevel
+        if(currentLevel >= 6){
+            this.addPoints(15);
+        }else if(currentLevel >=3){
+            this.addPoints(10);
+        }else{
+            this.addPoints(5);
+        }
+    }
 
 
 };
