@@ -27,42 +27,48 @@ player = [
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 3,
+                highestLevel: 8,
                 lowestLevel: 0,
             },
             {
                 name: '< Positive Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 7,
-                lowestLevel: 4,
+                highestLevel: 17,
+                lowestLevel: 9,
             },
             {
                 name: '< and > Positive Integer',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 11,
-                lowestLevel: 8,
+                highestLevel: 26,
+                lowestLevel: 18,
             },
             {
                 name: '> Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 35,
+                lowestLevel: 27,
             },
             {
                 name: '< Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 44,
+                lowestLevel: 36,
             },
             {
                 name: '< and > Integer',
-                locked: true,
+                locked: false,
                 medal: 'none',
-                score: 0
+                score: 0,
+                highestLevel: 53,
+                lowestLevel: 45,
             }
         ]
     },
@@ -72,9 +78,10 @@ levels = [
     {
         levelName: 'Stage 1:1',
         playerValue: 5,
+        equalTo: false,
         greater: [
             {
-                amount: 18,
+                amount: 15,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -103,9 +110,10 @@ levels = [
     {
         levelName: 'Stage 1:2',
         playerValue: 10,
+        equalTo: false,
         greater: [
             {
-                amount: 18,
+                amount: 15,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -133,12 +141,13 @@ levels = [
     },
     {
         levelName: 'Stage 1:3',
-        playerValue: 15,
+        playerValue: 10,
+        equalTo: true,
         greater: [
             {
-                amount: 18,
+                amount: 15,
                 minValue: 0,
-                maxValue: 30,
+                maxValue: 20,
                 proportionAbove: 0.3,
                 proportionEqual: 0,
                 proportionBelow: 0.7,
@@ -164,12 +173,13 @@ levels = [
     },
     {
         levelName: 'Stage 1:4',
-        playerValue: 20,
+        playerValue: 10,
+        equalTo: false,
         greater: [
             {
-                amount: 18,
+                amount: 15,
                 minValue: 0,
-                maxValue: 50,
+                maxValue: 20,
                 proportionAbove: 0.8,
                 proportionEqual: 0.2,
                 proportionBelow: 0,
@@ -204,8 +214,265 @@ levels = [
         ]
     },
     {
+        levelName: 'Stage 1:5',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:6',
+        playerValue: 15,
+        equalTo: true,
+        greater: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:7',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 18,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:8',
+        playerValue: 20,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 1:9',
+        playerValue: 20,
+        equalTo: true,
+        greater: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
         levelName: 'Stage 2:1',
         playerValue: 5,
+        equalTo: false,
         greater: [
             {
                 amount: 0,
@@ -218,7 +485,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 12,
+                amount: 10,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.7,
@@ -237,11 +504,12 @@ levels = [
     {
         levelName: 'Stage 2:2',
         playerValue: 10,
+        equalTo: false,
         greater: [
             {
                 amount: 0,
                 minValue: 0,
-                maxValue: 20,
+                maxValue: 15,
                 proportionAbove: 0.3,
                 proportionEqual: 0,
                 proportionBelow: 0.7,
@@ -249,40 +517,9 @@ levels = [
         ],
         lesser: [
             {
-                amount: 12,
+                amount: 15,
                 minValue: 0,
-                maxValue: 20,
-                proportionAbove: 0.7,
-                proportionEqual: 0,
-                proportionBelow: 0.1,
-            }
-        ],
-        treasure: [
-            {
-                text: '+0',
-                value: 0,
-                amount: 10,
-            },
-        ]
-    },
-    {
-        levelName: 'Stage 2:3',
-        playerValue: 15,
-        greater: [
-            {
-                amount: 0,
-                minValue: 0,
-                maxValue: 30,
-                proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
-            }
-        ],
-        lesser: [
-            {
-                amount: 18,
-                minValue: 0,
-                maxValue: 30,
+                maxValue: 15,
                 proportionAbove: 0.7,
                 proportionEqual: 0,
                 proportionBelow: 0.3,
@@ -297,13 +534,46 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:4',
-        playerValue: 20,
+        levelName: 'Stage 2:3',
+        playerValue: 10,
+        equalTo: true,
         greater: [
             {
                 amount: 0,
                 minValue: 0,
-                maxValue: 50,
+                maxValue: 20,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:4',
+        playerValue: 10,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 20,
                 proportionAbove: 0.8,
                 proportionEqual: 0.2,
                 proportionBelow: 0,
@@ -311,7 +581,49 @@ levels = [
         ],
         lesser: [
             {
-                amount: 18,
+                amount: 15,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:5',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -338,26 +650,241 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:1',
-        playerValue: 5,
+        levelName: 'Stage 2:6',
+        playerValue: 15,
+        equalTo: true,
         greater: [
             {
-                amount: 6,
+                amount: 0,
                 minValue: 0,
-                maxValue: 10,
-                proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                maxValue: 30,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
             }
         ],
         lesser: [
             {
-                amount: 6,
+                amount: 15,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:7',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:8',
+        playerValue: 20,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 2:9',
+        playerValue: 20,
+        equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: 'Stage 3:1',
+        playerValue: 5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
                 minValue: 0,
                 maxValue: 10,
-                proportionAbove: 0.7,
+                proportionAbove: 0.5,
                 proportionEqual: 0,
-                proportionBelow: 0.3,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -371,24 +898,25 @@ levels = [
     {
         levelName: 'Stage 3:2',
         playerValue: 10,
+        equalTo: false,
         greater: [
             {
-                amount: 6,
+                amount: 7,
                 minValue: 0,
                 maxValue: 20,
-                proportionAbove: 0.3,
+                proportionAbove: 0.5,
                 proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionBelow: 0.5,
             }
         ],
         lesser: [
             {
-                amount: 6,
+                amount: 7,
                 minValue: 0,
                 maxValue: 20,
-                proportionAbove: 0.7,
+                proportionAbove: 0.5,
                 proportionEqual: 0,
-                proportionBelow: 0.1,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -401,12 +929,343 @@ levels = [
     },
     {
         levelName: 'Stage 3:3',
-        playerValue: 15,
+        playerValue: 10,
+        equalTo: true,
         greater: [
             {
-                amount: 9,
+                amount: 7,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:4',
+        playerValue: 10,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:5',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
                 minValue: 0,
                 maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:6',
+        playerValue: 15,
+        equalTo: true,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:7',
+        playerValue: 15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0,
+                proportionEqual: 0.5,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:8',
+        playerValue: 20,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.5,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 3:9',
+        playerValue: 20,
+        equalTo: true,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.5,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: 'Stage 4:1',
+        playerValue: 5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 10,
                 proportionAbove: 0.3,
                 proportionEqual: 0,
                 proportionBelow: 0.7,
@@ -414,9 +1273,403 @@ levels = [
         ],
         lesser: [
             {
-                amount: 9,
+                amount: 0,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:2',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:3',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
                 minValue: 0,
                 maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:4',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:5',
+        playerValue: -5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:6',
+        playerValue: -5,
+        equalTo: true,
+        greater: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 5,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 3,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:7',
+        playerValue: -5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:8',
+        playerValue: -10,
+        equalTo: false,
+        greater: [
+            {
+                amount: 15,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 4:9',
+        playerValue: -10,
+        equalTo: true,
+        greater: [
+            {
+                amount: 15,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: 'Stage 5:1',
+        playerValue: 5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 10,
+                minValue: 0,
+                maxValue: 10,
                 proportionAbove: 0.7,
                 proportionEqual: 0,
                 proportionBelow: 0.3,
@@ -431,13 +1684,78 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:4',
-        playerValue: 20,
+        levelName: 'Stage 5:2',
+        playerValue: 0,
+        equalTo: false,
         greater: [
             {
-                amount: 9,
+                amount: 0,
                 minValue: 0,
-                maxValue: 50,
+                maxValue: 15,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.7,
+                proportionEqual: 0,
+                proportionBelow: 0.3,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 5:3',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.3,
+                proportionEqual: 0,
+                proportionBelow: 0.7,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 5:4',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: -10,
+                maxValue: 10,
                 proportionAbove: 0.8,
                 proportionEqual: 0.2,
                 proportionBelow: 0,
@@ -445,9 +1763,9 @@ levels = [
         ],
         lesser: [
             {
-                amount: 9,
-                minValue: 0,
-                maxValue: 30,
+                amount: 15,
+                minValue: -10,
+                maxValue: 10,
                 proportionAbove: 0,
                 proportionEqual: 0.2,
                 proportionBelow: 0.8,
@@ -457,34 +1775,669 @@ levels = [
             {
                 text: '-1',
                 value: -1,
-                amount: 3,
+                amount: 5,
             },
             {
                 text: '-2',
                 value: -2,
-                amount: 1,
+                amount: 3,
             },
             {
                 text: '-3',
                 value: -3,
-                amount: 1,
+                amount: 3,
             },
+        ]
+    },
+    {
+        levelName: 'Stage 5:5',
+        playerValue: -5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 5:6',
+        playerValue: -5,
+        equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 5:7',
+        playerValue: -15,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
             {
                 text: '+1',
                 value: 1,
-                amount: 3,
+                amount: 1,
             },
             {
                 text: '+2',
                 value: 2,
-                amount: 1,
+                amount: 2,
             },
             {
                 text: '+3',
                 value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
                 amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
             },
         ]
     },
+    {
+        levelName: 'Stage 5:8',
+        playerValue: -10,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 5:9',
+        playerValue: -10,
+        equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: 'Stage 6:1',
+        playerValue: 5,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:2',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:3',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 7,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+0',
+                value: 0,
+                amount: 10,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:4',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: 0,
+                maxValue: 20,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -10,
+                maxValue: 10,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:5',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 15,
+                minValue: 0,
+                maxValue: 30,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:6',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 7,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '-1',
+                value: -1,
+                amount: 5,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 3,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:7',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -15,
+                maxValue: 15,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:8',
+        playerValue: 0,
+        equalTo: false,
+        greater: [
+            {
+                amount: 7,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: 'Stage 6:9',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 7,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        lesser: [
+            {
+                amount: 7,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.5,
+                proportionEqual: 0,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
 ];
 

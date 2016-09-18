@@ -8,7 +8,7 @@ GreaterThan.Game.prototype = {
         worldSizeY: 2000,
         coolDownTime: 1,
         arrowMove: 50,
-        rightInARow: 8,
+        rightInARow: 6,
         wrongInARow: 3,
         unlockLevel: 600,
     },
@@ -24,7 +24,7 @@ GreaterThan.Game.prototype = {
 
         this.addWorld();
         this.addTreasure();
-        this.addGreaterLesserEntities();
+        this.setImageOfEntities();
         this.addPlayer();
         this.addUI();
         //addTimer - minutes and seconds
@@ -60,6 +60,7 @@ GreaterThan.Game.prototype = {
             levelName: levels[levelId].levelName,
             worldSizeX: this.config.worldSizeX,
             worldSizeY: this.config.worldSizeY,
+            equalToLevel: levels[levelId].equalTo,
             //Stage Data
             depth: player[0].currentDepth, //The height of the arrow, indicating depth/level progression
             currentStage: player[0].currentStage,
@@ -221,10 +222,20 @@ GreaterThan.Game.prototype = {
     },
 
 
-    addGreaterLesserEntities: function () {
+    setImageOfEntities: function(){
+        if(this.gameState.equalToLevel == true){
+            var greaterImage = 'greaterEqual';
+            var lesserImage = 'lesserEqual';
+        }else{
+            var greaterImage = 'greater';
+            var lesserImage = 'lesser';
+        }
+        this.addGreaterLesserEntities(greaterImage, lesserImage);
+    },
+    addGreaterLesserEntities: function (greaterImage, lesserImage) {
         // _createGreater(groupOfObjects, amount, image)
-        this._createGreater(this.gameState.greater, this.gameState.greaterAmount, 'greater');
-        this._createLesser(this.gameState.lesser, this.gameState.lesserAmount, 'lesser');
+        this._createGreater(this.gameState.greater, this.gameState.greaterAmount, greaterImage);
+        this._createLesser(this.gameState.lesser, this.gameState.lesserAmount, lesserImage);
     },
     _createGreater(groupOfObjects, amount, image){
         //this.createEntityGroup(groupOfObjects, amount, image, minValue, maxValue, percentage)
@@ -349,9 +360,7 @@ GreaterThan.Game.prototype = {
                         greater,
                         location,
                         currentGreater,
-                        currentGreater.value,
-                        currentGreater.text,
-                        'greater'
+                        currentGreater.value
                     );
                 },
                 null,
@@ -373,9 +382,7 @@ GreaterThan.Game.prototype = {
                         lesser,
                         location,
                         currentLesser,
-                        currentLesser.value,
-                        currentLesser.text,
-                        'lesser'
+                        currentLesser.value
                     );
                 },
                 null,
@@ -406,43 +413,66 @@ GreaterThan.Game.prototype = {
         }
 
     },
-    _greaterCollided: function (greater, location, greaterGroup, greaterValue, greaterText, image) {
-        if (this.gameState.playerCurrentValue <= greaterValue) {
-            this._died();
-            this._updateLevelDown();
-        }
-        else {
+    _greaterCollided: function (greater, location, greaterGroup, greaterValue) {
+        if(this.gameState.equalToLevel == true && this.gameState.playerCurrentValue < greaterValue){
+            this._wrongAnswer();
+        }else if(this.gameState.equalToLevel == false && this.gameState.playerCurrentValue <= greaterValue){
+            this._wrongAnswer();
+        }else{
+
+            //check if equal to world
+            if(this.gameState.equalToLevel == true){
+                var greaterImage = 'greaterEqual';
+                var greaterSymbol = '≥';
+                var maxValue = this.gameState.playerCurrentValue;
+            }else{
+                var greaterImage = 'greater';
+                var greaterSymbol = '>';
+                var maxValue = this.gameState.playerCurrentValue - 1;
+            }
+
             greater.kill();
             this.gameState.greater.splice(location, 1);
 
-            this.minValue = this.gameState.greaterMinValue;
-            this.maxValue = this.gameState.playerCurrentValue;
-            //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
-            this._textSolvedAnimation(greaterValue, '>');
-            this._createAmountOfEntities(this.gameState.greater, 1, image, this.minValue, this.maxValue, greaterValue);
-
-            this.updateLevelUp();
+            //_rightAnswer: function(min, max, value, symbol, groupOfObjects, amount, image){
+            this._rightAnswer(this.gameState.greaterMinValue, maxValue, greaterValue, greaterSymbol, this.gameState.greater, 1, greaterImage);
         }
     },
-    _lesserCollided: function (lesser, location, lesserGroup, lesserValue, lesserText, image) {
+    _lesserCollided: function (lesser, location, lesserGroup, lesserValue) {
+        if(this.gameState.equalToLevel == true && this.gameState.playerCurrentValue > lesserValue){
+            this._wrongAnswer();
+        }else if(this.gameState.equalToLevel == false && this.gameState.playerCurrentValue >= lesserValue) {
+            this._wrongAnswer();
+        }else{
 
-        if (this.gameState.playerCurrentValue >= lesserValue) {
-            this._died();
-            this._updateLevelDown();
-        }
-        else {
+            //check if equal to world
+            if(this.gameState.equalToLevel == true){
+                var lesserImage = 'lesserEqual';
+                var lesserSymbol = '≤';
+                var minValue = this.gameState.playerCurrentValue;
+            }else{
+                var lesserImage = 'lesser';
+                var lesserSymbol = '<';
+                var minValue = this.gameState.playerCurrentValue + 1;
+            }
+
             lesser.kill();
             this.gameState.lesser.splice(location, 1);
 
-            this.minValue = this.gameState.playerCurrentValue;
-            this.maxValue = this.gameState.lesserMaxValue;
-            this._textSolvedAnimation(lesserValue, '<');
-            //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
-            this._createAmountOfEntities(this.gameState.lesser, 1, image, this.minValue, this.maxValue, lesserValue);
-
-            this.updateLevelUp();
+            //_rightAnswer: function(min, max, value, symbol, groupOfObjects, amount, image){
+            this._rightAnswer(minValue, this.gameState.lesserMaxValue, lesserValue, lesserSymbol, this.gameState.lesser, 1, lesserImage);
         }
     },
+    _rightAnswer: function( min, max, value, symbol, groupOfObjects, amount, image){
+
+        this.minValue = min;
+        this.maxValue = max;
+        this._textSolvedAnimation(value, symbol);
+        //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
+        this._createAmountOfEntities(groupOfObjects, 1, image, min, max, value);
+
+        this.updateLevelUp();
+},
     _treasureCollided: function (treasure, location, treasureValue) {
         this.gameState.playerCurrentValue += treasureValue;
         this.addPoints(2);
@@ -504,7 +534,7 @@ GreaterThan.Game.prototype = {
 
         //before generating new context
         this.addGameInformation();
-        this.addGreaterLesserEntities();
+        this.setImageOfEntities();
         this.addTreasure();
         this._setNewLevelText();
     },
@@ -547,6 +577,10 @@ GreaterThan.Game.prototype = {
         if(this.gameState.levelLocation == this.gameState.maxLevel){
             this.gameState.score += value;
         }
+    },
+    _wrongAnswer: function(){
+        this._died();
+        this._updateLevelDown();
     },
     _textSolvedAnimation: function(value, sign){
         this.solvedEquation = game.add.text(this.player.x, this.player.y,  this.gameState.playerCurrentValue + sign + value, {fill: "#24475b"});

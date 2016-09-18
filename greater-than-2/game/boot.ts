@@ -44,7 +44,9 @@ GreaterThan.Boot.prototype = {
         //Game Elements
         game.load.spritesheet('you', 'assets/player.png', 75, 75, 4);
         game.load.image('greater', 'assets/enemyGreater.png');
+        game.load.image('greaterEqual', 'assets/enemyGreaterEqual.png');
         game.load.image('lesser', 'assets/enemyLess.png');
+        game.load.image('lesserEqual', 'assets/enemyLessEqual.png');
         game.load.image('treasure', 'assets/collectable.png');
         game.load.image('clam', 'assets/clam.png');
 
