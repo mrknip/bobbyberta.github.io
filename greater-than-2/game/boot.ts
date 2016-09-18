@@ -27,6 +27,7 @@ GreaterThan.Boot.prototype = {
         game.load.image('locked', 'assets/levelLocked.png');
         game.load.spritesheet('unlocked', 'assets/levelPlay.png');
         game.load.image('home', 'assets/homeButton.png');
+        game.load.image('pause', 'assets/pause.png');
 
         //Game Backgrounds
         game.load.image('bg', 'assets/background.png');
@@ -40,6 +41,7 @@ GreaterThan.Boot.prototype = {
         game.load.image('title', 'assets/levelNameUI.png');
         game.load.image('depth', 'assets/depth.png');
         game.load.image('arrow', 'assets/arrow.png');
+        game.load.image('deepestLine', 'assets/deepestLine.png');
 
         //Game Elements
         game.load.spritesheet('you', 'assets/player.png', 75, 75, 4);

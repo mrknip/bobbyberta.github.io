@@ -15,12 +15,14 @@ player = [
         endLevel: 0,
         levelLocation: 0,
         levelMax: 0,
+        maxLevelLine: 155,
         currentDepth: 100,
         currentScore: 0,
         totalScore: 0,
-        bronze: 600,
+        bronze: 400,
         silver: 800,
-        gold: 1000,
+        gold: 1200,
+        pauseEnabled: false,
         stageData: [
             {
                 name: '> Positive Integers',
@@ -149,8 +151,8 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         lesser: [
@@ -159,8 +161,8 @@ levels = [
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -543,8 +545,8 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         lesser: [
@@ -553,8 +555,8 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -936,8 +938,8 @@ levels = [
                 amount: 7,
                 minValue: 0,
                 maxValue: 20,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
+                proportionAbove: 0.3,
+                proportionEqual: 0.2,
                 proportionBelow: 0.5,
             }
         ],
@@ -947,8 +949,8 @@ levels = [
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionEqual: 0.2,
+                proportionBelow: 0.3,
             }
         ],
         treasure: [
@@ -1331,8 +1333,8 @@ levels = [
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         lesser: [
@@ -1341,8 +1343,8 @@ levels = [
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -1725,8 +1727,8 @@ levels = [
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         lesser: [
@@ -1735,8 +1737,8 @@ levels = [
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
-                proportionEqual: 0,
-                proportionBelow: 0.7,
+                proportionEqual: 0.2,
+                proportionBelow: 0.5,
             }
         ],
         treasure: [
@@ -2118,9 +2120,9 @@ levels = [
                 amount: 7,
                 minValue: -10,
                 maxValue: 10,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         lesser: [
@@ -2128,9 +2130,9 @@ levels = [
                 amount: 7,
                 minValue: -10,
                 maxValue: 10,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         treasure: [
@@ -2234,9 +2236,9 @@ levels = [
                 amount: 7,
                 minValue: -15,
                 maxValue: 15,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         lesser: [
@@ -2244,9 +2246,9 @@ levels = [
                 amount: 7,
                 minValue: -15,
                 maxValue: 15,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         treasure: [
@@ -2390,9 +2392,9 @@ levels = [
                 amount: 7,
                 minValue: -25,
                 maxValue: 25,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         lesser: [
@@ -2400,9 +2402,9 @@ levels = [
                 amount: 7,
                 minValue: -25,
                 maxValue: 25,
-                proportionAbove: 0.5,
-                proportionEqual: 0,
-                proportionBelow: 0.5,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
             }
         ],
         treasure: [

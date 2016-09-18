@@ -61,6 +61,7 @@ GreaterThan.Menu.prototype = {
         player[0].currentScore = 0;
         player[0].levelLocation = 0;
         player[0].maxLevel = 0;
+        player[0].maxLevelLine = 155;
         player[0].endLevel = player[0].stageData[stage].highestLevel;
         player[0].startLevel = player[0].stageData[stage].lowestLevel;
     },
