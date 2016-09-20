@@ -4,14 +4,24 @@ GreaterThan.Game = function (game) {
 GreaterThan.Game.prototype = {
     config: {
         viewSizeX: 1200,
-        worldSizeX: 2000,
-        worldSizeY: 2000,
+        worldSizeX: 2500,
+        worldSizeY: 2500,
         coolDownTime: 0.5,
         arrowMove: 75,
         lineMove: 75,
         rightInARow: 6,
         wrongInARow: 3,
         unlockLevel: 600,
+    },
+
+    testing:{
+        treasure: 0,
+        rightAnswers: 0,
+        wrongAnswers: 0,
+        pointsAtBronze: 0,
+        pointsAtSilver: 0,
+        pointsAtGold: 0,
+        levelUpBoonus: 0,
     },
 
     gameState: {},
@@ -29,7 +39,7 @@ GreaterThan.Game.prototype = {
         this.addPlayer();
         this.addUI();
         //addTimer - minutes and seconds
-        this.addTimer(3, 00);
+        this.addTimer(2, 30);
     },
 
 
@@ -71,7 +81,7 @@ GreaterThan.Game.prototype = {
             lowestLevel: player[0].startLevel,
             highestLevel: player[0].endLevel,
             score: player[0].currentScore,
-            unlockNextLevel: player[0].stageData[stageId].locked,
+            //unlockNextLevel: player[0].stageData[stageId].locked,
             //criteria for unlocking the next level
             toNextLevel: this.config.unlockLevel,
             //Player information
@@ -108,7 +118,8 @@ GreaterThan.Game.prototype = {
 
     addWorld: function () {
         this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
-        this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX / 1.2, this.gameState.worldSizeY / 1.2);
+        this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
+        // /1.2
 
         this._addBackgroundColour();
 
@@ -163,6 +174,7 @@ GreaterThan.Game.prototype = {
     },
     _endTimer: function () {
         player[0].currentScore = this.gameState.score;
+        this.addTestingInformation();
         this.timer.stop();
         this.game.state.start("gameOver", true);
     },
@@ -223,18 +235,20 @@ GreaterThan.Game.prototype = {
 
     addPlayer: function () {
 
-        this.player = this.add.sprite(1000, 1000, 'you');
+        this.player = this.add.sprite(this.config.worldSizeX/2, this.config.worldSizeY/2, 'you');
 
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.player.body.setSize(75, 75, 0, 0);
         this.player.anchor.setTo(0.5, 0.5);
-        this.player.body.collideWorldBounds = true;
-        this.player.body.bounce.x = 1;
-        this.player.body.bounce.y = 1;
-        this.player.body.minBounceVelocity = 0;
+
+        // this.player.body.collideWorldBounds = true;
+        // this.player.body.bounce.x = 1;
+        // this.player.body.bounce.y = 1;
+        // this.player.body.minBounceVelocity = 0;
 
         this.game.camera.follow(this.player);
+        this.game.camera.bounds = null;
 
         //Text on Player - Showing the players value
         this.playerNumber = this.make.text(-10, -15, this.gameState.playerCurrentValue, {fill: '#000000'});
@@ -243,6 +257,8 @@ GreaterThan.Game.prototype = {
     _playerMovement: function (speed) {
         this._playerMovementMouse(speed);
         this._playerMovementArrows(speed);
+
+        game.world.wrap(this.player);
     },
     _playerMovementMouse: function (speed) {
         if (this.game.input.activePointer.isDown) {
@@ -328,7 +344,7 @@ GreaterThan.Game.prototype = {
         value = game.rnd.integerInRange(minValue, maxValue);
         this.object.value = value;
 
-        this._addGroupPhysics(this.objectGroup);
+        //this._addGroupPhysics(this.objectGroup);
         this._addSpeed(this.object);
         this._addText(this.object, value);
 
@@ -406,6 +422,8 @@ GreaterThan.Game.prototype = {
             var currentGreater = this.gameState.greater[i];
             var location = i;
 
+            game.world.wrap(currentGreater);
+
             this.game.physics.arcade.overlap(
                 this.player,
                 currentGreater,
@@ -427,6 +445,8 @@ GreaterThan.Game.prototype = {
         for (var i = 0; i < this.gameState.lesser.length; ++i) {
             var currentLesser = this.gameState.lesser[i];
             var location = i;
+
+            game.world.wrap(currentLesser);
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -450,6 +470,8 @@ GreaterThan.Game.prototype = {
         for (var i = 0; i < this.gameState.treasure.length; ++i) {
             var currentTreasure = this.gameState.treasure[i];
             var location = i;
+
+            game.world.wrap(currentTreasure);
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -520,6 +542,7 @@ GreaterThan.Game.prototype = {
     _treasureCollided: function (treasure, location, treasureValue) {
         this.gameState.playerCurrentValue += treasureValue;
         this.addPoints(2);
+        this.testing.treasure +=1;
         treasure.kill();
         this.gameState.treasure.splice(location, 1);
 
@@ -542,7 +565,8 @@ GreaterThan.Game.prototype = {
     _checkChangeLevel: function () {
         if (this.gameState.levelUp == this.config.rightInARow && this.gameState.currentLevel < this.gameState.highestLevel) {
             if (this.gameState.levelLocation == this.gameState.maxLevel) {
-                this.addPoints(200);
+                //this.addPoints(200);
+                //this.testing.levelUpBoonus +=200;
                 this.gameState.maxLevel += 1;
                 this.gameState.maxLevelLine += this.config.lineMove;
             }
@@ -570,6 +594,8 @@ GreaterThan.Game.prototype = {
             this._removeGreaterLesser(this.gameState.treasure);
 
             game.time.events.add(Phaser.Timer.SECOND * 1, this._nextLevel, this)
+
+            this.addTestingInformation();
         }
     },
     _nextLevel: function () {
@@ -600,10 +626,14 @@ GreaterThan.Game.prototype = {
         player[0].maxLevel = this.gameState.maxLevel;
         player[0].maxLevelLine = this.gameState.maxLevelLine;
 
-        if (this.gameState.score >= this.gameState.toNextLevel) {
-            //Unlock next stage
-            var nextStage = this.gameState.currentStage + 1;
-            player[0].stageData[nextStage].locked = false;
+        if(player[0].currentStage == 5){
+        } else {
+
+            if (this.gameState.score >= this.gameState.toNextLevel) {
+                //Unlock next stage
+                var nextStage = this.gameState.currentStage + 1;
+                player[0].stageData[nextStage].locked = false;
+            }
         }
     },
     _checkMoveUpDown: function () {
@@ -631,6 +661,8 @@ GreaterThan.Game.prototype = {
         this._animateFishEscape(entity);
         this._died();
         this._updateLevelDown();
+
+        this.testing.wrongAnswers +=1;
     },
     _animateFishEscape: function(entity){
         this.fade = game.add.tween(entity).to({alpha: 0.5}, 1, Phaser.Easing.Linear.None, true);
@@ -649,6 +681,8 @@ GreaterThan.Game.prototype = {
         this._createAmountOfEntities(groupOfObjects, 1, image, min, max, value);
 
         this.updateLevelUp();
+
+        this.testing.rightAnswers +=1;
     },
     _textSolvedAnimation: function (value, sign) {
         this.solvedEquation = game.add.text(this.player.x, this.player.y, this.gameState.playerCurrentValue + sign + value, {fill: "#24475b"});
@@ -663,17 +697,31 @@ GreaterThan.Game.prototype = {
         this.gameState.alive = true;
         this.player.frame = 0;
     },
-
     _addEntityPoints(){
         var currentLevel =  this.gameState.currentLevel - this.gameState.lowestLevel
         if(currentLevel >= 6){
-            this.addPoints(15);
+            this.addPoints(100);
+            this.testing.pointsAtGold +=100;
+
         }else if(currentLevel >=3){
-            this.addPoints(10);
+            this.addPoints(50);
+            this.testing.pointsAtSilver += 50;
         }else{
-            this.addPoints(5);
+            this.addPoints(10);
+            this.testing.pointsAtBronze +=10;
         }
-    }
+    },
 
+    addTestingInformation(){
+        var totalEaten = this.testing.rightAnswers +this.testing.wrongAnswers;
+        testing[0].totalEaten = totalEaten;
+        testing[0].treasure = this.testing.treasure;
+        testing[0].rightAnswers = this.testing.rightAnswers;
+        testing[0].wrongAnswers = this.testing.wrongAnswers;
+        testing[0].pointsAtBronze = this.testing.pointsAtBronze;
+        testing[0].pointsAtSilver = this.testing.pointsAtSilver;
+        testing[0].pointsAtGold = this.testing.pointsAtGold;
+        testing[0].levelUpBoonus = this.testing.levelUpBoonus;
 
+    },
 };

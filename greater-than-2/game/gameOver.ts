@@ -13,6 +13,7 @@ GreaterThan.gameOver.prototype = {
     create: function () {
         this._calculateHighScore();
         this.addGraphics();
+        this.showTestingData();
     },
 
     update: function () {},
@@ -61,8 +62,23 @@ GreaterThan.gameOver.prototype = {
 
         player[0].stageData[currentStage].medal = this.config.medal;
 
-    }
+    },
 
+    showTestingData: function(){
+        console.log('amount of right answers: ' + testing[0].rightAnswers);
+        console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
+        console.log('total Eaten: ' + testing[0].totalEaten);
+        console.log('points earned at Bronze: ' + testing[0].pointsAtBronze);
+        console.log('points earned at Silver: ' + testing[0].pointsAtSilver);
+        console.log('points earned at Gold: '   + testing[0].pointsAtGold);
+
+        var highestLevel = player[0].currentLevel - player[0].startLevel;
+
+        console.log('Highest Level: '   + highestLevel);
+        console.log('Treasure Eaten: '   + testing[0].treasure);
+        console.log('Level Up Bonus: '   + testing[0].levelUpBoonus);
+
+    }
 
 
 };
