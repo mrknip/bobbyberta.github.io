@@ -36,7 +36,7 @@ player = [
         bronze: 600,
         silver: 900,
         gold: 1200,
-        pauseEnabled: false,
+        pauseEnabled: true,
         stageData: [
             {
                 name: '> Positive Integers',
@@ -48,7 +48,7 @@ player = [
             },
             {
                 name: '< Positive Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
                 highestLevel: 17,
@@ -56,7 +56,7 @@ player = [
             },
             {
                 name: '< and > Positive Integer',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
                 highestLevel: 26,
@@ -64,7 +64,7 @@ player = [
             },
             {
                 name: '> Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
                 highestLevel: 35,
@@ -72,7 +72,7 @@ player = [
             },
             {
                 name: '< Integers',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
                 highestLevel: 44,
@@ -80,7 +80,7 @@ player = [
             },
             {
                 name: '< and > Integer',
-                locked: true,
+                locked: false,
                 medal: 'none',
                 score: 0,
                 highestLevel: 53,
