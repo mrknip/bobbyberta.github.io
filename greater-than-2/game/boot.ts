@@ -60,7 +60,8 @@ GreaterThan.Boot.prototype = {
         game.load.image('silver', 'assets/silver.png');
         game.load.image('gold', 'assets/gold.png');
         game.load.image('complete', 'assets/completedDepth.png');
-        game.load.image('play', 'assets3/playButton.png');
+        game.load.image('play', 'assets/playButton.png');
+        game.load.image('i', 'assets/information.png');
 
 
     },

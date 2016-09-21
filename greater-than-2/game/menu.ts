@@ -64,6 +64,7 @@ GreaterThan.Menu.prototype = {
         player[0].maxLevelLine = 155;
         player[0].endLevel = player[0].stageData[stage].highestLevel;
         player[0].startLevel = player[0].stageData[stage].lowestLevel;
+
     },
     _startLevel: function (stage, level) {
         this._setGameData(stage, level);

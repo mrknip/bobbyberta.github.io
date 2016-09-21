@@ -8,6 +8,7 @@ GreaterThan.gameOver.prototype = {
         bronze: player[0].bronze,
         silver: player[0].silver,
         gold: player[0].gold,
+        clicked: false,
     },
 
     create: function () {
@@ -28,6 +29,15 @@ GreaterThan.gameOver.prototype = {
         this.scoreText = this.make.text(5, 5, 'Score: ' + player[0].currentScore, {fill: '#24475b'});
         this.scoreBox.addChild(this.scoreText);
 
+        this.createInformationBox();
+        this.information = game.add.sprite(120, 680, 'i');
+        this.information.inputEnabled = true;
+        this.information.events.onInputDown.add(
+            function () {
+                this._showInformation();
+            },
+            this);
+
         if(this.config.highScore == true){
             this.highScore = this.add.text(700, 400, 'HighScore!', {fill: '#24475b'});
         }
@@ -36,6 +46,7 @@ GreaterThan.gameOver.prototype = {
         }
     },
     _goHome: function(){
+
         this.game.state.start("menu", true);
     },
     _calculateHighScore: function(){
@@ -65,6 +76,7 @@ GreaterThan.gameOver.prototype = {
     },
 
     showTestingData: function(){
+        console.log('Stage ' + player[0].currentStage + ' report');
         console.log('amount of right answers: ' + testing[0].rightAnswers);
         console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
         console.log('total Eaten: ' + testing[0].totalEaten);
@@ -78,7 +90,54 @@ GreaterThan.gameOver.prototype = {
         console.log('Treasure Eaten: '   + testing[0].treasure);
         console.log('Level Up Bonus: '   + testing[0].levelUpBoonus);
 
-    }
+    },
+    createInformationBox: function(){
+        var levelNormalisation = player[0].currentLevel - player[0].startLevel;
+        var stage = player[0].currentStage + 1;
+        var highestLevel = levelNormalisation +1;
+
+        this.informBox = this.add.image(200, 150, 'box1');
+        this.textGroup = this.add.group();
+
+        var x = 260;
+        var y = 240;
+        this.height = 0;
+
+        this.title = this.make.text(440, 180, 'Stage ' + stage + ' Points Break Down:', {fill: '#6f9695'});
+        this.textGroup.add(this.title);
+
+        this._addInfomrationText(x, y, 'Amount of right answers: ', testing[0].rightAnswers);
+        this._addInfomrationText(x, y, 'Amount of wrong answers: ', testing[0].wrongAnswers);
+        this._addInfomrationText(x, y, 'Total Eaten: ', testing[0].totalEaten);
+        this._addInfomrationText(x, y, 'Points earned at Bronze: ', testing[0].pointsAtBronze);
+        this._addInfomrationText(x, y, 'Points earned at Silver: ', testing[0].pointsAtSilver);
+        this._addInfomrationText(x, y, 'Points earned at Gold: ', testing[0].pointsAtGold);
+        this._addInfomrationText(x, y, 'Highest Level Reached: ', highestLevel);
+        this._addInfomrationText(x, y, 'Bubbles Collected: ' , testing[0].treasure);
+        this._addInfomrationText(x, y, 'Level Up Bonus Points:  ' , testing[0].levelUpBoonus);
+
+        this.textGroup.visible = false;
+        this.informBox.visible = false;
+
+    },
+    _addInfomrationText: function(x, y, text, data ){
+        var line = y + this.height;
+        this.text = this.make.text(x, line, text + data, {fill: '#6f9695'} );
+        this.textGroup.add(this.text);
+        this.height +=40;
+
+    },
+    _showInformation: function(){
+        if(this.config.clicked == false){
+            this.informBox.visible = true;
+            this.textGroup.visible = true;
+            this.config.clicked = true;
+        }else{
+            this.informBox.visible = false;
+            this.textGroup.visible = false;
+            this.config.clicked = false;
+        }
+    },
 
 
 };

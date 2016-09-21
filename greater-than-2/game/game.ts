@@ -14,15 +14,7 @@ GreaterThan.Game.prototype = {
         unlockLevel: 600,
     },
 
-    testing:{
-        treasure: 0,
-        rightAnswers: 0,
-        wrongAnswers: 0,
-        pointsAtBronze: 0,
-        pointsAtSilver: 0,
-        pointsAtGold: 0,
-        levelUpBoonus: 0,
-    },
+    testingData: {},
 
     gameState: {},
 
@@ -33,6 +25,9 @@ GreaterThan.Game.prototype = {
 
         this.addGameInformation();
 
+
+        this.addTestingData();
+
         this.addWorld();
         this.addTreasure();
         this.checkImageOfEntities();
@@ -40,6 +35,9 @@ GreaterThan.Game.prototype = {
         this.addUI();
         //addTimer - minutes and seconds
         this.addTimer(2, 30);
+
+        //Testing Data
+        //this.showTestingData();
     },
 
 
@@ -116,6 +114,30 @@ GreaterThan.Game.prototype = {
 
     },
 
+    addTestingData: function () {
+
+        testing[0].totalEaten = 0;
+        testing[0].treasure = 0;
+        testing[0].rightAnswers = 0;
+        testing[0].wrongAnswers = 0;
+        testing[0].pointsAtBronze = 0;
+        testing[0].pointsAtSilver = 0;
+        testing[0].pointsAtGold = 0;
+        testing[0].levelUpBoonus = 0;
+
+
+        this.testing = {
+            treasure: testing[0].totalEaten,
+            rightAnswers: testing[0].rightAnswers,
+            wrongAnswers: testing[0].wrongAnswers,
+            pointsAtBronze: testing[0].pointsAtBronze,
+            pointsAtSilver: testing[0].pointsAtSilver,
+            pointsAtGold: testing[0].pointsAtGold,
+            levelUpBoonus: testing[0].levelUpBoonus,
+
+        }
+    },
+
     addWorld: function () {
         this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
@@ -127,36 +149,36 @@ GreaterThan.Game.prototype = {
         this.game.cursors = this.game.input.keyboard.createCursorKeys();
 
     },
-    _addBackgroundColour: function(){
+    _addBackgroundColour: function () {
         this._defineBackground();
         this.game.stage.backgroundColor = this.gameState.backgroundColour;
     },
-    _defineBackground: function(){
+    _defineBackground: function () {
         var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
-        if(currentLevel== 0 ){
+        if (currentLevel == 0) {
             this.gameState.backgroundColour = '#6f9695'
-        }else if(currentLevel == 1 ){
+        } else if (currentLevel == 1) {
             this.gameState.backgroundColour = '#56908E'
         }
-        else if(currentLevel == 2 ){
+        else if (currentLevel == 2) {
             this.gameState.backgroundColour = '#4D8B86'
         }
-        else if(currentLevel == 3 ){
+        else if (currentLevel == 3) {
             this.gameState.backgroundColour = '#418481'
         }
-        else if(currentLevel == 4 ){
+        else if (currentLevel == 4) {
             this.gameState.backgroundColour = '#377F7B'
         }
-        else if(currentLevel == 5 ){
+        else if (currentLevel == 5) {
             this.gameState.backgroundColour = '#327A76'
         }
-        else if(currentLevel == 6 ){
+        else if (currentLevel == 6) {
             this.gameState.backgroundColour = '#307571'
         }
-        else if(currentLevel == 7 ){
+        else if (currentLevel == 7) {
             this.gameState.backgroundColour = '#2E716C'
         }
-        else if(currentLevel == 8 ){
+        else if (currentLevel == 8) {
             this.gameState.backgroundColour = '#2C6C68'
         }
     },
@@ -207,7 +229,7 @@ GreaterThan.Game.prototype = {
         this.deepestDepth.scale.setTo(1.2, 1.5)
         this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
 
-        if(this.gameState.pauseEnabled == true){
+        if (this.gameState.pauseEnabled == true) {
             //Home button
             this.homeButton = game.add.button(40, 700, 'home', this._goHome);
             this._setUIPosition(this.homeButton, 1080, 700);
@@ -215,7 +237,7 @@ GreaterThan.Game.prototype = {
             //Pause button
             this.pauseButton = game.add.button(40, 700, 'pause', this._pause);
             this._setUIPosition(this.pauseButton, 1180, 700);
-        }else{
+        } else {
             //Home button
             this.homeButton = game.add.button(40, 700, 'home', this._goHome);
             this._setUIPosition(this.homeButton, 1180, 700);
@@ -229,13 +251,13 @@ GreaterThan.Game.prototype = {
     _goHome: function () {
         this.game.state.start("menu", true);
     },
-    _pause: function() {
+    _pause: function () {
         game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
     },
 
     addPlayer: function () {
 
-        this.player = this.add.sprite(this.config.worldSizeX/2, this.config.worldSizeY/2, 'you');
+        this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, 'you');
 
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
@@ -276,19 +298,19 @@ GreaterThan.Game.prototype = {
         }
     },
     _playerMovementArrows: function (speed) {
-            if (this.game.cursors.left.isDown) {
-                this.player.x -= speed / 80;
-            }
-            else if (this.game.cursors.right.isDown) {
-                this.player.x += speed / 80;
-            }
+        if (this.game.cursors.left.isDown) {
+            this.player.x -= speed / 80;
+        }
+        else if (this.game.cursors.right.isDown) {
+            this.player.x += speed / 80;
+        }
 
-            if (this.game.cursors.up.isDown) {
-                this.player.y -= speed / 80;
-            }
-            else if (this.game.cursors.down.isDown) {
-                this.player.y += speed / 80;
-            }
+        if (this.game.cursors.up.isDown) {
+            this.player.y -= speed / 80;
+        }
+        else if (this.game.cursors.down.isDown) {
+            this.player.y += speed / 80;
+        }
     },
 
 
@@ -542,7 +564,7 @@ GreaterThan.Game.prototype = {
     _treasureCollided: function (treasure, location, treasureValue) {
         this.gameState.playerCurrentValue += treasureValue;
         this.addPoints(2);
-        this.testing.treasure +=1;
+        this.testing.treasure += 1;
         treasure.kill();
         this.gameState.treasure.splice(location, 1);
 
@@ -593,9 +615,10 @@ GreaterThan.Game.prototype = {
             this._removeGreaterLesser(this.gameState.lesser);
             this._removeGreaterLesser(this.gameState.treasure);
 
-            game.time.events.add(Phaser.Timer.SECOND * 1, this._nextLevel, this)
+            game.time.events.add(Phaser.Timer.SECOND * 1, this._nextLevel, this);
 
             this.addTestingInformation();
+            //this.showTestingData();
         }
     },
     _nextLevel: function () {
@@ -626,7 +649,7 @@ GreaterThan.Game.prototype = {
         player[0].maxLevel = this.gameState.maxLevel;
         player[0].maxLevelLine = this.gameState.maxLevelLine;
 
-        if(player[0].currentStage == 5){
+        if (player[0].currentStage == 5) {
         } else {
 
             if (this.gameState.score >= this.gameState.toNextLevel) {
@@ -662,9 +685,9 @@ GreaterThan.Game.prototype = {
         this._died();
         this._updateLevelDown();
 
-        this.testing.wrongAnswers +=1;
+        this.testing.wrongAnswers += 1;
     },
-    _animateFishEscape: function(entity){
+    _animateFishEscape: function (entity) {
         this.fade = game.add.tween(entity).to({alpha: 0.5}, 1, Phaser.Easing.Linear.None, true);
         this.fade.onComplete.add(this._unfade, this);
     },
@@ -682,7 +705,7 @@ GreaterThan.Game.prototype = {
 
         this.updateLevelUp();
 
-        this.testing.rightAnswers +=1;
+        this.testing.rightAnswers += 1;
     },
     _textSolvedAnimation: function (value, sign) {
         this.solvedEquation = game.add.text(this.player.x, this.player.y, this.gameState.playerCurrentValue + sign + value, {fill: "#24475b"});
@@ -698,22 +721,23 @@ GreaterThan.Game.prototype = {
         this.player.frame = 0;
     },
     _addEntityPoints(){
-        var currentLevel =  this.gameState.currentLevel - this.gameState.lowestLevel
-        if(currentLevel >= 6){
+        var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
+        if (currentLevel >= 6) {
             this.addPoints(100);
-            this.testing.pointsAtGold +=100;
+            this.testing.pointsAtGold += 100;
 
-        }else if(currentLevel >=3){
+        } else if (currentLevel >= 3) {
             this.addPoints(50);
             this.testing.pointsAtSilver += 50;
-        }else{
+        } else {
             this.addPoints(10);
-            this.testing.pointsAtBronze +=10;
+            this.testing.pointsAtBronze += 10;
         }
     },
 
-    addTestingInformation(){
-        var totalEaten = this.testing.rightAnswers +this.testing.wrongAnswers;
+    addTestingInformation: function () {
+
+        var totalEaten = this.testing.rightAnswers + this.testing.wrongAnswers;
         testing[0].totalEaten = totalEaten;
         testing[0].treasure = this.testing.treasure;
         testing[0].rightAnswers = this.testing.rightAnswers;
@@ -724,4 +748,21 @@ GreaterThan.Game.prototype = {
         testing[0].levelUpBoonus = this.testing.levelUpBoonus;
 
     },
+    showTestingData: function () {
+
+        console.log('amount of right answers: ' + testing[0].rightAnswers);
+        console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
+        console.log('total Eaten: ' + testing[0].totalEaten);
+        console.log('points earned at Bronze: ' + testing[0].pointsAtBronze);
+        console.log('points earned at Silver: ' + testing[0].pointsAtSilver);
+        console.log('points earned at Gold: ' + testing[0].pointsAtGold);
+
+        var highestLevel = player[0].currentLevel - player[0].startLevel;
+
+        console.log('Highest Level: ' + highestLevel);
+        console.log('Treasure Eaten: ' + testing[0].treasure);
+        console.log('Level Up Bonus: ' + testing[0].levelUpBoonus);
+
+    },
+
 };
