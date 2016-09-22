@@ -2,8 +2,8 @@ GreaterThan = {};
 
 ui = [
     {
-        worldSizeX: 2500,
-        worldSizeY: 2500,
+        worldSizeX: 2000,
+        worldSizeY: 2000,
     }
 ];
 
@@ -17,6 +17,7 @@ testing = [
         pointsAtSilver: 0,
         pointsAtGold: 0,
         levelUpBoonus: 0,
+        worldWrap: false,
 
     }
 ]

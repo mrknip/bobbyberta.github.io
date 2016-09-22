@@ -4,8 +4,8 @@ GreaterThan.Game = function (game) {
 GreaterThan.Game.prototype = {
     config: {
         viewSizeX: 1200,
-        worldSizeX: 2500,
-        worldSizeY: 2500,
+        worldSizeX: ui[0].worldSizeX,
+        worldSizeY: ui[0].worldSizeY,
         coolDownTime: 0.5,
         arrowMove: 75,
         lineMove: 75,
@@ -264,13 +264,17 @@ GreaterThan.Game.prototype = {
         this.player.body.setSize(75, 75, 0, 0);
         this.player.anchor.setTo(0.5, 0.5);
 
-        // this.player.body.collideWorldBounds = true;
-        // this.player.body.bounce.x = 1;
-        // this.player.body.bounce.y = 1;
-        // this.player.body.minBounceVelocity = 0;
-
         this.game.camera.follow(this.player);
-        this.game.camera.bounds = null;
+
+        if(testing[0].worldWrap == true){
+            this.game.camera.bounds = null;
+        }else{
+            this.game.camera.bounds = this.bounds;
+            this.player.body.collideWorldBounds = true;
+            this.player.body.bounce.x = 1;
+            this.player.body.bounce.y = 1;
+            this.player.body.minBounceVelocity = 0;
+        }
 
         //Text on Player - Showing the players value
         this.playerNumber = this.make.text(-10, -15, this.gameState.playerCurrentValue, {fill: '#000000'});
@@ -280,7 +284,9 @@ GreaterThan.Game.prototype = {
         this._playerMovementMouse(speed);
         this._playerMovementArrows(speed);
 
-        game.world.wrap(this.player);
+        if(testing[0].worldWrap == true){
+            game.world.wrap(this.player);
+        }
     },
     _playerMovementMouse: function (speed) {
         if (this.game.input.activePointer.isDown) {
@@ -366,6 +372,10 @@ GreaterThan.Game.prototype = {
         value = game.rnd.integerInRange(minValue, maxValue);
         this.object.value = value;
 
+        if(testing[0].worldWrap ==! true){
+            this._addGroupPhysics(this.objectGroup);
+        }
+
         //this._addGroupPhysics(this.objectGroup);
         this._addSpeed(this.object);
         this._addText(this.object, value);
@@ -444,7 +454,9 @@ GreaterThan.Game.prototype = {
             var currentGreater = this.gameState.greater[i];
             var location = i;
 
-            game.world.wrap(currentGreater);
+            if(testing[0].worldWrap == true){
+                game.world.wrap(currentGreater);
+            }
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -468,7 +480,9 @@ GreaterThan.Game.prototype = {
             var currentLesser = this.gameState.lesser[i];
             var location = i;
 
-            game.world.wrap(currentLesser);
+            if(testing[0].worldWrap == true){
+                game.world.wrap(currentLesser);
+            }
 
             this.game.physics.arcade.overlap(
                 this.player,
@@ -493,7 +507,9 @@ GreaterThan.Game.prototype = {
             var currentTreasure = this.gameState.treasure[i];
             var location = i;
 
-            game.world.wrap(currentTreasure);
+            if(testing[0].worldWrap == true){
+                game.world.wrap(currentTreasure);
+            }
 
             this.game.physics.arcade.overlap(
                 this.player,

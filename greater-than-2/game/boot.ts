@@ -28,6 +28,9 @@ GreaterThan.Boot.prototype = {
         game.load.spritesheet('unlocked', 'assets/levelPlay.png');
         game.load.image('home', 'assets/homeButton.png');
         game.load.image('pause', 'assets/pause.png');
+        game.load.image('settings', 'assets/settings.png');
+        game.load.spritesheet('checkBox', 'assets/checkBox.png', 30, 30, 2);
+        game.load.spritesheet('worldSize', 'assets/worldSize.png', 90, 30, 3);
 
         //Game Backgrounds
         game.load.image('bg', 'assets/background.png');
