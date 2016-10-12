@@ -3,7 +3,7 @@ GreaterThan.Game = function (game) {
 
 GreaterThan.Game.prototype = {
     config: {
-        viewSizeX: 1200,
+        viewSizeX: 1024,
         worldSizeX: ui[0].worldSizeX,
         worldSizeY: ui[0].worldSizeY,
         coolDownTime: 0.5,
@@ -57,6 +57,8 @@ GreaterThan.Game.prototype = {
         else {
             game.debug.text("GameOver!", 600, 60, "#fff");
         }
+
+        game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
     },
 
     addGameInformation: function () {
@@ -143,7 +145,23 @@ GreaterThan.Game.prototype = {
         this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         // /1.2
 
-        this._addBackgroundColour();
+        this.background = game.add.image(0, 0, 'bgBase');
+        this.background.fixedToCamera = true;
+        this.background3 = game.add.image(0,0, 'bgMiddle');
+        this.background2 = game.add.image(0,0, 'bgTop');
+        this.background2.fixedToCamera = true;
+        this.lightAnim = game.add.sprite(0, 0, 'light');
+        this.lightAnim.fixedToCamera = true;
+
+        var light = this.lightAnim.animations.add('twinkle');
+
+        light.enableUpdate = true;
+
+        //this.lightAnim.animations.play('twinkle', 0.25, true);
+
+
+
+        //this._addBackgroundColour();
 
         //enable Input
         this.game.cursors = this.game.input.keyboard.createCursorKeys();
@@ -151,6 +169,7 @@ GreaterThan.Game.prototype = {
     },
     _addBackgroundColour: function () {
         this._defineBackground();
+
         this.game.stage.backgroundColor = this.gameState.backgroundColour;
     },
     _defineBackground: function () {
@@ -281,13 +300,23 @@ GreaterThan.Game.prototype = {
         this.player.addChild(this.playerNumber);
     },
     _playerMovement: function (speed) {
-        this._playerMovementMouse(speed);
-        this._playerMovementArrows(speed);
 
-        if(testing[0].worldWrap == true){
-            game.world.wrap(this.player);
-        }
+        game.physics.arcade.moveToPointer(this.player, speed);
+
+
+        //This works only in top right corner where the game screen is the same postion as the game world
+        //need to find a way to get the screen position not the world position
+                if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
+                    this.player.body.velocity.setTo(0, 0);
+                }
+
+
+                if (testing[0].worldWrap == true) {
+                    game.world.wrap(this.player);
+                }
+
     },
+
     _playerMovementMouse: function (speed) {
         if (this.game.input.activePointer.isDown) {
             this.game.physics.arcade.moveToPointer(this.player, speed);
@@ -304,19 +333,21 @@ GreaterThan.Game.prototype = {
         }
     },
     _playerMovementArrows: function (speed) {
-        if (this.game.cursors.left.isDown) {
-            this.player.x -= speed / 80;
-        }
-        else if (this.game.cursors.right.isDown) {
-            this.player.x += speed / 80;
-        }
 
-        if (this.game.cursors.up.isDown) {
-            this.player.y -= speed / 80;
-        }
-        else if (this.game.cursors.down.isDown) {
-            this.player.y += speed / 80;
-        }
+
+        // if (this.game.cursors.left.isDown) {
+        //     this.player.x -= speed / 80;
+        // }
+        // else if (this.game.cursors.right.isDown) {
+        //     this.player.x += speed / 80;
+        // }
+        //
+        // if (this.game.cursors.up.isDown) {
+        //     this.player.y -= speed / 80;
+        // }
+        // else if (this.game.cursors.down.isDown) {
+        //     this.player.y += speed / 80;
+        // }
     },
 
 
@@ -361,6 +392,7 @@ GreaterThan.Game.prototype = {
     _createAmountOfEntities: function (groupOfObjects, amount, image, minValue, maxValue, value) {
         this.objectGroup = this.add.group();
         this.objectGroup.enableBody = true;
+        this.objectGroup.inputEnabled = true;
         this.objectGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
         for (var i = 0; i < amount; i++) {
@@ -383,8 +415,8 @@ GreaterThan.Game.prototype = {
         groupOfObjects.push(this.object);
     },
     _addSpeed: function (object) {
-        object.body.velocity.x = game.rnd.integerInRange(-200, 200);
-        object.body.velocity.y = game.rnd.integerInRange(-200, 200);
+        object.body.velocity.x = game.rnd.integerInRange(-100, 100);
+        object.body.velocity.y = game.rnd.integerInRange(-100, 100);
     },
     _addText: function (object, text) {
         this.text = this.make.text(42, 22, text, {fill: '#f4f0ce'});
@@ -579,7 +611,7 @@ GreaterThan.Game.prototype = {
     },
     _treasureCollided: function (treasure, location, treasureValue) {
         this.gameState.playerCurrentValue += treasureValue;
-        this.addPoints(2);
+        this.addPoints(testing[0].treasurePoints);
         this.testing.treasure += 1;
         treasure.kill();
         this.gameState.treasure.splice(location, 1);
@@ -603,8 +635,8 @@ GreaterThan.Game.prototype = {
     _checkChangeLevel: function () {
         if (this.gameState.levelUp == this.config.rightInARow && this.gameState.currentLevel < this.gameState.highestLevel) {
             if (this.gameState.levelLocation == this.gameState.maxLevel) {
-                //this.addPoints(200);
-                //this.testing.levelUpBoonus +=200;
+                this.addPoints(testing[0].levelUpBonus);
+                this.testing.levelUpBoonus += testing[0].levelUpBonus;
                 this.gameState.maxLevel += 1;
                 this.gameState.maxLevelLine += this.config.lineMove;
             }
@@ -739,15 +771,15 @@ GreaterThan.Game.prototype = {
     _addEntityPoints(){
         var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
         if (currentLevel >= 6) {
-            this.addPoints(100);
-            this.testing.pointsAtGold += 100;
+            this.addPoints(testing[0].goldPoints);
+            this.testing.pointsAtGold += testing[0].goldPoints;
 
         } else if (currentLevel >= 3) {
-            this.addPoints(50);
-            this.testing.pointsAtSilver += 50;
+            this.addPoints(testing[0].silverPoints);
+            this.testing.pointsAtSilver += testing[0].silverPoints;
         } else {
-            this.addPoints(10);
-            this.testing.pointsAtBronze += 10;
+            this.addPoints(testing[0].bronzePoints);
+            this.testing.pointsAtBronze += testing[0].bronzePoints;
         }
     },
 

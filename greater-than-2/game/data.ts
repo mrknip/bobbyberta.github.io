@@ -18,9 +18,14 @@ testing = [
         pointsAtGold: 0,
         levelUpBoonus: 0,
         worldWrap: false,
+        bronzePoints: 10,
+        silverPoints: 50,
+        goldPoints: 100,
+        treasurePoints: 2,
+        levelUpBonus: 0,
 
     }
-]
+];
 
 player = [
     {
@@ -38,19 +43,20 @@ player = [
         silver: 900,
         gold: 1200,
         pauseEnabled: true,
+        language: 'ENG_UK',
         stageData: [
             {
                 name: '> Positive Integers',
                 locked: false,
-                medal: 'none',
-                score: 0,
+                medal: 'gold',
+                score: 1000,
                 highestLevel: 8,
                 lowestLevel: 0,
             },
             {
                 name: '< Positive Integers',
                 locked: false,
-                medal: 'none',
+                medal: 'silver',
                 score: 0,
                 highestLevel: 17,
                 lowestLevel: 9,
@@ -58,7 +64,7 @@ player = [
             {
                 name: '< and > Positive Integer',
                 locked: false,
-                medal: 'none',
+                medal: 'bronze',
                 score: 0,
                 highestLevel: 26,
                 lowestLevel: 18,
@@ -81,7 +87,7 @@ player = [
             },
             {
                 name: '< and > Integer',
-                locked: false,
+                locked: true,
                 medal: 'none',
                 score: 0,
                 highestLevel: 53,

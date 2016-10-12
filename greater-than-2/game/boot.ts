@@ -1,6 +1,6 @@
 window.onload = function () {
 
-    game = new Phaser.Game(1200, 800, Phaser.CANVAS);
+    game = new Phaser.Game(1024, 768, Phaser.CANVAS);
     Game = game.state.add("game", GreaterThan.Game, false);
     game.state.add("boot", GreaterThan.Boot,true);
     game.state.add("title", GreaterThan.Title, false);
@@ -18,21 +18,33 @@ GreaterThan.Boot.prototype = {
         game.stage.backgroundColor = "#6f9695";
 
         //Title screen
-        game.load.image('splash', 'assets/title.png');
-        game.load.image('play', 'assets/playButtonTitle.png');
+        game.load.image('splash', 'assets2/background.png');
+        game.load.image('play', 'assets2/playButton.png');
+        game.load.image('help', 'assets2/helpButton.png');
+        game.load.image('titleImage', 'assets2/titleImage.png');
+        game.load.image('helpBox', 'assets2/helpBox.png');
+
 
         //Menu Graphics
         game.load.image('backgroundTitle', 'assets/titleBackground.png');
-        game.load.image('box1', 'assets/levelSelectBox.png');
-        game.load.image('locked', 'assets/levelLocked.png');
-        game.load.spritesheet('unlocked', 'assets/levelPlay.png');
+        //game.load.image('box1', 'assets2/levelBox.png');
+        game.load.image('locked', 'assets2/levelBox2.png');
+        game.load.spritesheet('unlocked', 'assets2/levelBox.png');
+        game.load.spritesheet('stars', 'assets2/starSprites.png', 160, 60, 4);
         game.load.image('home', 'assets/homeButton.png');
         game.load.image('pause', 'assets/pause.png');
         game.load.image('settings', 'assets/settings.png');
         game.load.spritesheet('checkBox', 'assets/checkBox.png', 30, 30, 2);
         game.load.spritesheet('worldSize', 'assets/worldSize.png', 90, 30, 3);
+        game.load.image('points', 'assets/pointsBlank.png');
+
 
         //Game Backgrounds
+        game.load.image('bgBase', 'assets2/baseBg.png');
+        game.load.image('bgMiddle', 'assets2/middleBg.png');
+        game.load.image('bgTop', 'assets2/topBg.png');
+        game.load.spritesheet('light', 'assets2/lightAnim.png', 1024, 768, 3);
+
         game.load.image('bg', 'assets/background.png');
         game.load.image('up', 'assets/levelUp.png');
         game.load.image('loose', 'assets/levelDown.png');
@@ -75,17 +87,19 @@ GreaterThan.Boot.prototype = {
         this.disableVisibilityChange = true;
 
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
-        this.scale.minWidth = 512;
-        this.scale.minHeight = 400;
-        this.scale.maxWidth = 1200;
-        this.scale.maxHeight = 800;
+        this.scale.minWidth = 568;
+        this.scale.minHeight = 426;
+        this.scale.maxWidth = 1024;
+        this.scale.maxHeight = 768;
         this.scale.pageAlignHorizontally = true;
 
         if (game.device.desktop) {
             this.scale.forceOrientation(true, false);
         }
 
+
         this.game.state.start("title")
+
 
     },
 
