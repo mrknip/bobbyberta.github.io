@@ -48,30 +48,30 @@ player = [
             {
                 name: '> Positive Integers',
                 locked: false,
-                medal: 'gold',
-                score: 1000,
+                medal: 'none',
+                score: 0,
                 highestLevel: 8,
                 lowestLevel: 0,
             },
             {
                 name: '< Positive Integers',
-                locked: false,
-                medal: 'silver',
+                locked: true,
+                medal: 'none',
                 score: 0,
                 highestLevel: 17,
                 lowestLevel: 9,
             },
             {
                 name: '< and > Positive Integer',
-                locked: false,
-                medal: 'bronze',
+                locked: true,
+                medal: 'none',
                 score: 0,
                 highestLevel: 26,
                 lowestLevel: 18,
             },
             {
                 name: '> Integers',
-                locked: false,
+                locked: true,
                 medal: 'none',
                 score: 0,
                 highestLevel: 35,
@@ -79,7 +79,7 @@ player = [
             },
             {
                 name: '< Integers',
-                locked: false,
+                locked: true,
                 medal: 'none',
                 score: 0,
                 highestLevel: 44,
@@ -99,7 +99,7 @@ player = [
 
 levels = [
     {
-        levelName: 'Stage 1:1',
+        levelName: '1:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -131,7 +131,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:2',
+        levelName: '1:2',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -163,7 +163,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:3',
+        levelName: '1:3',
         playerValue: 10,
         equalTo: true,
         greater: [
@@ -195,7 +195,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:4',
+        levelName: '1:4',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -237,7 +237,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:5',
+        levelName: '1:5',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -279,7 +279,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:6',
+        levelName: '1:6',
         playerValue: 15,
         equalTo: true,
         greater: [
@@ -321,7 +321,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:7',
+        levelName: '1:7',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -378,7 +378,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:8',
+        levelName: '1:8',
         playerValue: 20,
         equalTo: false,
         greater: [
@@ -435,7 +435,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 1:9',
+        levelName: '1:9',
         playerValue: 20,
         equalTo: true,
         greater: [
@@ -493,7 +493,7 @@ levels = [
     },
 
     {
-        levelName: 'Stage 2:1',
+        levelName: '2:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -525,7 +525,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:2',
+        levelName: '2:2',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -557,7 +557,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:3',
+        levelName: '2:3',
         playerValue: 10,
         equalTo: true,
         greater: [
@@ -589,7 +589,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:4',
+        levelName: '2:4',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -631,7 +631,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:5',
+        levelName: '2:5',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -673,7 +673,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:6',
+        levelName: '2:6',
         playerValue: 15,
         equalTo: true,
         greater: [
@@ -715,7 +715,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:7',
+        levelName: '2:7',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -772,7 +772,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:8',
+        levelName: '2:8',
         playerValue: 20,
         equalTo: false,
         greater: [
@@ -829,7 +829,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 2:9',
+        levelName: '2:9',
         playerValue: 20,
         equalTo: true,
         greater: [
@@ -887,7 +887,7 @@ levels = [
     },
 
     {
-        levelName: 'Stage 3:1',
+        levelName: '3:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -919,7 +919,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:2',
+        levelName: '3:2',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -951,7 +951,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:3',
+        levelName: '3:3',
         playerValue: 10,
         equalTo: true,
         greater: [
@@ -983,7 +983,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:4',
+        levelName: '3:4',
         playerValue: 10,
         equalTo: false,
         greater: [
@@ -1025,7 +1025,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:5',
+        levelName: '3:5',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -1067,7 +1067,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:6',
+        levelName: '3:6',
         playerValue: 15,
         equalTo: true,
         greater: [
@@ -1109,7 +1109,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:7',
+        levelName: '3:7',
         playerValue: 15,
         equalTo: false,
         greater: [
@@ -1166,7 +1166,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:8',
+        levelName: '3:8',
         playerValue: 20,
         equalTo: false,
         greater: [
@@ -1223,7 +1223,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 3:9',
+        levelName: '3:9',
         playerValue: 20,
         equalTo: true,
         greater: [
@@ -1281,7 +1281,7 @@ levels = [
     },
 
     {
-        levelName: 'Stage 4:1',
+        levelName: '4:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -1313,7 +1313,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:2',
+        levelName: '4:2',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -1345,7 +1345,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:3',
+        levelName: '4:3',
         playerValue: 0,
         equalTo: true,
         greater: [
@@ -1377,7 +1377,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:4',
+        levelName: '4:4',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -1419,7 +1419,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:5',
+        levelName: '4:5',
         playerValue: -5,
         equalTo: false,
         greater: [
@@ -1461,7 +1461,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:6',
+        levelName: '4:6',
         playerValue: -5,
         equalTo: true,
         greater: [
@@ -1503,7 +1503,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:7',
+        levelName: '4:7',
         playerValue: -5,
         equalTo: false,
         greater: [
@@ -1560,7 +1560,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:8',
+        levelName: '4:8',
         playerValue: -10,
         equalTo: false,
         greater: [
@@ -1617,7 +1617,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 4:9',
+        levelName: '4:9',
         playerValue: -10,
         equalTo: true,
         greater: [
@@ -1675,7 +1675,7 @@ levels = [
     },
 
     {
-        levelName: 'Stage 5:1',
+        levelName: '5:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -1707,7 +1707,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:2',
+        levelName: '5:2',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -1739,7 +1739,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:3',
+        levelName: '5:3',
         playerValue: 0,
         equalTo: true,
         greater: [
@@ -1771,7 +1771,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:4',
+        levelName: '5:4',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -1813,7 +1813,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:5',
+        levelName: '5:5',
         playerValue: -5,
         equalTo: false,
         greater: [
@@ -1855,7 +1855,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:6',
+        levelName: '5:6',
         playerValue: -5,
         equalTo: true,
         greater: [
@@ -1897,7 +1897,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:7',
+        levelName: '5:7',
         playerValue: -5,
         equalTo: false,
         greater: [
@@ -1954,7 +1954,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:8',
+        levelName: '5:8',
         playerValue: -10,
         equalTo: false,
         greater: [
@@ -2011,7 +2011,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 5:9',
+        levelName: '5:9',
         playerValue: -10,
         equalTo: true,
         greater: [
@@ -2069,7 +2069,7 @@ levels = [
     },
 
     {
-        levelName: 'Stage 6:1',
+        levelName: '6:1',
         playerValue: 5,
         equalTo: false,
         greater: [
@@ -2101,7 +2101,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:2',
+        levelName: '6:2',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -2133,7 +2133,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:3',
+        levelName: '6:3',
         playerValue: 0,
         equalTo: true,
         greater: [
@@ -2165,7 +2165,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:4',
+        levelName: '6:4',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -2207,7 +2207,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:5',
+        levelName: '6:5',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -2249,7 +2249,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:6',
+        levelName: '6:6',
         playerValue: 0,
         equalTo: true,
         greater: [
@@ -2291,7 +2291,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:7',
+        levelName: '6:7',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -2348,7 +2348,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:8',
+        levelName: '6:8',
         playerValue: 0,
         equalTo: false,
         greater: [
@@ -2405,7 +2405,7 @@ levels = [
         ]
     },
     {
-        levelName: 'Stage 6:9',
+        levelName: '6:9',
         playerValue: 0,
         equalTo: true,
         greater: [

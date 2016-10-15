@@ -12,6 +12,7 @@ GreaterThan.gameOver.prototype = {
     },
 
     create: function () {
+        this.checkLanguage();
         this._calculateHighScore();
         this.addGraphics();
         this.showTestingData();
@@ -19,18 +20,57 @@ GreaterThan.gameOver.prototype = {
 
     update: function () {},
 
+    checkLanguage: function(){
+        if(player[0].language ==  'PTR_BR'){
+            this.textGameOver = PTR_BR[0].gameOver[0].gameOver;
+            this.textScore = PTR_BR[0].gameOver[0].score;
+            this.textHighScore = PTR_BR[0].gameOver[0].highScore;
+            this.textNext = PTR_BR[0].gameOver[0].next;
+            this.textEarned = PTR_BR[0].gameOver[0].earned;
+            this.textBronze = PTR_BR[0].gameOver[0].bronze;
+            this.textSilver = PTR_BR[0].gameOver[0].silver;
+            this.textGold = PTR_BR[0].gameOver[0].gold;
+            this.textMedal = PTR_BR[0].gameOver[0].medal;
+        }else{
+            this.textGameOver = ENG_UK[0].gameOver[0].gameOver;
+            this.textScore = ENG_UK[0].gameOver[0].score;
+            this.textHighScore = ENG_UK[0].gameOver[0].highScore;
+            this.textNext = ENG_UK[0].gameOver[0].next;
+            this.textEarned = ENG_UK[0].gameOver[0].earned;
+            this.textBronze = ENG_UK[0].gameOver[0].bronze;
+            this.textSilver = ENG_UK[0].gameOver[0].silver;
+            this.textGold = ENG_UK[0].gameOver[0].gold;
+            this.textMedal = ENG_UK[0].gameOver[0].medal;
+        }
+
+    },
+
     addGraphics: function(){
-        this.background = game.add.sprite(0, 0, 'backgroundTitle');
-        game.add.button(40, 700, 'home', this._goHome);
+        this.background = game.add.sprite(0, 0, 'splash');
 
-        this.title = this.add.text(500, 300, 'Time is up!', {fill: '#24475b'});
+        var x = 1024;
+        var y = 768;
 
-        this.scoreBox = this.add.image(500,400, 'title');
-        this.scoreText = this.make.text(5, 5, 'Score: ' + player[0].currentScore, {fill: '#24475b'});
+
+        this.homeButton = game.add.button(x/2, y/2, 'play', this._goHome);
+        this.homeButton.anchor.setTo(0.5, 0.5);
+        this.nextText = this.add.text(0, 0, this.textNext, {fill: '#24475b'});
+        this.nextText.anchor.setTo(0.5, 0.5);
+        this.homeButton.addChild(this.nextText);
+
+        this.title = this.add.text(x/2, y/5, this.textGameOver, {fill: '#19a3e0'});
+        this.title.anchor.setTo(0.5, 0.5);
+
+        this.scoreBox = this.add.image(x/2, y/3, 'title');
+        this.scoreBox.anchor.setTo(0.5, 0.5);
+
+        this.scoreText = this.make.text(5, 5, this.textScore + ': ' + player[0].currentScore, {fill: '#24475b'});
+        this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
 
         this.createInformationBox();
-        this.information = game.add.sprite(120, 680, 'i');
+        this.information = game.add.sprite(x/1.05, y/1.1, 'i');
+        this.information.anchor.setTo(0.5, 0.5);
         this.information.inputEnabled = true;
         this.information.events.onInputDown.add(
             function () {
@@ -38,11 +78,22 @@ GreaterThan.gameOver.prototype = {
             },
             this);
 
+        if(this.config.medal == 'gold'){
+                this.medalText = this.textGold;
+        }else if(this.config.medal == 'silver'){
+            this.medalText = this.textSilver;
+        }else if(this.config.medal == 'bronze'){
+            this.medalText = this.textBronze;
+        }
+
         if(this.config.highScore == true){
-            this.highScore = this.add.text(700, 400, 'HighScore!', {fill: '#24475b'});
+            this.highScore = this.add.text(x/2, y/2.5, this.textHighScore, {fill: '#19a3e0'});
+            this.highScore.anchor.setTo(0.5, 0.5);
+
         }
         if(this.config.medal != 'none' ){
-            this.highScore = this.add.text(400, 500, 'You have earned a ' + this.config.medal + ' medal', {fill: '#24475b'});
+            this.highScore = this.add.text(x/2, y/1.5, this.textEarned + ": " + this.medalText + this.textMedal, {fill: '#19a3e0'});
+            this.highScore.anchor.setTo(0.5, 0.5);
         }
     },
     _goHome: function(){

@@ -4,6 +4,7 @@ GreaterThan.Game = function (game) {
 GreaterThan.Game.prototype = {
     config: {
         viewSizeX: 1024,
+        viewSizeY: 768,
         worldSizeX: ui[0].worldSizeX,
         worldSizeY: ui[0].worldSizeY,
         coolDownTime: 0.5,
@@ -12,6 +13,8 @@ GreaterThan.Game.prototype = {
         rightInARow: 6,
         wrongInARow: 3,
         unlockLevel: 600,
+        minutes: 4,
+        seconds: 0,
     },
 
     testingData: {},
@@ -23,10 +26,14 @@ GreaterThan.Game.prototype = {
 
     create: function () {
 
+        this.checkLanguage();
+
+
         this.addGameInformation();
 
 
         this.addTestingData();
+
 
         this.addWorld();
         this.addTreasure();
@@ -34,12 +41,13 @@ GreaterThan.Game.prototype = {
         this.addPlayer();
         this.addUI();
         //addTimer - minutes and seconds
-        this.addTimer(2, 30);
+        this.addTimer(this.config.minutes, this.config.seconds);
+        this.animateFuel();
 
+        game.time.advancedTiming = true;
         //Testing Data
         //this.showTestingData();
     },
-
 
     update: function () {
 
@@ -52,13 +60,33 @@ GreaterThan.Game.prototype = {
     render: function () {
         // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
         if (this.timer.running == true) {
-            game.debug.text(this._formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000)), 600, 60, "#fff");
+            game.debug.text(this._formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000)), 540, 35, "#fff");
         }
         else {
             game.debug.text("GameOver!", 600, 60, "#fff");
         }
 
-        game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+        game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
+    },
+
+
+    checkLanguage: function(){
+        if(player[0].language ==  'PTR_BR'){
+            this.textStage = PTR_BR[0].game[0].stage;
+            this.textScore = PTR_BR[0].game[0].score;
+            this.textPauseMenu = PTR_BR[0].game[0].pause;
+            this.textQuit = PTR_BR[0].game[0].quit;
+            this.textContinue = PTR_BR[0].game[0].continue;
+
+        }else{
+            this.textStage = ENG_UK[0].game[0].stage;
+            this.textScore = ENG_UK[0].game[0].score;
+            this.textPauseMenu = ENG_UK[0].game[0].pause;
+            this.textQuit = ENG_UK[0].game[0].quit;
+            this.textContinue = ENG_UK[0].game[0].continue;
+
+        }
+
     },
 
     addGameInformation: function () {
@@ -112,6 +140,8 @@ GreaterThan.Game.prototype = {
             lesser: [],
             //Treasure Information
             treasure: [],
+            //pause menu clicked
+            paused: false,
         };
 
     },
@@ -139,6 +169,7 @@ GreaterThan.Game.prototype = {
 
         }
     },
+
 
     addWorld: function () {
         this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
@@ -175,7 +206,7 @@ GreaterThan.Game.prototype = {
     _defineBackground: function () {
         var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
         if (currentLevel == 0) {
-            this.gameState.backgroundColour = '#6f9695'
+            this.gameState.backgroundColour = '#z6f9695'
         } else if (currentLevel == 1) {
             this.gameState.backgroundColour = '#56908E'
         }
@@ -221,19 +252,62 @@ GreaterThan.Game.prototype = {
     },
 
     addUI: function () {
+        //seUiPosition x and y are game screen size / number
 
-        //title Bar - name of level
+        var textStyle = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: 200};
+
+        this._addTitle(textStyle);
+        this._addScore(textStyle);
+        this._addFuelBar();
+        //this._addDepthUi();
+        this._addHomeButton();
+        //this._checkHomePauseButtons();
+        this._addPauseMenu();
+
+    },
+    _addTitle: function(textStyle){
         this.levelTitle = this.add.image(0, 0, 'title');
-        this._setUIPosition(this.levelTitle, 200, 10);
-        this.titleText = this.make.text(5, 5, this.gameState.levelName, {fill: '#24475b'});
+        this._setUIPosition(this.levelTitle, 10, 20);
+        this.titleText = this.make.text(5, 5, this.textStage + ": " + this.gameState.levelName, textStyle);
+        this.titleText.anchor.setTo(0.5, 0.5);
         this.levelTitle.addChild(this.titleText);
-
-        //Score
+    },
+    _addScore: function(textStyle){
         this.scoreBox = this.add.image(0, 0, 'title');
-        this._setUIPosition(this.scoreBox, 1180, 10);
-        this.scoreText = this.make.text(5, 5, 'Score: ' + this.gameState.score, {fill: '#24475b'});
+        this._setUIPosition(this.scoreBox, 10, 9);
+        this.scoreText = this.make.text(5, 5, this.textScore + ": " + this.gameState.score, textStyle);
+        this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
+    },
+    _addFuelBar: function(){
+        //Fuel Bar
+        this.fuelBase = this.add.image(0, 0, 'fuelBase');
+        this.fuelBase.fixedToCamera = true;
+        this.fuelBase.cameraOffset.setTo(250, 30);
+        this.fuelBase.anchor.setTo(0, 0.5);
 
+        //
+        this.fuelMid = this.add.image(10, 0, 'fuelMid');
+        this.fuelMid.anchor.setTo(0, 0.5);
+        this.fuelBase.addChild(this.fuelMid);
+
+        this.fuelTop = this.add.image(10, 0, 'fuelTop');
+        this.fuelTop.anchor.setTo(0, 0.5);
+        this.fuelBase.addChild(this.fuelTop);
+
+    },
+    animateFuel: function(){
+        var minutes = this.config.minutes;
+        var seconds = this.config.seconds;
+
+        var minutesToMill = minutes * 60000;
+        var secondsToMill = seconds * 1000;
+
+        var totalTime = minutesToMill + secondsToMill;
+
+        game.add.tween(this.fuelTop.scale).to({ x: 0, y: 1}, totalTime, null, true, 0, Infinity);
+    },
+    _addDepthUi: function(){
         //depth UI
         this.depthUI = this.add.image(0, 0, 'depth');
         this.depthUI.scale.setTo(1.2, 1.5)
@@ -248,30 +322,111 @@ GreaterThan.Game.prototype = {
         this.deepestDepth.scale.setTo(1.2, 1.5)
         this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
 
+    },
+    _addHomeButton: function(){
+        this.homeButton = game.add.sprite(40, 700, 'home');
+        this._setUIPosition(this.homeButton, 1.05, 15);
+        this.homeButton.inputEnabled = true;
+        this.homeButton.events.onInputDown.add(
+            function () {
+                this._pause();
+            },
+            this);
+
+    },
+    _checkHomePauseButtons(){
         if (this.gameState.pauseEnabled == true) {
             //Home button
-            this.homeButton = game.add.button(40, 700, 'home', this._goHome);
-            this._setUIPosition(this.homeButton, 1080, 700);
+            this.homeButton = game.add.button(40, 700, 'home', this._pause);
+            this._setUIPosition(this.homeButton, 1.05, 15);
 
             //Pause button
             this.pauseButton = game.add.button(40, 700, 'pause', this._pause);
-            this._setUIPosition(this.pauseButton, 1180, 700);
-        } else {
-            //Home button
-            this.homeButton = game.add.button(40, 700, 'home', this._goHome);
-            this._setUIPosition(this.homeButton, 1180, 700);
+            this._setUIPosition(this.pauseButton, 1.150, 15);
         }
-
+        else {
+            //Home button
+            this.homeButton = game.add.button(40, 700, 'home', this._pause);
+            this._setUIPosition(this.homeButton, 10, 1.15);
+        }
     },
     _setUIPosition: function (uiElement, positionX, positionY) {
         uiElement.fixedToCamera = true;
-        uiElement.cameraOffset.setTo(this.config.viewSizeX - positionX, positionY);
+
+        var screenX = this.config.viewSizeX;
+        var screenY = this.config.viewSizeY;
+
+        uiElement.cameraOffset.setTo(screenX/positionX, screenY/positionY);
+
+        uiElement.anchor.setTo(0.5, 0.5);
+
+
     },
     _goHome: function () {
-        this.game.state.start("menu", true);
+        player[0].currentScore = this.gameState.score;
+        this.addTestingInformation();
+        this.timer.stop();
+        game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
+        this.game.state.start("gameOver", true);
     },
     _pause: function () {
+
         game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
+
+        if(this.gameState.paused == false){
+            this.pauseGroup.visible = true;
+            this.gameState.paused = true;
+        }else{
+            this.pauseGroup.visible = false;
+            this.gameState.paused = false;
+        }
+
+
+
+    },
+    _addPauseMenu: function(){
+        this.pauseGroup = this.add.group();
+        this.box = this.add.image(0, 0, 'helpBox');
+        this._setUIPosition(this.box, 2, 2);
+        this.pauseGroup.add(this.box);
+
+        this.quitButton = game.add.sprite(0,0, "play2");
+        this._setUIPosition(this.quitButton, 3.5, 2);
+        this.quitButton.inputEnabled = true;
+        this.quitButton.events.onInputDown.add(
+            function () {
+                this._goHome();
+            },
+            this);
+        this.pauseGroup.add(this.quitButton);
+
+        this.continueButton = game.add.sprite(0,0, "play2");
+        this._setUIPosition(this.continueButton, 1.4, 2);
+        this.continueButton.inputEnabled = true;
+        this.continueButton.events.onInputDown.add(
+            function () {
+                this._pause();
+            },
+            this);
+        this.pauseGroup.add(this.continueButton);
+
+        this._addPauseText(this.textPauseMenu, "#213f6b", 2, 4);
+        this._addPauseText(this.textQuit, "#19a3e0", 3.5, 2);
+        this._addPauseText(this.textContinue, "#19a3e0", 1.4, 2);
+
+        this.pauseGroup.add(this.box);
+        this.pauseGroup.visible = false;
+
+
+    },
+    _addPauseText: function(text, colour, x, y){
+        var style = { fill: colour, align: "centre"};
+
+        this.pauseText = game.add.text(0, 0, text, style);
+        this.pauseText.anchor.setTo(0.5, 0.5);
+        this.pauseGroup.add(this.pauseText);
+
+        this._setUIPosition(this.pauseText, x, y);
     },
 
     addPlayer: function () {
@@ -682,10 +837,10 @@ GreaterThan.Game.prototype = {
     },
     _setNewLevelText: function () {
         this.playerNumber.setText(this.gameState.playerCurrentValue);
-        this.titleText.setText(this.gameState.levelName);
-        this.scoreText.setText('Score: ' + this.gameState.score);
-        this._setUIPosition(this.arrow, 115, this.gameState.depth);
-        this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
+        this.titleText.setText(this.textStage + ": " + this.gameState.levelName);
+        this.scoreText.setText(this.textScore + ": " + this.gameState.score);
+        //this._setUIPosition(this.arrow, 115, this.gameState.depth);
+        //this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
 
     },
     _addToPlayerInformation: function () {
@@ -711,19 +866,19 @@ GreaterThan.Game.prototype = {
         if (this.gameState.levelUp == this.config.rightInARow) {
             //Level Up
             player[0].currentLevel += 1;
-            player[0].currentDepth += this.config.arrowMove;
+            //player[0].currentDepth += this.config.arrowMove;
         }
         if (this.gameState.levelDown == this.config.wrongInARow && player[0].currentLevel > 0) {
             //Level Down
             player[0].currentLevel -= 1;
-            player[0].currentDepth -= this.config.arrowMove;
+            //player[0].currentDepth -= this.config.arrowMove;
         }
     },
 
     //Feedback on game progression
     addPoints: function (value) {
         this.gameState.score += value;
-        this.scoreText.setText('Score: ' + this.gameState.score);
+        this.scoreText.setText(this.textScore + ": " + this.gameState.score);
         // if (this.gameState.levelLocation == this.gameState.maxLevel) {
         //     this.gameState.score += value;
         // }

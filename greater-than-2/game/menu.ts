@@ -7,6 +7,7 @@ GreaterThan.Menu.prototype = {
         settingsClicked: false,
         checkBoxTicked: false,
         worldSize: 'small',
+        worldSelected: false,
     },
 
     preload: function () {},
@@ -38,20 +39,28 @@ GreaterThan.Menu.prototype = {
     checkLanguage: function(){
         if(player[0].language ==  'PTR_BR'){
             this.textTitle = PTR_BR[0].menu[0].title;
+            this.textWorld = PTR_BR[0].menu[0].world;
             this.textWorld1 = PTR_BR[0].menu[0].world1;
             this.textWorld2 = PTR_BR[0].menu[0].world2;
             this.textWorld3 = PTR_BR[0].menu[0].world3;
             this.textWorld4 = PTR_BR[0].menu[0].world4;
             this.textWorld5 = PTR_BR[0].menu[0].world5;
             this.textWorld6 = PTR_BR[0].menu[0].world6;
+            this.textPlay = PTR_BR[0].menu[0].play;
+            this.textFuel  = PTR_BR[0].menu[0].fuel;
+            this.textFish  = PTR_BR[0].menu[0].fish;
         }else{
             this.textTitle = ENG_UK[0].menu[0].title;
+            this.textWorld = ENG_UK[0].menu[0].world;
             this.textWorld1 = ENG_UK[0].menu[0].world1;
             this.textWorld2 = ENG_UK[0].menu[0].world2;
             this.textWorld3 = ENG_UK[0].menu[0].world3;
             this.textWorld4 = ENG_UK[0].menu[0].world4;
             this.textWorld5 = ENG_UK[0].menu[0].world5;
             this.textWorld6 = ENG_UK[0].menu[0].world6;
+            this.textPlay = ENG_UK[0].menu[0].play;
+            this.textFuel  = ENG_UK[0].menu[0].fuel;
+            this.textFish  = ENG_UK[0].menu[0].fish;
         }
 
     },
@@ -85,13 +94,14 @@ GreaterThan.Menu.prototype = {
         }
     },
     _addButton: function (x, y, stage, level, text) {
+
         this.levelButton = game.add.sprite(x, y, 'unlocked');
         this.levelButton.inputEnabled = true;
-        this.levelButton.events.onInputDown.add(
-            function () {
-                this._startLevel(stage, level);
-            },
-            this);
+            this.levelButton.events.onInputDown.add(
+                function () {
+                    this._startLevel(stage, level);
+                },
+                this);
 
         var textStyle = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.levelButton.width};
 
@@ -112,6 +122,8 @@ GreaterThan.Menu.prototype = {
         this.stars = game.add.sprite(textX, starY, 'stars');
         this.stars.anchor.setTo(0.5, 0.5);
         this.levelButton.addChild(this.stars);
+
+
     },
     _checkAndAddMedal: function (stage) {
         if (player[0].stageData[stage].medal == 'gold') {
@@ -139,10 +151,99 @@ GreaterThan.Menu.prototype = {
 
     },
     _startLevel: function (stage, level) {
-        if (this.config.settingsClicked == false) {
-            this._setGameData(stage, level);
-            this.game.state.start("game", true);
+
+        game.world.removeAll();
+
+        this.game.stage.backgroundColor = '#213f6b';
+
+        this.checkLanguage();
+
+        this._setGameData(stage, level);
+        this.addStartWorld();
+
+    },
+
+    addStartWorld: function(){
+
+        this.box = this.add.image(0, 0, 'helpBox');
+        this._setScreenPosition(this.box, 2, 2);
+
+        this._addTitle();
+        this._addFuel();
+        this._addFish();
+        this._addPlayButton();
+
+    },
+    _addTitle: function(){
+
+        var worldNumber = player[0].currentStage + 1;
+
+        if(worldNumber == 6){
+            var textWorldName = this.textWorld6
+        }else if(worldNumber == 5){
+            var textWorldName = this.textWorld5
+        }else if(worldNumber == 4) {
+            var textWorldName = this.textWorld4
+        }else if(worldNumber == 3) {
+            var textWorldName = this.textWorld3
+        }else if(worldNumber == 2) {
+            var textWorldName = this.textWorld2
+        } else {
+            var textWorldName = this.textWorld1
         }
+
+        var titleStyle = { fill: "#213f6b"};
+
+        this.title = this.add.text(0, 0, this.textWorld + worldNumber + ": " + textWorldName, titleStyle );
+        this._setScreenPosition(this.title, 2, 7);
+
+    },
+    _addFuel: function(){
+        var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width};
+
+        this.fuelText = game.add.text(0, 0, this.textFuel + ": 4mins", style);
+
+        this._setScreenPosition(this.fuelText, 4, 4);
+
+    },
+    _addFish: function(){
+        var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width};
+
+        this.fishText = game.add.text(0, 0, this.textFish, style);
+
+        this._setScreenPosition(this.fishText, 4, 3);
+
+    },
+    _addPlayButton: function(){
+        this.playButton = this.add.sprite(0,0, 'play2');
+        this._setScreenPosition(this.playButton, 2, 1.25);
+        this.playButton.inputEnabled = true;
+        this.playButton.events.onInputDown.add(
+            function () {
+                this._playGame();
+            },
+            this);
+
+        this.playButton.anchor.setTo(0.5, 0.5);
+
+        var style = { fill: "#19a3e0", align: "center", wordWrap: true, wordWrapWidth: this.playButton.width};
+
+        this.playText = game.add.text(0, 0, this.textPlay, style);
+        this.playText.anchor.setTo(0.5, 0.5);
+        this.playButton.addChild(this.playText);
+
+    },
+    _setScreenPosition: function(image, x, y){
+        image.anchor.setTo(0.5, 0.5);
+        image.fixedToCamera = true;
+
+        var screenX = 1025;
+        var screenY = 768;
+
+        image.cameraOffset.setTo(screenX/x, screenY/y);
+    },
+    _playGame: function(){
+        this.game.state.start("game", true);
     },
 
 

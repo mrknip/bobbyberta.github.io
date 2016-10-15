@@ -31,12 +31,13 @@ GreaterThan.Boot.prototype = {
         game.load.image('locked', 'assets2/levelBox2.png');
         game.load.spritesheet('unlocked', 'assets2/levelBox.png');
         game.load.spritesheet('stars', 'assets2/starSprites.png', 160, 60, 4);
+        game.load.image('play2', 'assets2/playButton2.png');
         game.load.image('home', 'assets/homeButton.png');
-        game.load.image('pause', 'assets/pause.png');
-        game.load.image('settings', 'assets/settings.png');
-        game.load.spritesheet('checkBox', 'assets/checkBox.png', 30, 30, 2);
-        game.load.spritesheet('worldSize', 'assets/worldSize.png', 90, 30, 3);
-        game.load.image('points', 'assets/pointsBlank.png');
+        // game.load.image('pause', 'assets/pause.png');
+        // game.load.image('settings', 'assets/settings.png');
+        // game.load.spritesheet('checkBox', 'assets/checkBox.png', 30, 30, 2);
+        // game.load.spritesheet('worldSize', 'assets/worldSize.png', 90, 30, 3);
+        // game.load.image('points', 'assets/pointsBlank.png');
 
 
         //Game Backgrounds
@@ -52,11 +53,15 @@ GreaterThan.Boot.prototype = {
 
         //Game UI
         game.load.image('eatsUI', 'assets/uiBar.png');
-        game.load.spritesheet('lives', 'assets/lives.png', 150, 30, 5);
+        //game.load.spritesheet('lives', 'assets/lives.png', 150, 30, 5);
         game.load.image('title', 'assets/levelNameUI.png');
-        game.load.image('depth', 'assets/depth.png');
-        game.load.image('arrow', 'assets/arrow.png');
-        game.load.image('deepestLine', 'assets/deepestLine.png');
+        game.load.image('fuelBase', 'assets2/baseHealthBar.png');
+        game.load.image('fuelMid', 'assets2/healthBar1.png');
+        game.load.image('fuelTop', 'assets2/healthBar2.png');
+        //game.load.image('depth', 'assets/depth.png');
+        //game.load.image('arrow', 'assets/arrow.png');
+        //game.load.image('deepestLine', 'assets/deepestLine.png');
+
 
         //Game Elements
         game.load.spritesheet('you', 'assets/player.png', 75, 75, 4);
