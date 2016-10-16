@@ -37,7 +37,7 @@ GreaterThan.Game.prototype = {
 
         this.addWorld();
         this.addTreasure();
-        this.checkImageOfEntities();
+        this.addGreaterLesserEntities();
         this.addPlayer();
         this.addUI();
         //addTimer - minutes and seconds
@@ -45,6 +45,8 @@ GreaterThan.Game.prototype = {
         this.animateFuel();
 
         game.time.advancedTiming = true;
+
+
         //Testing Data
         //this.showTestingData();
     },
@@ -507,56 +509,55 @@ GreaterThan.Game.prototype = {
 
 
     checkImageOfEntities: function () {
-        if (this.gameState.equalToLevel == true) {
-            var greaterImage = 'greaterEqual';
-            var lesserImage = 'lesserEqual';
-        } else {
-            var greaterImage = 'greater';
-            var lesserImage = 'lesser';
-        }
-        this.addGreaterLesserEntities(greaterImage, lesserImage);
+
+        this.addGreaterLesserEntities();
     },
-    addGreaterLesserEntities: function (greaterImage, lesserImage) {
-        // _createGreater(groupOfObjects, amount, image)
-        this._createGreater(this.gameState.greater, this.gameState.greaterAmount, greaterImage);
-        this._createLesser(this.gameState.lesser, this.gameState.lesserAmount, lesserImage);
+    addGreaterLesserEntities: function () {
+        // _createGreater(groupOfObjects, amount)
+        this._createGreater(this.gameState.greater, this.gameState.greaterAmount);
+        this._createLesser(this.gameState.lesser, this.gameState.lesserAmount);
     },
-    _createGreater(groupOfObjects, amount, image){
+    _createGreater(groupOfObjects, amount){
         //this.createEntityGroup(groupOfObjects, amount, image, minValue, maxValue, percentage)
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.greaterMinValue, this.gameState.playerCurrentValue - 1, this.gameState.greaterPropBelow);
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.playerCurrentValue + 1, this.gameState.greaterMaxValue, this.gameState.greaterPropAbove);
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.greaterPropEqual);
+        this._calculateValue(groupOfObjects, amount, this.gameState.greaterMinValue, this.gameState.playerCurrentValue - 1, this.gameState.greaterPropBelow);
+        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.greaterMaxValue, this.gameState.greaterPropAbove);
+        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.greaterPropEqual);
     },
-    _createLesser(groupOfObjects, amount, image){
+    _createLesser(groupOfObjects, amount){
         //this.createEntityGroup(groupOfObjects, amount, image, minValue, maxValue, percentage)
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.lesserMinValue, this.gameState.playerCurrentValue - 1, this.gameState.lesserPropBelow);
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.playerCurrentValue + 1, this.gameState.lesserMaxValue, this.gameState.lesserPropAbove);
-        this._calculateValue(groupOfObjects, amount, image, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.lesserPropEqual);
+        this._calculateValue(groupOfObjects, amount, this.gameState.lesserMinValue, this.gameState.playerCurrentValue - 1, this.gameState.lesserPropBelow);
+        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.lesserMaxValue, this.gameState.lesserPropAbove);
+        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.lesserPropEqual);
     },
-    _calculateValue: function (groupOfObjects, amount, image, minValue, maxValue, percentage) {
+    _calculateValue: function (groupOfObjects, amount, minValue, maxValue, percentage) {
         var value = game.rnd.integerInRange(minValue, maxValue);
-        this._calculateAmount(groupOfObjects, amount, image, minValue, maxValue, percentage, value);
+        this._calculateAmount(groupOfObjects, amount, minValue, maxValue, percentage, value);
     },
-    _calculateAmount: function (groupOfObjects, amount, image, minValue, maxValue, percentage, value) {
+    _calculateAmount: function (groupOfObjects, amount, minValue, maxValue, percentage, value) {
         var rawValue = amount * percentage;
         var amount = game.math.roundTo(rawValue, 0);
 
-        this._createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value);
+        this._createAmountOfEntities(groupOfObjects, amount, minValue, maxValue, value);
 
     },
-    _createAmountOfEntities: function (groupOfObjects, amount, image, minValue, maxValue, value) {
+    _createAmountOfEntities: function (groupOfObjects, amount, minValue, maxValue, value) {
         this.objectGroup = this.add.group();
         this.objectGroup.enableBody = true;
         this.objectGroup.inputEnabled = true;
         this.objectGroup.physicsBodyType = Phaser.Physics.ARCADE;
 
         for (var i = 0; i < amount; i++) {
-            this._createEntities(groupOfObjects, this.objectGroup, minValue, maxValue, image, value);
+            this._createEntities(groupOfObjects, this.objectGroup, minValue, maxValue, value);
         }
     },
-    _createEntities: function (groupOfObjects, objectGroup, minValue, maxValue, image, value) {
-        this.object = this.objectGroup.create(this.bounds.randomX, this.bounds.randomY, image);
+    _createEntities: function (groupOfObjects, objectGroup, minValue, maxValue, value) {
+
         value = game.rnd.integerInRange(minValue, maxValue);
+
+        this._defineImage(groupOfObjects, value);
+
+        this.object = this.objectGroup.create(this.bounds.randomX, this.bounds.randomY, image);
+        this.object.anchor.setTo(0.5, 0.5);
         this.object.value = value;
 
         if(testing[0].worldWrap ==! true){
@@ -566,6 +567,7 @@ GreaterThan.Game.prototype = {
         //this._addGroupPhysics(this.objectGroup);
         this._addSpeed(this.object);
         this._addText(this.object, value);
+        this._addMathsSign(groupOfObjects, this.object);
 
         groupOfObjects.push(this.object);
     },
@@ -573,9 +575,63 @@ GreaterThan.Game.prototype = {
         object.body.velocity.x = game.rnd.integerInRange(-100, 100);
         object.body.velocity.y = game.rnd.integerInRange(-100, 100);
     },
+    _addMathsSign: function(groupOfObjects, object){
+        //Check if the sign is equal to or not
+        if (this.gameState.equalToLevel == true){
+            var image = 'equalTo'
+        }else{
+            var image = 'sign'
+        }
+
+        if(groupOfObjects == this.gameState.greater){
+            this.mathSign = this.add.image(0,0, image);
+            this.mathSign.anchor.setTo(0.5, 0.5);
+            object.addChild(this.mathSign);
+        }else{
+            this.mathSign = this.add.image(0,0, image);
+            this.mathSign.anchor.setTo(0.5, 0.5);
+            this.mathSign.scale.x *= -1;
+            object.addChild(this.mathSign);
+        }
+
+    },
     _addText: function (object, text) {
-        this.text = this.make.text(42, 22, text, {fill: '#f4f0ce'});
+        this.text = this.make.text(19, 0, text, {fill: '#213f6b'});
+        this.text.anchor.setTo(0.5, 0.5);
         object.addChild(this.text);
+    },
+    _defineImage(groupOfObjects, value){
+        if(groupOfObjects == this.gameState.greater){
+            var min = this.gameState.greaterMinValue;
+            var max = this.gameState.greaterMaxValue;
+            var mid = game.math.roundTo(max - min, 0);
+        }else if (groupOfObjects == this.gameState.lesser){
+            var min = this.gameState.lesserMinValue;
+            var max = this.gameState.lesserMaxValue;
+            var mid = game.math.roundTo(max - min, 0);
+        }
+
+        var thirds = game.math.roundTo((mid)/3, 0);
+        var topThird = max - thirds;
+        var midThird = max - (2*thirds);
+
+        if(groupOfObjects == this.gameState.greater) {
+            if (value >= topThird) {
+                image = 'fishC';
+            } else if (value >= midThird) {
+                image = 'fishB';
+            } else if(value >= min){
+                image = 'fishA';
+            }
+        }else if (groupOfObjects == this.gameState.lesser){
+            if (value >= topThird) {
+                image = 'fishA';
+            } else if (value >= midThird) {
+                image = 'fishB';
+            } else if (value >= min){
+                image = 'fishB';
+            }
+        }
     },
     _addGroupPhysics(objectGroup){
         this.physicsGroup = this.game.make.group();
@@ -732,6 +788,8 @@ GreaterThan.Game.prototype = {
                 var maxValue = this.gameState.playerCurrentValue - 1;
             }
 
+            this._addEntityPoints(greater);
+
             greater.kill();
             this.gameState.greater.splice(location, 1);
 
@@ -756,6 +814,8 @@ GreaterThan.Game.prototype = {
                 var lesserSymbol = '<';
                 var minValue = this.gameState.playerCurrentValue + 1;
             }
+
+            this._addEntityPoints(lesser);
 
             lesser.kill();
             this.gameState.lesser.splice(location, 1);
@@ -790,10 +850,23 @@ GreaterThan.Game.prototype = {
     _checkChangeLevel: function () {
         if (this.gameState.levelUp == this.config.rightInARow && this.gameState.currentLevel < this.gameState.highestLevel) {
             if (this.gameState.levelLocation == this.gameState.maxLevel) {
-                this.addPoints(testing[0].levelUpBonus);
-                this.testing.levelUpBoonus += testing[0].levelUpBonus;
-                this.gameState.maxLevel += 1;
-                this.gameState.maxLevelLine += this.config.lineMove;
+
+                if(this.gameState.currentLevel == 2){
+                    this.addPoints(testing[0].levelUpBonus);
+                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                }
+                if(this.gameState.currentLevel == 5){
+                    this.addPoints(testing[0].levelUpBonus);
+                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                }
+                if(this.gameState.currentLevel == 7){
+                    this.addPoints(testing[0].levelUpBonus);
+                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                }
+
+                this.gameState.maxLevel +=1;
+
+
             }
             this.gameState.levelLocation += 1;
             this._levelChangeScreen();
@@ -831,7 +904,7 @@ GreaterThan.Game.prototype = {
         //before generating new context
         this.addGameInformation();
         this._addBackgroundColour();
-        this.checkImageOfEntities();
+        this.addGreaterLesserEntities();
         this.addTreasure();
         this._setNewLevelText();
     },
@@ -901,10 +974,10 @@ GreaterThan.Game.prototype = {
 
         this.minValue = min;
         this.maxValue = max;
-        this._addEntityPoints();
+        //this._addEntityPoints();
         this._textSolvedAnimation(value, symbol);
         //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
-        this._createAmountOfEntities(groupOfObjects, 1, image, min, max, value);
+        this._createAmountOfEntities(groupOfObjects, 1, min, max, value);
 
         this.updateLevelUp();
 
@@ -923,19 +996,29 @@ GreaterThan.Game.prototype = {
         this.gameState.alive = true;
         this.player.frame = 0;
     },
-    _addEntityPoints(){
-        var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
-        if (currentLevel >= 6) {
-            this.addPoints(testing[0].goldPoints);
-            this.testing.pointsAtGold += testing[0].goldPoints;
+    _addEntityPoints(entity){
 
-        } else if (currentLevel >= 3) {
-            this.addPoints(testing[0].silverPoints);
-            this.testing.pointsAtSilver += testing[0].silverPoints;
-        } else {
-            this.addPoints(testing[0].bronzePoints);
-            this.testing.pointsAtBronze += testing[0].bronzePoints;
+        if(entity.key == 'fishA'){
+            this.addPoints(3)
+        }else if(entity.key == 'fishB'){
+            this.addPoints(4)
+        }else if(entity.key == 'fishC'){
+            this.addPoints(5)
         }
+
+
+        // var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
+        // if (currentLevel >= 6) {
+        //     this.addPoints(testing[0].goldPoints);
+        //     this.testing.pointsAtGold += testing[0].goldPoints;
+        //
+        // } else if (currentLevel >= 3) {
+        //     this.addPoints(testing[0].silverPoints);
+        //     this.testing.pointsAtSilver += testing[0].silverPoints;
+        // } else {
+        //     this.addPoints(testing[0].bronzePoints);
+        //     this.testing.pointsAtBronze += testing[0].bronzePoints;
+        // }
     },
 
     addTestingInformation: function () {
