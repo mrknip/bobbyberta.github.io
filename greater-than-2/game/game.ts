@@ -433,11 +433,11 @@ GreaterThan.Game.prototype = {
 
     addPlayer: function () {
 
-        this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, 'you');
+        this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
 
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
-        this.player.body.setSize(75, 75, 0, 0);
+        //this.player.body.setSize(75, 75, 0, 0);
         this.player.anchor.setTo(0.5, 0.5);
 
         this.game.camera.follow(this.player);
@@ -452,13 +452,28 @@ GreaterThan.Game.prototype = {
             this.player.body.minBounceVelocity = 0;
         }
 
+        //Submarine behind player
+        this.sub = this.add.sprite(-5, -10, 'sub');
+        this.sub.anchor.setTo(0.5, 0.5);
+        this.player.addChild(this.sub);
+
+        //Blank circle for player number
+        this.numberCircle = this.add.image(0,0, 'number');
+        this.numberCircle.anchor.setTo(0.5, 0.5);
+        this.player.addChild(this.numberCircle);
+
+
         //Text on Player - Showing the players value
         this.playerNumber = this.make.text(-10, -15, this.gameState.playerCurrentValue, {fill: '#000000'});
         this.player.addChild(this.playerNumber);
+
+
     },
     _playerMovement: function (speed) {
 
         game.physics.arcade.moveToPointer(this.player, speed);
+
+        this.checkAnimation(this.player, this.sub);
 
 
         //This works only in top right corner where the game screen is the same postion as the game world
@@ -467,11 +482,31 @@ GreaterThan.Game.prototype = {
                     this.player.body.velocity.setTo(0, 0);
                 }
 
-
                 if (testing[0].worldWrap == true) {
                     game.world.wrap(this.player);
                 }
 
+    },
+
+    checkAnimation: function(object, frame){
+
+        var pointA = object.body.x;
+
+        game.time.events.add(Phaser.Timer.SECOND * 0.1,
+            function() {
+                this._updateAnimation(pointA, object.body.x, frame);
+            },
+            this);
+
+    },
+    _updateAnimation: function(pointA, objectBodyX, frame){
+        var pointB = objectBodyX;
+
+        if(pointA > pointB){
+            frame.scale.x = 1;
+        }else if (pointA < pointB){
+            frame.scale.x =- 1;
+        }
     },
 
     _playerMovementMouse: function (speed) {
@@ -564,12 +599,45 @@ GreaterThan.Game.prototype = {
             this._addGroupPhysics(this.objectGroup);
         }
 
-        //this._addGroupPhysics(this.objectGroup);
+        this._addFish(this.object, headImage, finImage, tailImage);
+        this._addFishNumber(this.object, value, groupOfObjects);
         this._addSpeed(this.object);
-        this._addText(this.object, value);
-        this._addMathsSign(groupOfObjects, this.object);
 
         groupOfObjects.push(this.object);
+    },
+    _addFish: function(object, headImage, finImage, tailImage){
+        //Fish Base behind number
+        this.fishBase = this.add.sprite(0, 0, image);
+        this.fishBase.anchor.setTo(0.5, 0.5);
+        object.addChild(this.fishBase);
+
+        this._addFishDetail(this.fishBase, headImage, finImage, tailImage);
+    },
+    _addFishDetail: function(fish, headImage, finImage, tailImage){
+
+        //Fish Base behind number
+        this.fishHead = this.add.sprite(-40, 0, headImage);
+        this.fishHead.anchor.setTo(1, 0.5);
+        fish.addChild(this.fishHead);
+
+        //Fish Base behind number
+        this.fishFin = this.add.sprite(0, -45, finImage);
+        this.fishFin.anchor.setTo(0.5, 1);
+        fish.addChild(this.fishFin);
+
+        //Fish Base behind number
+        this.fishTail = this.add.sprite(40, 0, tailImage);
+        this.fishTail.anchor.setTo(0, 0.5);
+        fish.addChild(this.fishTail);
+    },
+    _addFishNumber: function(object, value, groupOfObjects){
+        //Blank circle for fish number
+        this.fishCircle = this.add.image(0,0, 'number');
+        this.fishCircle.anchor.setTo(0.5, 0.5);
+        object.addChild(this.fishCircle);
+
+        this._addText(object, value);
+        this._addMathsSign(groupOfObjects, object);
     },
     _addSpeed: function (object) {
         object.body.velocity.x = game.rnd.integerInRange(-100, 100);
@@ -584,19 +652,19 @@ GreaterThan.Game.prototype = {
         }
 
         if(groupOfObjects == this.gameState.greater){
-            this.mathSign = this.add.image(0,0, image);
+            this.mathSign = this.add.image(-8,0, image);
             this.mathSign.anchor.setTo(0.5, 0.5);
-            object.addChild(this.mathSign);
+            this.fishCircle.addChild(this.mathSign);
         }else{
-            this.mathSign = this.add.image(0,0, image);
+            this.mathSign = this.add.image(-8, 0, image);
             this.mathSign.anchor.setTo(0.5, 0.5);
             this.mathSign.scale.x *= -1;
-            object.addChild(this.mathSign);
+            this.fishCircle.addChild(this.mathSign);
         }
 
     },
     _addText: function (object, text) {
-        this.text = this.make.text(19, 0, text, {fill: '#213f6b'});
+        this.text = this.make.text(12, 0, text, {fill: '#213f6b'});
         this.text.anchor.setTo(0.5, 0.5);
         object.addChild(this.text);
     },
@@ -618,18 +686,36 @@ GreaterThan.Game.prototype = {
         if(groupOfObjects == this.gameState.greater) {
             if (value >= topThird) {
                 image = 'fishC';
+                headImage = 'headC';
+                finImage = 'finC';
+                tailImage = 'tailC';
             } else if (value >= midThird) {
                 image = 'fishB';
+                headImage = 'headB';
+                finImage = 'finB';
+                tailImage = 'tailB';
             } else if(value >= min){
                 image = 'fishA';
+                headImage = 'headA';
+                finImage = 'finA';
+                tailImage = 'tailA';
             }
         }else if (groupOfObjects == this.gameState.lesser){
             if (value >= topThird) {
                 image = 'fishA';
+                headImage = 'headA';
+                finImage = 'finA';
+                tailImage = 'tailA';
             } else if (value >= midThird) {
                 image = 'fishB';
+                headImage = 'headB';
+                finImage = 'finB';
+                tailImage = 'tailB';
             } else if (value >= min){
-                image = 'fishB';
+                image = 'fishC';
+                headImage = 'headC';
+                finImage = 'finC';
+                tailImage = 'tailC';
             }
         }
     },
@@ -700,6 +786,8 @@ GreaterThan.Game.prototype = {
             if(testing[0].worldWrap == true){
                 game.world.wrap(currentGreater);
             }
+
+            this.checkAnimation(currentGreater, currentGreater.children[0]);
 
             this.game.physics.arcade.overlap(
                 this.player,

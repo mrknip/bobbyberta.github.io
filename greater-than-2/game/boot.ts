@@ -72,13 +72,27 @@ GreaterThan.Boot.prototype = {
         game.load.image('treasure', 'assets/collectable.png');
         //game.load.image('clam', 'assets/clam.png');
 
+        game.load.image('sub', 'assets2/sub.png');
+        game.load.image('number', 'assets2/number.png');
+
+        game.load.image('headC', 'assets2/headC.png');
+        game.load.image('finC', 'assets2/finC.png');
+        game.load.image('tailC', 'assets2/tailC.png');
+
+        game.load.image('headB', 'assets2/headB.png');
+        game.load.image('finB', 'assets2/finB.png');
+        game.load.image('tailB', 'assets2/tailB.png');
+
+        game.load.image('headA', 'assets2/headA.png');
+        game.load.image('finA', 'assets2/finA.png');
+        game.load.image('tailA', 'assets2/tailA.png');
+
         game.load.image('fishA', 'assets2/fishA.png');
         game.load.image('fishB', 'assets2/fishB.png');
         game.load.image('fishC', 'assets2/fishC.png');
 
         game.load.image('sign', 'assets2/greaterThan.png');
         game.load.image('equalTo', 'assets2/equalTo.png');
-
 
         game.load.image('greater', 'assets/enemyGreaterSquare.png')
         game.load.image('lesser', 'assets/enemyLessSquare.png')
