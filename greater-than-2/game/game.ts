@@ -453,19 +453,21 @@ GreaterThan.Game.prototype = {
         }
 
         //Submarine behind player
-        this.sub = this.add.sprite(-5, -10, 'sub');
-        this.sub.anchor.setTo(0.5, 0.5);
+        this.sub = this.add.sprite(-1.5, -12, 'sub');
+        this.sub.anchor.setTo(0.53, 0.5);
         this.player.addChild(this.sub);
 
-        //Blank circle for player number
-        this.numberCircle = this.add.image(0,0, 'number');
-        this.numberCircle.anchor.setTo(0.5, 0.5);
-        this.player.addChild(this.numberCircle);
+        // //Blank circle for player number
+        // this.numberCircle = this.add.image(0,0, 'number');
+        // this.numberCircle.anchor.setTo(0.5, 0.5);
+        // this.player.addChild(this.numberCircle);
 
 
         //Text on Player - Showing the players value
-        this.playerNumber = this.make.text(-10, -15, this.gameState.playerCurrentValue, {fill: '#000000'});
+        this.playerNumberBase = this.make.text(-11, -15, this.gameState.playerCurrentValue, {fill: '#FFFFFF'});
+        this.playerNumber = this.make.text(-9, -13, this.gameState.playerCurrentValue, {fill: '#000000'});
         this.player.addChild(this.playerNumber);
+        this.player.addChild(this.playerNumberBase);
 
 
     },
@@ -920,6 +922,7 @@ GreaterThan.Game.prototype = {
         this.gameState.treasure.splice(location, 1);
 
         this.playerNumber.setText(this.gameState.playerCurrentValue);
+        this.playerNumberBase.setText(this.gameState.playerCurrentValue);
     },
 
     //level progression
@@ -998,6 +1001,7 @@ GreaterThan.Game.prototype = {
     },
     _setNewLevelText: function () {
         this.playerNumber.setText(this.gameState.playerCurrentValue);
+        this.playerNumberBase.setText(this.gameState.playerCurrentValue);
         this.titleText.setText(this.textStage + ": " + this.gameState.levelName);
         this.scoreText.setText(this.textScore + ": " + this.gameState.score);
         //this._setUIPosition(this.arrow, 115, this.gameState.depth);
