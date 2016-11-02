@@ -989,20 +989,20 @@ GreaterThan.Game.prototype = {
 
         this._lotsOfBubbles();
 
-        game.time.events.add(Phaser.Timer.SECOND * 2, this._removeEntities, this);
+        game.time.events.add(Phaser.Timer.SECOND * 0, this._removeEntities, this);
 
     },
     _lotsOfBubbles: function(){
 
         var delay = 0;
 
-        for (var i = 0; i < 300; i++)
+        for (var i = 0; i < 150; i++)
         {
             this.bubble = game.add.sprite(-100 + (this.bounds.randomX), 2500, 'bubble');
 
             this.bubble.scale.set(game.rnd.realInRange(0.01, 0.1));
 
-            var speed = game.rnd.between(2000, 6000);
+            var speed = game.rnd.between(3000, 8000);
 
             game.add.tween(this.bubble).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true);
 
@@ -1016,7 +1016,7 @@ GreaterThan.Game.prototype = {
             this._removeGreaterLesser(this.gameState.lesser);
             this._removeGreaterLesser(this.gameState.treasure);
 
-            game.time.events.add(Phaser.Timer.SECOND * 0.5, this._nextLevel, this);
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, this._nextLevel, this);
 
             this.addTestingInformation();
             //this.showTestingData();
