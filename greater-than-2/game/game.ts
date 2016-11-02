@@ -237,6 +237,7 @@ GreaterThan.Game.prototype = {
 
     addTimer: function (minute, second) {
         this.timer = game.time.create();
+        this.timerSound = this.timer.add((Phaser.Timer.MINUTE * minute + Phaser.Timer.SECOND * second - Phaser.Timer.SECOND * 11), this._timerSound, this);
         this.timerEvent = this.timer.add(Phaser.Timer.MINUTE * minute + Phaser.Timer.SECOND * second, this._endTimer, this);
         this.timer.start();
     },
@@ -245,6 +246,9 @@ GreaterThan.Game.prototype = {
         var minutes = "0" + Math.floor(s / 60);
         var seconds = "0" + (s - minutes * 60);
         return minutes.substr(-2) + ":" + seconds.substr(-2);
+    },
+    _timerSound: function (){
+        this.addSFX('timer');
     },
     _endTimer: function () {
         player[0].currentScore = this.gameState.score;
@@ -915,6 +919,9 @@ GreaterThan.Game.prototype = {
         }
     },
     _treasureCollided: function (treasure, location, treasureValue) {
+
+        this.addSFX('pop');
+
         this.gameState.playerCurrentValue += treasureValue;
         this.addPoints(testing[0].treasurePoints);
         this.testing.treasure += 1;
@@ -960,9 +967,11 @@ GreaterThan.Game.prototype = {
 
             }
             this.gameState.levelLocation += 1;
+            this.addSFX('win');
             this._levelChangeScreen();
         }
         if (this.gameState.levelDown == this.config.wrongInARow && this.gameState.currentLevel > this.gameState.lowestLevel) {
+            this.addSFX('wave');
             this._levelChangeScreen();
             this.gameState.levelLocation -= 1;
         }
@@ -977,12 +986,37 @@ GreaterThan.Game.prototype = {
         }
     },
     _levelChangeScreen: function () {
+
+        this._lotsOfBubbles();
+
+        game.time.events.add(Phaser.Timer.SECOND * 2, this._removeEntities, this);
+
+    },
+    _lotsOfBubbles: function(){
+
+        var delay = 0;
+
+        for (var i = 0; i < 300; i++)
+        {
+            this.bubble = game.add.sprite(-100 + (this.bounds.randomX), 2500, 'bubble');
+
+            this.bubble.scale.set(game.rnd.realInRange(0.01, 0.1));
+
+            var speed = game.rnd.between(2000, 6000);
+
+            game.add.tween(this.bubble).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true);
+
+            delay += 200;
+        }
+
+    },
+    _removeEntities: function(){
         if (this.gameState.currentLevel >= this.gameState.lowestLevel && this.gameState.currentLevel <= this.gameState.highestLevel) {
             this._removeGreaterLesser(this.gameState.greater);
             this._removeGreaterLesser(this.gameState.lesser);
             this._removeGreaterLesser(this.gameState.treasure);
 
-            game.time.events.add(Phaser.Timer.SECOND * 1, this._nextLevel, this);
+            game.time.events.add(Phaser.Timer.SECOND * 0.5, this._nextLevel, this);
 
             this.addTestingInformation();
             //this.showTestingData();
@@ -1049,6 +1083,9 @@ GreaterThan.Game.prototype = {
         // }
     },
     _wrongAnswer: function (entity) {
+
+        this.addSFX('splash');
+
         this._animateFishEscape(entity);
         this._died();
         this._updateLevelDown();
@@ -1063,6 +1100,8 @@ GreaterThan.Game.prototype = {
         this.game.add.tween(entity).to({alpha: 1}, 3000, Phaser.Easing.Linear.None, true);
     },
     _rightAnswer: function (min, max, value, symbol, groupOfObjects, amount, image) {
+
+        this.addSFX('tick');
 
         this.minValue = min;
         this.maxValue = max;
@@ -1142,5 +1181,11 @@ GreaterThan.Game.prototype = {
         console.log('Level Up Bonus: ' + testing[0].levelUpBoonus);
 
     },
+
+    addSFX(sound){
+        this.sound = game.add.audio(sound);
+        this.sound.play();
+
+    }
 
 };

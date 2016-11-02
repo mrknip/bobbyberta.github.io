@@ -49,7 +49,7 @@ player = [
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 8,
+                highestLevel: 9,
                 lowestLevel: 0,
             },
             {
@@ -57,40 +57,40 @@ player = [
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 17,
-                lowestLevel: 9,
+                highestLevel: 19,
+                lowestLevel: 10,
             },
             {
                 name: '< and > Positive Integer',
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 26,
-                lowestLevel: 18,
+                highestLevel: 29,
+                lowestLevel: 20,
             },
             {
                 name: '> Integers',
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 35,
-                lowestLevel: 27,
+                highestLevel: 39,
+                lowestLevel: 30,
             },
             {
                 name: '< Integers',
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 44,
-                lowestLevel: 36,
+                highestLevel: 49,
+                lowestLevel: 40,
             },
             {
                 name: '< and > Integer',
                 locked: false,
                 medal: 'none',
                 score: 0,
-                highestLevel: 53,
-                lowestLevel: 45,
+                highestLevel: 59,
+                lowestLevel: 50,
             }
         ]
     },
@@ -103,7 +103,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -135,7 +135,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -167,7 +167,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -199,7 +199,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.8,
@@ -241,7 +241,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.8,
@@ -283,7 +283,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.8,
@@ -325,7 +325,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.8,
@@ -382,7 +382,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 50,
                 proportionAbove: 0.8,
@@ -437,6 +437,63 @@ levels = [
         levelName: '1:9',
         playerValue: 20,
         equalTo: true,
+        greater: [
+            {
+                amount: 10,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 0,
+                proportionAbove: 0,
+                proportionEqual: 0,
+                proportionBelow: 0,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: '1:10',
+        playerValue: 20,
+        equalTo: false,
         greater: [
             {
                 amount: 15,
@@ -507,7 +564,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.7,
@@ -539,7 +596,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 15,
                 proportionAbove: 0.7,
@@ -571,7 +628,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -603,7 +660,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0,
@@ -645,7 +702,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -687,7 +744,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -729,7 +786,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -786,7 +843,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 50,
                 proportionAbove: 0,
@@ -831,6 +888,64 @@ levels = [
         levelName: '2:9',
         playerValue: 20,
         equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 0,
+                proportionAbove: 0,
+                proportionEqual: 0,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 10,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: '2:10',
+        playerValue: 20,
+        equalTo: false,
         greater: [
             {
                 amount: 0,
@@ -891,7 +1006,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -901,7 +1016,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -923,7 +1038,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
@@ -933,7 +1048,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
@@ -955,7 +1070,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.3,
@@ -965,7 +1080,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
@@ -987,7 +1102,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0,
@@ -997,7 +1112,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
@@ -1029,7 +1144,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -1039,7 +1154,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.5,
@@ -1071,7 +1186,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -1081,7 +1196,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.5,
@@ -1113,7 +1228,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0.5,
@@ -1123,7 +1238,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 30,
                 proportionAbove: 0,
@@ -1170,7 +1285,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 50,
                 proportionAbove: 0.5,
@@ -1180,7 +1295,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 50,
                 proportionAbove: 0,
@@ -1225,6 +1340,63 @@ levels = [
         levelName: '3:9',
         playerValue: 20,
         equalTo: true,
+        greater: [
+            {
+                amount: 5,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0.5,
+                proportionEqual: 0.5,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 5,
+                minValue: 0,
+                maxValue: 50,
+                proportionAbove: 0,
+                proportionEqual: 0.5,
+                proportionBelow: 0.5,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value:  1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value:  2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value:  3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: '3:10',
+        playerValue: 20,
+        equalTo: false,
         greater: [
             {
                 amount: 7,
@@ -1285,7 +1457,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -1317,7 +1489,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -1349,7 +1521,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -1381,7 +1553,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.8,
@@ -1423,7 +1595,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.8,
@@ -1465,7 +1637,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.8,
@@ -1507,7 +1679,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.8,
@@ -1564,7 +1736,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -25,
                 maxValue: 25,
                 proportionAbove: 0.8,
@@ -1619,6 +1791,63 @@ levels = [
         levelName: '4:9',
         playerValue: -10,
         equalTo: true,
+        greater: [
+            {
+                amount: 10,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.8,
+                proportionEqual: 0.2,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 0,
+                proportionAbove: 0,
+                proportionEqual: 0,
+                proportionBelow: 0,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: '4:10',
+        playerValue: -10,
+        equalTo: false,
         greater: [
             {
                 amount: 15,
@@ -1689,7 +1918,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.7,
@@ -1721,7 +1950,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.7,
@@ -1753,7 +1982,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.3,
@@ -1785,7 +2014,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0,
@@ -1827,7 +2056,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0,
@@ -1869,7 +2098,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0,
@@ -1911,7 +2140,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0,
@@ -1968,7 +2197,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 15,
+                amount: 10,
                 minValue: -25,
                 maxValue: 25,
                 proportionAbove: 0,
@@ -2013,6 +2242,64 @@ levels = [
         levelName: '5:9',
         playerValue: -10,
         equalTo: true,
+        greater: [
+            {
+                amount: 0,
+                minValue: 0,
+                maxValue: 0,
+                proportionAbove: 0,
+                proportionEqual: 0,
+                proportionBelow: 0,
+            }
+        ],
+        lesser: [
+            {
+                amount: 10,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0,
+                proportionEqual: 0.2,
+                proportionBelow: 0.8,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+
+    {
+        levelName: '5:10',
+        playerValue: -10,
+        equalTo: false,
         greater: [
             {
                 amount: 0,
@@ -2073,7 +2360,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -2083,7 +2370,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -2105,7 +2392,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -2115,7 +2402,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -2137,7 +2424,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.25,
@@ -2147,7 +2434,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.25,
@@ -2169,7 +2456,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: 0,
                 maxValue: 20,
                 proportionAbove: 0.5,
@@ -2179,7 +2466,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -10,
                 maxValue: 10,
                 proportionAbove: 0.5,
@@ -2211,7 +2498,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.25,
@@ -2221,7 +2508,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.25,
@@ -2253,7 +2540,7 @@ levels = [
         equalTo: true,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.25,
@@ -2263,7 +2550,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.25,
@@ -2295,7 +2582,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.5,
@@ -2305,7 +2592,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -15,
                 maxValue: 15,
                 proportionAbove: 0.5,
@@ -2352,7 +2639,7 @@ levels = [
         equalTo: false,
         greater: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -25,
                 maxValue: 25,
                 proportionAbove: 0.5,
@@ -2362,7 +2649,7 @@ levels = [
         ],
         lesser: [
             {
-                amount: 7,
+                amount: 5,
                 minValue: -25,
                 maxValue: 25,
                 proportionAbove: 0.5,
@@ -2405,6 +2692,63 @@ levels = [
     },
     {
         levelName: '6:9',
+        playerValue: 0,
+        equalTo: true,
+        greater: [
+            {
+                amount: 5,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
+            }
+        ],
+        lesser: [
+            {
+                amount: 5,
+                minValue: -25,
+                maxValue: 25,
+                proportionAbove: 0.25,
+                proportionEqual: 0.5,
+                proportionBelow: 0.25,
+            }
+        ],
+        treasure: [
+            {
+                text: '+1',
+                value: 1,
+                amount: 1,
+            },
+            {
+                text: '+2',
+                value: 2,
+                amount: 2,
+            },
+            {
+                text: '+3',
+                value: 3,
+                amount: 3,
+            },
+            {
+                text: '-1',
+                value: -1,
+                amount: 1,
+            },
+            {
+                text: '-2',
+                value: -2,
+                amount: 2,
+            },
+            {
+                text: '-3',
+                value: -3,
+                amount: 3,
+            },
+        ]
+    },
+    {
+        levelName: '6:10',
         playerValue: 0,
         equalTo: true,
         greater: [

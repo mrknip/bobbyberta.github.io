@@ -72,6 +72,8 @@ GreaterThan.Boot.prototype = {
         game.load.image('treasure', 'assets/collectable.png');
         //game.load.image('clam', 'assets/clam.png');
 
+        game.load.image('bubble', 'assets2/bubble2.png');
+
         game.load.image('sub', 'assets2/sub.png');
         game.load.image('number', 'assets2/number.png');
 
@@ -94,8 +96,17 @@ GreaterThan.Boot.prototype = {
         game.load.image('sign', 'assets2/greaterThan.png');
         game.load.image('equalTo', 'assets2/equalTo.png');
 
-        game.load.image('greater', 'assets/enemyGreaterSquare.png')
-        game.load.image('lesser', 'assets/enemyLessSquare.png')
+        game.load.image('greater', 'assets/enemyGreaterSquare.png');
+        game.load.image('lesser', 'assets/enemyLessSquare.png');
+
+        //sound for in game
+        game.load.audio('pop', 'sound/pop.mp3');
+        game.load.audio('splash', 'sound/splash.mp3');
+        game.load.audio('tick', 'sound/tick.mp3');
+        game.load.audio('win', 'sound/win.mp3');
+        game.load.audio('timer', 'sound/timer.mp3');
+        game.load.audio('wave', 'sound/wave.mp3');
+
 
         //Assets for Level Completed Screen
         game.load.image('bronze', 'assets/bronze.png');
