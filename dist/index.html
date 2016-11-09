@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+    <title>Greater Than You</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+
+        canvas {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+
+
+<script src="game.js"> // Using unuglified file as this means you can make debugging changes directly </script>
+
+<script type="text/javascript">
+
+    // Works as guest user
+    window.addEventListener("load", function () {
+        window.game = new Game({
+            resourceUrl: null,
+            baseUrl: 'localhost:8000',
+            locale: 'en',
+            gameId: 23,
+            userId: 0
+        });
+
+//        Uncomment the below for challenge mode
+//        window.game = new Game({
+//            resourceUrl: null,
+//            baseUrl: 'localhost:8000',
+//            locale: 'en',
+//            gameId: 23,
+//            userId: 0,
+//            activityId: 1 // Edit this number for different challenges
+//        });
+
+        window.game.play();
+    });
+</script>
+
+<div id="canvasContainer"></div>
+</body>
+</html>

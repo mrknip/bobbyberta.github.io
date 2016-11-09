@@ -1,0 +1,85 @@
+{
+  "images": {
+    "splash": "assets2/background.png",
+    "play": "assets2/playButton.png",
+    "help": "assets2/helpButton.png",
+    "titleImage": "assets2/titleImage.png",
+    "helpBox": "assets2/helpBox.png",
+
+    "backgroundTitle": "assets/titleBackground.png",
+    "box1": "assets/levelSelectBox.png",
+    "locked": "assets/levelLocked.png",
+    "home": "assets/homeButton.png",
+
+    "bgBase": "assets2/bg.jpg",
+    "bgMiddle": "assets2/middleBg.png",
+    "bgTop": "assets2/topBg.png",
+    "bg": "assets/background.png",
+    "particle": "assets2/particle.png",
+    "bgFish": "assets2/bg_fish.png",
+
+    "play2": "assets2/playButton2.png",
+
+    "up": "assets/levelUp.png",
+    "loose": "assets/levelDown.png",
+    "blob": "assets/dust.png",
+    "eatsUI": "assets/uiBar.png",
+    "title": "assets/levelNameUI.png",
+    "scoreBox": "assets2/uiBox.png",
+
+    "fuelBase": "assets2/baseHealthBar.png",
+    "fuelMid": "assets2/healthBar1.png",
+    "fuelTop": "assets2/healthBar2.png",
+
+    "greaterEqual": "assets/enemyGreaterEqual.png",
+    "lesserEqual": "assets/enemyLessEqual.png",
+
+    "treasure": "assets/collectable.png",
+    "bubble": "assets2/bubble2.png",
+
+    "sub": "assets2/sub.png",
+    "number": "assets2/number.png",
+
+    "headC": "assets2/headC.png",
+    "finC": "assets2/finC.png",
+    "tailC": "assets2/tailC.png",
+
+    "headB": "assets2/headB.png",
+    "finB": "assets2/finB.png",
+    "tailB": "assets2/tailB.png",
+
+    "headA": "assets2/headA.png",
+    "finA": "assets2/finA.png",
+    "tailA": "assets2/tailA.png",
+
+    "fishA": "assets2/fishA.png",
+    "fishB": "assets2/fishB.png",
+    "fishC": "assets2/fishC.png",
+
+    "sign": "assets2/greaterThan.png",
+    "equalTo": "assets2/equalTo.png",
+
+    "greater": "assets/enemyGreaterSquare.png",
+    "lesser": "assets/enemyLessSquare.png",
+
+    "bronze": "assets/bronze.png",
+    "silver": "assets/silver.png",
+    "gold": "assets/gold.png",
+    "complete": "assets/completedDepth.png",
+    "i": "assets/information.png"
+  },
+
+  "spritesheets": {
+
+  },
+
+  "audio": {
+    "pop": "sound/pop.mp3",
+    "splash": "sound/splash.mp3",
+    "tick": "sound/tick.mp3",
+    "win": "sound/win.mp3",
+    "timer": "sound/timer.mp3",
+    "wave": "sound/wave.mp3"
+  }
+
+}
