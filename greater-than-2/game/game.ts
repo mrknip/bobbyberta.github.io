@@ -69,6 +69,11 @@ GreaterThan.Game.prototype = {
         }
 
         game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
+
+        //Debug stuff
+        // game.debug.body(this.slowCircle);
+        // game.debug.body(this.mediumCircle);
+        // game.debug.body(this.player);
     },
 
 
@@ -117,7 +122,7 @@ GreaterThan.Game.prototype = {
             //Player information
             playerCurrentValue: levels[levelId].playerValue,
             alive: true,
-            playerSpeed: 400,
+            playerSpeed: 500,
             //Level Progression Information
             levelUp: 0,
             levelDown: 0,
@@ -260,7 +265,7 @@ GreaterThan.Game.prototype = {
     addUI: function () {
         //seUiPosition x and y are game screen size / number
 
-        var textStyle = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: 200};
+        var textStyle = { fill: "#ffffff", align: "center", wordWrap: true, wordWrapWidth: 200};
 
         this._addTitle(textStyle);
         this._addScore(textStyle);
@@ -274,14 +279,14 @@ GreaterThan.Game.prototype = {
     _addTitle: function(textStyle){
         this.levelTitle = this.add.image(0, 0, 'title');
         this._setUIPosition(this.levelTitle, 10, 20);
-        this.titleText = this.make.text(5, 5, this.textStage + ": " + this.gameState.levelName, textStyle);
+        this.titleText = this.make.text(5, 5,  this.gameState.levelName, textStyle);
         this.titleText.anchor.setTo(0.5, 0.5);
         this.levelTitle.addChild(this.titleText);
     },
     _addScore: function(textStyle){
         this.scoreBox = this.add.image(0, 0, 'title');
-        this._setUIPosition(this.scoreBox, 10, 9);
-        this.scoreText = this.make.text(5, 5, this.textScore + ": " + this.gameState.score, textStyle);
+        this._setUIPosition(this.scoreBox, 10, 8);
+        this.scoreText = this.make.text(5, 5, this.gameState.score, textStyle);
         this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
     },
@@ -437,7 +442,12 @@ GreaterThan.Game.prototype = {
 
     addPlayer: function () {
 
+
         this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
+
+
+        this._addSlowCircle();
+        this._addMediumCircle();
 
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
@@ -475,22 +485,62 @@ GreaterThan.Game.prototype = {
 
 
     },
-    _playerMovement: function (speed) {
 
-        game.physics.arcade.moveToPointer(this.player, speed);
+    _addSlowCircle: function(){
+
+        //this works for the bottom right corner - probably means that the anchor point of this sprite is top left
+        //needs to be moved into the middle of the player...
+
+        this.slowCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
+
+        //Player Physics
+        this.physics.enable(this.slowCircle, Phaser.Physics.ARCADE);
+        this.slowCircle.body.setSize(150, 150);
+        this.slowCircle.anchor.setTo(2.5, 2.5);
+
+
+    },
+
+    _addMediumCircle: function(){
+
+        this.mediumCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
+
+        //Player Physics
+        this.physics.enable(this.mediumCircle, Phaser.Physics.ARCADE);
+        this.mediumCircle.body.setSize(300, 300);
+        this.mediumCircle.anchor.setTo(4.5, 4.5);
+
+        //player.addChild(this.mediumCircle)
+
+    },
+
+    _playerMovement: function (speedMax) {
+
+
+        var mousePositionX = game.input.x + game.camera.x;
+        var mousePositionY = game.input.y + game.camera.y;
+
+        if (Phaser.Rectangle.contains(this.player.body, mousePositionX, mousePositionY)) {
+            this.player.body.velocity.setTo(0, 0);
+            this.slowCircle.body.velocity.setTo(0, 0);
+            this.mediumCircle.body.velocity.setTo(0, 0);
+        } else if (Phaser.Rectangle.contains(this.slowCircle.body, mousePositionX, mousePositionY)) {
+            game.physics.arcade.moveToPointer(this.player, speedMax / 2);
+            game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 2);
+            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 2);
+        }else if (Phaser.Rectangle.contains(this.mediumCircle.body, mousePositionX, mousePositionY)){
+            game.physics.arcade.moveToPointer(this.player, speedMax / 1.5);
+            game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 1.5);
+            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 1.5);
+        }else{
+            game.physics.arcade.moveToPointer(this.player, speedMax);
+            game.physics.arcade.moveToPointer(this.slowCircle, speedMax);
+            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax);
+        }
+
 
         this.checkAnimation(this.player, this.sub);
 
-
-        //This works only in top right corner where the game screen is the same postion as the game world
-        //need to find a way to get the screen position not the world position
-                if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
-                    this.player.body.velocity.setTo(0, 0);
-                }
-
-                if (testing[0].worldWrap == true) {
-                    game.world.wrap(this.player);
-                }
 
     },
 
@@ -1036,8 +1086,8 @@ GreaterThan.Game.prototype = {
     _setNewLevelText: function () {
         this.playerNumber.setText(this.gameState.playerCurrentValue);
         this.playerNumberBase.setText(this.gameState.playerCurrentValue);
-        this.titleText.setText(this.textStage + ": " + this.gameState.levelName);
-        this.scoreText.setText(this.textScore + ": " + this.gameState.score);
+        this.titleText.setText( this.gameState.levelName);
+        this.scoreText.setText( this.gameState.score);
         //this._setUIPosition(this.arrow, 115, this.gameState.depth);
         //this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
 
@@ -1077,7 +1127,7 @@ GreaterThan.Game.prototype = {
     //Feedback on game progression
     addPoints: function (value) {
         this.gameState.score += value;
-        this.scoreText.setText(this.textScore + ": " + this.gameState.score);
+        this.scoreText.setText(this.gameState.score);
         // if (this.gameState.levelLocation == this.gameState.maxLevel) {
         //     this.gameState.score += value;
         // }

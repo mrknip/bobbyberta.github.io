@@ -54,10 +54,11 @@ GreaterThan.Boot.prototype = {
         //Game UI
         game.load.image('eatsUI', 'assets/uiBar.png');
         //game.load.spritesheet('lives', 'assets/lives.png', 150, 30, 5);
-        game.load.image('title', 'assets/levelNameUI.png');
+        //game.load.image('title', 'assets/levelNameUI.png');
         game.load.image('fuelBase', 'assets2/baseHealthBar.png');
         game.load.image('fuelMid', 'assets2/healthBar1.png');
         game.load.image('fuelTop', 'assets2/healthBar2.png');
+        game.load.image('title', 'assets2/scoreUI.png');
         //game.load.image('depth', 'assets/depth.png');
         //game.load.image('arrow', 'assets/arrow.png');
         //game.load.image('deepestLine', 'assets/deepestLine.png');
