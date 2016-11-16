@@ -81258,58 +81258,2373 @@ MangahighGameAPI = function (gameId, userId, apiBaseUrl, resourceBaseUrl) {
   return Api;
 };
 
+// i18next, v1.10.3
+// Copyright (c)2015 Jan Mühlemann (jamuhl).
+// Distributed under MIT license
+// http://i18next.com
+(function(root) {
+
+    // add indexOf to non ECMA-262 standard compliant browsers
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+            "use strict";
+            if (this == null) {
+                throw new TypeError();
+            }
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (len === 0) {
+                return -1;
+            }
+            var n = 0;
+            if (arguments.length > 0) {
+                n = Number(arguments[1]);
+                if (n != n) { // shortcut for verifying if it's NaN
+                    n = 0;
+                } else if (n != 0 && n != Infinity && n != -Infinity) {
+                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
+                }
+            }
+            if (n >= len) {
+                return -1;
+            }
+            var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+            for (; k < len; k++) {
+                if (k in t && t[k] === searchElement) {
+                    return k;
+                }
+            }
+            return -1;
+        }
+    }
+    
+    // add lastIndexOf to non ECMA-262 standard compliant browsers
+    if (!Array.prototype.lastIndexOf) {
+        Array.prototype.lastIndexOf = function(searchElement /*, fromIndex*/) {
+            "use strict";
+            if (this == null) {
+                throw new TypeError();
+            }
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (len === 0) {
+                return -1;
+            }
+            var n = len;
+            if (arguments.length > 1) {
+                n = Number(arguments[1]);
+                if (n != n) {
+                    n = 0;
+                } else if (n != 0 && n != (1 / 0) && n != -(1 / 0)) {
+                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
+                }
+            }
+            var k = n >= 0 ? Math.min(n, len - 1) : len - Math.abs(n);
+            for (; k >= 0; k--) {
+                if (k in t && t[k] === searchElement) {
+                    return k;
+                }
+            }
+            return -1;
+        };
+    }
+    
+    // Add string trim for IE8.
+    if (typeof String.prototype.trim !== 'function') {
+        String.prototype.trim = function() {
+            return this.replace(/^\s+|\s+$/g, ''); 
+        }
+    }
+
+    var $ = root.jQuery || root.Zepto
+      , i18n = {}
+      , resStore = {}
+      , currentLng
+      , replacementCounter = 0
+      , languages = []
+      , initialized = false
+      , sync = {}
+      , conflictReference = null;
+
+
+
+    // Export the i18next object for **CommonJS**. 
+    // If we're not in CommonJS, add `i18n` to the
+    // global object or to jquery.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = i18n;
+    } else {
+        if ($) {
+            $.i18n = $.i18n || i18n;
+        }
+        
+        if (root.i18n) {
+        	conflictReference = root.i18n;
+        }
+        root.i18n = i18n;
+    }
+    sync = {
+    
+        load: function(lngs, options, cb) {
+            if (options.useLocalStorage) {
+                sync._loadLocal(lngs, options, function(err, store) {
+                    var missingLngs = [];
+                    for (var i = 0, len = lngs.length; i < len; i++) {
+                        if (!store[lngs[i]]) missingLngs.push(lngs[i]);
+                    }
+    
+                    if (missingLngs.length > 0) {
+                        sync._fetch(missingLngs, options, function(err, fetched) {
+                            f.extend(store, fetched);
+                            sync._storeLocal(fetched);
+    
+                            cb(err, store);
+                        });
+                    } else {
+                        cb(err, store);
+                    }
+                });
+            } else {
+                sync._fetch(lngs, options, function(err, store){
+                    cb(err, store);
+                });
+            }
+        },
+    
+        _loadLocal: function(lngs, options, cb) {
+            var store = {}
+              , nowMS = new Date().getTime();
+    
+            if(window.localStorage) {
+    
+                var todo = lngs.length;
+    
+                f.each(lngs, function(key, lng) {
+                    var local = f.localStorage.getItem('res_' + lng);
+    
+                    if (local) {
+                        local = JSON.parse(local);
+    
+                        if (local.i18nStamp && local.i18nStamp + options.localStorageExpirationTime > nowMS) {
+                            store[lng] = local;
+                        }
+                    }
+    
+                    todo--; // wait for all done befor callback
+                    if (todo === 0) cb(null, store);
+                });
+            }
+        },
+    
+        _storeLocal: function(store) {
+            if(window.localStorage) {
+                for (var m in store) {
+                    store[m].i18nStamp = new Date().getTime();
+                    f.localStorage.setItem('res_' + m, JSON.stringify(store[m]));
+                }
+            }
+            return;
+        },
+    
+        _fetch: function(lngs, options, cb) {
+            var ns = options.ns
+              , store = {};
+            
+            if (!options.dynamicLoad) {
+                var todo = ns.namespaces.length * lngs.length
+                  , errors;
+    
+                // load each file individual
+                f.each(ns.namespaces, function(nsIndex, nsValue) {
+                    f.each(lngs, function(lngIndex, lngValue) {
+                        
+                        // Call this once our translation has returned.
+                        var loadComplete = function(err, data) {
+                            if (err) {
+                                errors = errors || [];
+                                errors.push(err);
+                            }
+                            store[lngValue] = store[lngValue] || {};
+                            store[lngValue][nsValue] = data;
+    
+                            todo--; // wait for all done befor callback
+                            if (todo === 0) cb(errors, store);
+                        };
+                        
+                        if(typeof options.customLoad == 'function'){
+                            // Use the specified custom callback.
+                            options.customLoad(lngValue, nsValue, options, loadComplete);
+                        } else {
+                            //~ // Use our inbuilt sync.
+                            sync._fetchOne(lngValue, nsValue, options, loadComplete);
+                        }
+                    });
+                });
+            } else {
+                // Call this once our translation has returned.
+                var loadComplete = function(err, data) {
+                    cb(err, data);
+                };
+    
+                if(typeof options.customLoad == 'function'){
+                    // Use the specified custom callback.
+                    options.customLoad(lngs, ns.namespaces, options, loadComplete);
+                } else {
+                    var url = applyReplacement(options.resGetPath, { lng: lngs.join('+'), ns: ns.namespaces.join('+') });
+                    // load all needed stuff once
+                    f.ajax({
+                        url: url,
+                        cache: options.cache,
+                        success: function(data, status, xhr) {
+                            f.log('loaded: ' + url);
+                            loadComplete(null, data);
+                        },
+                        error : function(xhr, status, error) {
+                            f.log('failed loading: ' + url);
+                            loadComplete('failed loading resource.json error: ' + error);
+                        },
+                        dataType: "json",
+                        async : options.getAsync,
+                        timeout: options.ajaxTimeout
+                    });
+                }    
+            }
+        },
+    
+        _fetchOne: function(lng, ns, options, done) {
+            var url = applyReplacement(options.resGetPath, { lng: lng, ns: ns });
+            f.ajax({
+                url: url,
+                cache: options.cache,
+                success: function(data, status, xhr) {
+                    f.log('loaded: ' + url);
+                    done(null, data);
+                },
+                error : function(xhr, status, error) {
+                    if ((status && status == 200) || (xhr && xhr.status && xhr.status == 200)) {
+                        // file loaded but invalid json, stop waste time !
+                        f.error('There is a typo in: ' + url);
+                    } else if ((status && status == 404) || (xhr && xhr.status && xhr.status == 404)) {
+                        f.log('Does not exist: ' + url);
+                    } else {
+                        var theStatus = status ? status : ((xhr && xhr.status) ? xhr.status : null);
+                        f.log(theStatus + ' when loading ' + url);
+                    }
+                    
+                    done(error, {});
+                },
+                dataType: "json",
+                async : options.getAsync,
+                timeout: options.ajaxTimeout
+            });
+        },
+    
+        postMissing: function(lng, ns, key, defaultValue, lngs) {
+            var payload = {};
+            payload[key] = defaultValue;
+    
+            var urls = [];
+    
+            if (o.sendMissingTo === 'fallback' && o.fallbackLng[0] !== false) {
+                for (var i = 0; i < o.fallbackLng.length; i++) {
+                    urls.push({lng: o.fallbackLng[i], url: applyReplacement(o.resPostPath, { lng: o.fallbackLng[i], ns: ns })});
+                }
+            } else if (o.sendMissingTo === 'current' || (o.sendMissingTo === 'fallback' && o.fallbackLng[0] === false) ) {
+                urls.push({lng: lng, url: applyReplacement(o.resPostPath, { lng: lng, ns: ns })});
+            } else if (o.sendMissingTo === 'all') {
+                for (var i = 0, l = lngs.length; i < l; i++) {
+                    urls.push({lng: lngs[i], url: applyReplacement(o.resPostPath, { lng: lngs[i], ns: ns })});
+                }
+            }
+    
+            for (var y = 0, len = urls.length; y < len; y++) {
+                var item = urls[y];
+                f.ajax({
+                    url: item.url,
+                    type: o.sendType,
+                    data: payload,
+                    success: function(data, status, xhr) {
+                        f.log('posted missing key \'' + key + '\' to: ' + item.url);
+    
+                        // add key to resStore
+                        var keys = key.split('.');
+                        var x = 0;
+                        var value = resStore[item.lng][ns];
+                        while (keys[x]) {
+                            if (x === keys.length - 1) {
+                                value = value[keys[x]] = defaultValue;
+                            } else {
+                                value = value[keys[x]] = value[keys[x]] || {};
+                            }
+                            x++;
+                        }
+                    },
+                    error : function(xhr, status, error) {
+                        f.log('failed posting missing key \'' + key + '\' to: ' + item.url);
+                    },
+                    dataType: "json",
+                    async : o.postAsync,
+                    timeout: o.ajaxTimeout
+                });
+            }
+        },
+    
+        reload: reload
+    };
+    // defaults
+    var o = {
+        lng: undefined,
+        load: 'all',
+        preload: [],
+        lowerCaseLng: false,
+        returnObjectTrees: false,
+        fallbackLng: ['dev'],
+        fallbackNS: [],
+        detectLngQS: 'setLng',
+        detectLngFromLocalStorage: false,
+        ns: {
+            namespaces: ['translation'],
+            defaultNs: 'translation'
+        },
+        fallbackOnNull: true,
+        fallbackOnEmpty: false,
+        fallbackToDefaultNS: false,
+        showKeyIfEmpty: false,
+        nsseparator: ':',
+        keyseparator: '.',
+        selectorAttr: 'data-i18n',
+        debug: false,
+    
+        resGetPath: 'locales/__lng__/__ns__.json',
+        resPostPath: 'locales/add/__lng__/__ns__',
+    
+        getAsync: true,
+        postAsync: true,
+    
+        resStore: undefined,
+        useLocalStorage: false,
+        localStorageExpirationTime: 7*24*60*60*1000,
+    
+        dynamicLoad: false,
+        sendMissing: false,
+        sendMissingTo: 'fallback', // current | all
+        sendType: 'POST',
+    
+        interpolationPrefix: '__',
+        interpolationSuffix: '__',
+        defaultVariables: false,
+        reusePrefix: '$t(',
+        reuseSuffix: ')',
+        pluralSuffix: '_plural',
+        pluralNotFound: ['plural_not_found', Math.random()].join(''),
+        contextNotFound: ['context_not_found', Math.random()].join(''),
+        escapeInterpolation: false,
+        indefiniteSuffix: '_indefinite',
+        indefiniteNotFound: ['indefinite_not_found', Math.random()].join(''),
+    
+        setJqueryExt: true,
+        defaultValueFromContent: true,
+        useDataAttrOptions: false,
+        cookieExpirationTime: undefined,
+        useCookie: true,
+        cookieName: 'i18next',
+        cookieDomain: undefined,
+    
+        objectTreeKeyHandler: undefined,
+        postProcess: undefined,
+        parseMissingKey: undefined,
+        missingKeyHandler: sync.postMissing,
+        ajaxTimeout: 0,
+    
+        shortcutFunction: 'sprintf' // or: defaultValue
+    };
+    function _extend(target, source) {
+        if (!source || typeof source === 'function') {
+            return target;
+        }
+    
+        for (var attr in source) { target[attr] = source[attr]; }
+        return target;
+    }
+    
+    function _deepExtend(target, source) {
+        for (var prop in source)
+            if (prop in target)
+                _deepExtend(target[prop], source[prop]);
+            else
+                target[prop] = source[prop];
+        return target;
+    }
+    
+    function _each(object, callback, args) {
+        var name, i = 0,
+            length = object.length,
+            isObj = length === undefined || Object.prototype.toString.apply(object) !== '[object Array]' || typeof object === "function";
+    
+        if (args) {
+            if (isObj) {
+                for (name in object) {
+                    if (callback.apply(object[name], args) === false) {
+                        break;
+                    }
+                }
+            } else {
+                for ( ; i < length; ) {
+                    if (callback.apply(object[i++], args) === false) {
+                        break;
+                    }
+                }
+            }
+    
+        // A special, fast, case for the most common use of each
+        } else {
+            if (isObj) {
+                for (name in object) {
+                    if (callback.call(object[name], name, object[name]) === false) {
+                        break;
+                    }
+                }
+            } else {
+                for ( ; i < length; ) {
+                    if (callback.call(object[i], i, object[i++]) === false) {
+                        break;
+                    }
+                }
+            }
+        }
+    
+        return object;
+    }
+    
+    var _entityMap = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': '&quot;',
+        "'": '&#39;',
+        "/": '&#x2F;'
+    };
+    
+    function _escape(data) {
+        if (typeof data === 'string') {
+            return data.replace(/[&<>"'\/]/g, function (s) {
+                return _entityMap[s];
+            });
+        }else{
+            return data;
+        }
+    }
+    
+    function _ajax(options) {
+    
+        // v0.5.0 of https://github.com/goloroden/http.js
+        var getXhr = function (callback) {
+            // Use the native XHR object if the browser supports it.
+            if (window.XMLHttpRequest) {
+                return callback(null, new XMLHttpRequest());
+            } else if (window.ActiveXObject) {
+                // In Internet Explorer check for ActiveX versions of the XHR object.
+                try {
+                    return callback(null, new ActiveXObject("Msxml2.XMLHTTP"));
+                } catch (e) {
+                    return callback(null, new ActiveXObject("Microsoft.XMLHTTP"));
+                }
+            }
+    
+            // If no XHR support was found, throw an error.
+            return callback(new Error());
+        };
+    
+        var encodeUsingUrlEncoding = function (data) {
+            if(typeof data === 'string') {
+                return data;
+            }
+    
+            var result = [];
+            for(var dataItem in data) {
+                if(data.hasOwnProperty(dataItem)) {
+                    result.push(encodeURIComponent(dataItem) + '=' + encodeURIComponent(data[dataItem]));
+                }
+            }
+    
+            return result.join('&');
+        };
+    
+        var utf8 = function (text) {
+            text = text.replace(/\r\n/g, '\n');
+            var result = '';
+    
+            for(var i = 0; i < text.length; i++) {
+                var c = text.charCodeAt(i);
+    
+                if(c < 128) {
+                        result += String.fromCharCode(c);
+                } else if((c > 127) && (c < 2048)) {
+                        result += String.fromCharCode((c >> 6) | 192);
+                        result += String.fromCharCode((c & 63) | 128);
+                } else {
+                        result += String.fromCharCode((c >> 12) | 224);
+                        result += String.fromCharCode(((c >> 6) & 63) | 128);
+                        result += String.fromCharCode((c & 63) | 128);
+                }
+            }
+    
+            return result;
+        };
+    
+        var base64 = function (text) {
+            var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    
+            text = utf8(text);
+            var result = '',
+                    chr1, chr2, chr3,
+                    enc1, enc2, enc3, enc4,
+                    i = 0;
+    
+            do {
+                chr1 = text.charCodeAt(i++);
+                chr2 = text.charCodeAt(i++);
+                chr3 = text.charCodeAt(i++);
+    
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+    
+                if(isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if(isNaN(chr3)) {
+                    enc4 = 64;
+                }
+    
+                result +=
+                    keyStr.charAt(enc1) +
+                    keyStr.charAt(enc2) +
+                    keyStr.charAt(enc3) +
+                    keyStr.charAt(enc4);
+                chr1 = chr2 = chr3 = '';
+                enc1 = enc2 = enc3 = enc4 = '';
+            } while(i < text.length);
+    
+            return result;
+        };
+    
+        var mergeHeaders = function () {
+            // Use the first header object as base.
+            var result = arguments[0];
+    
+            // Iterate through the remaining header objects and add them.
+            for(var i = 1; i < arguments.length; i++) {
+                var currentHeaders = arguments[i];
+                for(var header in currentHeaders) {
+                    if(currentHeaders.hasOwnProperty(header)) {
+                        result[header] = currentHeaders[header];
+                    }
+                }
+            }
+    
+            // Return the merged headers.
+            return result;
+        };
+    
+        var ajax = function (method, url, options, callback) {
+            // Adjust parameters.
+            if(typeof options === 'function') {
+                callback = options;
+                options = {};
+            }
+    
+            // Set default parameter values.
+            options.cache = options.cache || false;
+            options.data = options.data || {};
+            options.headers = options.headers || {};
+            options.jsonp = options.jsonp || false;
+            options.async = options.async === undefined ? true : options.async;
+    
+            // Merge the various header objects.
+            var headers = mergeHeaders({
+                'accept': '*/*',
+                'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            }, ajax.headers, options.headers);
+    
+            // Encode the data according to the content-type.
+            var payload;
+            if (headers['content-type'] === 'application/json') {
+                payload = JSON.stringify(options.data);
+            } else {
+                payload = encodeUsingUrlEncoding(options.data);
+            }
+    
+            // Specially prepare GET requests: Setup the query string, handle caching and make a JSONP call
+            // if neccessary.
+            if(method === 'GET') {
+                // Setup the query string.
+                var queryString = [];
+                if(payload) {
+                    queryString.push(payload);
+                    payload = null;
+                }
+    
+                // Handle caching.
+                if(!options.cache) {
+                    queryString.push('_=' + (new Date()).getTime());
+                }
+    
+                // If neccessary prepare the query string for a JSONP call.
+                if(options.jsonp) {
+                    queryString.push('callback=' + options.jsonp);
+                    queryString.push('jsonp=' + options.jsonp);
+                }
+    
+                // Merge the query string and attach it to the url.
+                queryString = queryString.join('&');
+                if (queryString.length > 1) {
+                    if (url.indexOf('?') > -1) {
+                        url += '&' + queryString;
+                    } else {
+                        url += '?' + queryString;
+                    }
+                }
+    
+                // Make a JSONP call if neccessary.
+                if(options.jsonp) {
+                    var head = document.getElementsByTagName('head')[0];
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = url;
+                    head.appendChild(script);
+                    return;
+                }
+            }
+    
+            // Since we got here, it is no JSONP request, so make a normal XHR request.
+            getXhr(function (err, xhr) {
+                if(err) return callback(err);
+    
+                // Open the request.
+                xhr.open(method, url, options.async);
+    
+                // Set the request headers.
+                for(var header in headers) {
+                    if(headers.hasOwnProperty(header)) {
+                        xhr.setRequestHeader(header, headers[header]);
+                    }
+                }
+    
+                // Handle the request events.
+                xhr.onreadystatechange = function () {
+                    if(xhr.readyState === 4) {
+                        var data = xhr.responseText || '';
+    
+                        // If no callback is given, return.
+                        if(!callback) {
+                            return;
+                        }
+    
+                        // Return an object that provides access to the data as text and JSON.
+                        callback(xhr.status, {
+                            text: function () {
+                                return data;
+                            },
+    
+                            json: function () {
+                                try {
+                                    return JSON.parse(data)
+                                } catch (e) {
+                                    f.error('Can not parse JSON. URL: ' + url);
+                                    return {};
+                                }
+                            }
+                        });
+                    }
+                };
+    
+                // Actually send the XHR request.
+                xhr.send(payload);
+            });
+        };
+    
+        // Define the external interface.
+        var http = {
+            authBasic: function (username, password) {
+                ajax.headers['Authorization'] = 'Basic ' + base64(username + ':' + password);
+            },
+    
+            connect: function (url, options, callback) {
+                return ajax('CONNECT', url, options, callback);
+            },
+    
+            del: function (url, options, callback) {
+                return ajax('DELETE', url, options, callback);
+            },
+    
+            get: function (url, options, callback) {
+                return ajax('GET', url, options, callback);
+            },
+    
+            head: function (url, options, callback) {
+                return ajax('HEAD', url, options, callback);
+            },
+    
+            headers: function (headers) {
+                ajax.headers = headers || {};
+            },
+    
+            isAllowed: function (url, verb, callback) {
+                this.options(url, function (status, data) {
+                    callback(data.text().indexOf(verb) !== -1);
+                });
+            },
+    
+            options: function (url, options, callback) {
+                return ajax('OPTIONS', url, options, callback);
+            },
+    
+            patch: function (url, options, callback) {
+                return ajax('PATCH', url, options, callback);
+            },
+    
+            post: function (url, options, callback) {
+                return ajax('POST', url, options, callback);
+            },
+    
+            put: function (url, options, callback) {
+                return ajax('PUT', url, options, callback);
+            },
+    
+            trace: function (url, options, callback) {
+                return ajax('TRACE', url, options, callback);
+            }
+        };
+    
+    
+        var methode = options.type ? options.type.toLowerCase() : 'get';
+    
+        http[methode](options.url, options, function (status, data) {
+            // file: protocol always gives status code 0, so check for data
+            if (status === 200 || (status === 0 && data.text())) {
+                options.success(data.json(), status, null);
+            } else {
+                options.error(data.text(), status, null);
+            }
+        });
+    }
+    
+    var _cookie = {
+        create: function(name,value,minutes,domain) {
+            var expires;
+            if (minutes) {
+                var date = new Date();
+                date.setTime(date.getTime()+(minutes*60*1000));
+                expires = "; expires="+date.toGMTString();
+            }
+            else expires = "";
+            domain = (domain)? "domain="+domain+";" : "";
+            document.cookie = name+"="+value+expires+";"+domain+"path=/";
+        },
+    
+        read: function(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        },
+    
+        remove: function(name) {
+            this.create(name,"",-1);
+        }
+    };
+    
+    var cookie_noop = {
+        create: function(name,value,minutes,domain) {},
+        read: function(name) { return null; },
+        remove: function(name) {}
+    };
+    
+    
+    
+    // move dependent functions to a container so that
+    // they can be overriden easier in no jquery environment (node.js)
+    var f = {
+        extend: $ ? $.extend : _extend,
+        deepExtend: _deepExtend,
+        each: $ ? $.each : _each,
+        ajax: $ ? $.ajax : (typeof document !== 'undefined' ? _ajax : function() {}),
+        cookie: typeof document !== 'undefined' ? _cookie : cookie_noop,
+        detectLanguage: detectLanguage,
+        escape: _escape,
+        log: function(str) {
+            if (o.debug && typeof console !== "undefined") console.log(str);
+        },
+        error: function(str) {
+            if (typeof console !== "undefined") console.error(str);
+        },
+        getCountyIndexOfLng: function(lng) {
+            var lng_index = 0;
+            if (lng === 'nb-NO' || lng === 'nn-NO' || lng === 'nb-no' || lng === 'nn-no') lng_index = 1;
+            return lng_index;
+        },
+        toLanguages: function(lng, fallbackLng) {
+            var log = this.log;
+    
+            fallbackLng = fallbackLng || o.fallbackLng;
+            if (typeof fallbackLng === 'string')
+                fallbackLng = [fallbackLng];
+    
+            function applyCase(l) {
+                var ret = l;
+    
+                if (typeof l === 'string' && l.indexOf('-') > -1) {
+                    var parts = l.split('-');
+    
+                    ret = o.lowerCaseLng ?
+                        parts[0].toLowerCase() +  '-' + parts[1].toLowerCase() :
+                        parts[0].toLowerCase() +  '-' + parts[1].toUpperCase();
+                } else {
+                    ret = o.lowerCaseLng ? l.toLowerCase() : l;
+                }
+    
+                return ret;
+            }
+    
+            var languages = [];
+            var whitelist = o.lngWhitelist || false;
+            var addLanguage = function(language){
+              //reject langs not whitelisted
+              if(!whitelist || whitelist.indexOf(language) > -1){
+                languages.push(language);
+              }else{
+                log('rejecting non-whitelisted language: ' + language);
+              }
+            };
+            if (typeof lng === 'string' && lng.indexOf('-') > -1) {
+                var parts = lng.split('-');
+    
+                if (o.load !== 'unspecific') addLanguage(applyCase(lng));
+                if (o.load !== 'current') addLanguage(applyCase(parts[this.getCountyIndexOfLng(lng)]));
+            } else {
+                addLanguage(applyCase(lng));
+            }
+    
+            for (var i = 0; i < fallbackLng.length; i++) {
+                if (languages.indexOf(fallbackLng[i]) === -1 && fallbackLng[i]) languages.push(applyCase(fallbackLng[i]));
+            }
+            return languages;
+        },
+        regexEscape: function(str) {
+            return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        },
+        regexReplacementEscape: function(strOrFn) {
+            if (typeof strOrFn === 'string') {
+                return strOrFn.replace(/\$/g, "$$$$");
+            } else {
+                return strOrFn;
+            }
+        },
+        localStorage: {
+            setItem: function(key, value) {
+                if (window.localStorage) {
+                    try {
+                        window.localStorage.setItem(key, value);
+                    } catch (e) {
+                        f.log('failed to set value for key "' + key + '" to localStorage.');
+                    }
+                }
+            },
+            getItem: function(key, value) {
+                if (window.localStorage) {
+                    try {
+                        return window.localStorage.getItem(key, value);
+                    } catch (e) {
+                        f.log('failed to get value for key "' + key + '" from localStorage.');
+                        return undefined;
+                    }
+                }
+            }
+        }
+    };
+    function init(options, cb) {
+    
+        if (typeof options === 'function') {
+            cb = options;
+            options = {};
+        }
+        options = options || {};
+    
+        // override defaults with passed in options
+        f.extend(o, options);
+        delete o.fixLng; /* passed in each time */
+    
+        // override functions: .log(), .detectLanguage(), etc
+        if (o.functions) {
+            delete o.functions;
+            f.extend(f, options.functions);
+        }
+    
+        // create namespace object if namespace is passed in as string
+        if (typeof o.ns == 'string') {
+            o.ns = { namespaces: [o.ns], defaultNs: o.ns};
+        }
+    
+        // fallback namespaces
+        if (typeof o.fallbackNS == 'string') {
+            o.fallbackNS = [o.fallbackNS];
+        }
+    
+        // fallback languages
+        if (typeof o.fallbackLng == 'string' || typeof o.fallbackLng == 'boolean') {
+            o.fallbackLng = [o.fallbackLng];
+        }
+    
+        // escape prefix/suffix
+        o.interpolationPrefixEscaped = f.regexEscape(o.interpolationPrefix);
+        o.interpolationSuffixEscaped = f.regexEscape(o.interpolationSuffix);
+    
+        if (!o.lng) o.lng = f.detectLanguage();
+    
+        languages = f.toLanguages(o.lng);
+        currentLng = languages[0];
+        f.log('currentLng set to: ' + currentLng);
+    
+        if (o.useCookie && f.cookie.read(o.cookieName) !== currentLng){ //cookie is unset or invalid
+            f.cookie.create(o.cookieName, currentLng, o.cookieExpirationTime, o.cookieDomain);
+        }
+        if (o.detectLngFromLocalStorage && typeof document !== 'undefined' && window.localStorage) {
+            f.localStorage.setItem('i18next_lng', currentLng);
+        }
+    
+        var lngTranslate = translate;
+        if (options.fixLng) {
+            lngTranslate = function(key, options) {
+                options = options || {};
+                options.lng = options.lng || lngTranslate.lng;
+                return translate(key, options);
+            };
+            lngTranslate.lng = currentLng;
+        }
+    
+        pluralExtensions.setCurrentLng(currentLng);
+    
+        // add JQuery extensions
+        if ($ && o.setJqueryExt) {
+            addJqueryFunct && addJqueryFunct();
+        } else {
+           addJqueryLikeFunctionality && addJqueryLikeFunctionality();
+        }
+    
+        // jQuery deferred
+        var deferred;
+        if ($ && $.Deferred) {
+            deferred = $.Deferred();
+        }
+    
+        // return immidiatly if res are passed in
+        if (o.resStore) {
+            resStore = o.resStore;
+            initialized = true;
+            if (cb) cb(null, lngTranslate);
+            if (deferred) deferred.resolve(lngTranslate);
+            if (deferred) return deferred.promise();
+            return;
+        }
+    
+        // languages to load
+        var lngsToLoad = f.toLanguages(o.lng);
+        if (typeof o.preload === 'string') o.preload = [o.preload];
+        for (var i = 0, l = o.preload.length; i < l; i++) {
+            var pres = f.toLanguages(o.preload[i]);
+            for (var y = 0, len = pres.length; y < len; y++) {
+                if (lngsToLoad.indexOf(pres[y]) < 0) {
+                    lngsToLoad.push(pres[y]);
+                }
+            }
+        }
+    
+        // else load them
+        i18n.sync.load(lngsToLoad, o, function(err, store) {
+            resStore = store;
+            initialized = true;
+    
+            if (cb) cb(err, lngTranslate);
+            if (deferred) (!err ? deferred.resolve : deferred.reject)(err || lngTranslate);
+        });
+    
+        if (deferred) return deferred.promise();
+    }
+    
+    function isInitialized() {
+        return initialized;
+    }
+    function preload(lngs, cb) {
+        if (typeof lngs === 'string') lngs = [lngs];
+        for (var i = 0, l = lngs.length; i < l; i++) {
+            if (o.preload.indexOf(lngs[i]) < 0) {
+                o.preload.push(lngs[i]);
+            }
+        }
+        return init(cb);
+    }
+    
+    function addResourceBundle(lng, ns, resources, deep) {
+        if (typeof ns !== 'string') {
+            resources = ns;
+            ns = o.ns.defaultNs;
+        } else if (o.ns.namespaces.indexOf(ns) < 0) {
+            o.ns.namespaces.push(ns);
+        }
+    
+        resStore[lng] = resStore[lng] || {};
+        resStore[lng][ns] = resStore[lng][ns] || {};
+    
+        if (deep) {
+            f.deepExtend(resStore[lng][ns], resources);
+        } else {
+            f.extend(resStore[lng][ns], resources);
+        }
+        if (o.useLocalStorage) {
+            sync._storeLocal(resStore);
+        }
+    }
+    
+    function hasResourceBundle(lng, ns) {
+        if (typeof ns !== 'string') {
+            ns = o.ns.defaultNs;
+        }
+    
+        resStore[lng] = resStore[lng] || {};
+        var res = resStore[lng][ns] || {};
+    
+        var hasValues = false;
+        for(var prop in res) {
+            if (res.hasOwnProperty(prop)) {
+                hasValues = true;
+            }
+        }
+    
+        return hasValues;
+    }
+    
+    function getResourceBundle(lng, ns) {
+        if (typeof ns !== 'string') {
+            ns = o.ns.defaultNs;
+        }
+    
+        resStore[lng] = resStore[lng] || {};
+        return f.extend({}, resStore[lng][ns]);
+    }
+    
+    function removeResourceBundle(lng, ns) {
+        if (typeof ns !== 'string') {
+            ns = o.ns.defaultNs;
+        }
+    
+        resStore[lng] = resStore[lng] || {};
+        resStore[lng][ns] = {};
+        if (o.useLocalStorage) {
+            sync._storeLocal(resStore);
+        }
+    }
+    
+    function addResource(lng, ns, key, value) {
+        if (typeof ns !== 'string') {
+            resource = ns;
+            ns = o.ns.defaultNs;
+        } else if (o.ns.namespaces.indexOf(ns) < 0) {
+            o.ns.namespaces.push(ns);
+        }
+    
+        resStore[lng] = resStore[lng] || {};
+        resStore[lng][ns] = resStore[lng][ns] || {};
+    
+        var keys = key.split(o.keyseparator);
+        var x = 0;
+        var node = resStore[lng][ns];
+        var origRef = node;
+    
+        while (keys[x]) {
+            if (x == keys.length - 1)
+                node[keys[x]] = value;
+            else {
+                if (node[keys[x]] == null)
+                    node[keys[x]] = {};
+    
+                node = node[keys[x]];
+            }
+            x++;
+        }
+        if (o.useLocalStorage) {
+            sync._storeLocal(resStore);
+        }
+    }
+    
+    function addResources(lng, ns, resources) {
+        if (typeof ns !== 'string') {
+            resource = ns;
+            ns = o.ns.defaultNs;
+        } else if (o.ns.namespaces.indexOf(ns) < 0) {
+            o.ns.namespaces.push(ns);
+        }
+    
+        for (var m in resources) {
+            if (typeof resources[m] === 'string') addResource(lng, ns, m, resources[m]);
+        }
+    }
+    
+    function setDefaultNamespace(ns) {
+        o.ns.defaultNs = ns;
+    }
+    
+    function loadNamespace(namespace, cb) {
+        loadNamespaces([namespace], cb);
+    }
+    
+    function loadNamespaces(namespaces, cb) {
+        var opts = {
+            dynamicLoad: o.dynamicLoad,
+            resGetPath: o.resGetPath,
+            getAsync: o.getAsync,
+            customLoad: o.customLoad,
+            ns: { namespaces: namespaces, defaultNs: ''} /* new namespaces to load */
+        };
+    
+        // languages to load
+        var lngsToLoad = f.toLanguages(o.lng);
+        if (typeof o.preload === 'string') o.preload = [o.preload];
+        for (var i = 0, l = o.preload.length; i < l; i++) {
+            var pres = f.toLanguages(o.preload[i]);
+            for (var y = 0, len = pres.length; y < len; y++) {
+                if (lngsToLoad.indexOf(pres[y]) < 0) {
+                    lngsToLoad.push(pres[y]);
+                }
+            }
+        }
+    
+        // check if we have to load
+        var lngNeedLoad = [];
+        for (var a = 0, lenA = lngsToLoad.length; a < lenA; a++) {
+            var needLoad = false;
+            var resSet = resStore[lngsToLoad[a]];
+            if (resSet) {
+                for (var b = 0, lenB = namespaces.length; b < lenB; b++) {
+                    if (!resSet[namespaces[b]]) needLoad = true;
+                }
+            } else {
+                needLoad = true;
+            }
+    
+            if (needLoad) lngNeedLoad.push(lngsToLoad[a]);
+        }
+    
+        if (lngNeedLoad.length) {
+            i18n.sync._fetch(lngNeedLoad, opts, function(err, store) {
+                var todo = namespaces.length * lngNeedLoad.length;
+    
+                // load each file individual
+                f.each(namespaces, function(nsIndex, nsValue) {
+    
+                    // append namespace to namespace array
+                    if (o.ns.namespaces.indexOf(nsValue) < 0) {
+                        o.ns.namespaces.push(nsValue);
+                    }
+    
+                    f.each(lngNeedLoad, function(lngIndex, lngValue) {
+                        resStore[lngValue] = resStore[lngValue] || {};
+                        resStore[lngValue][nsValue] = store[lngValue][nsValue];
+    
+                        todo--; // wait for all done befor callback
+                        if (todo === 0 && cb) {
+                            if (o.useLocalStorage) i18n.sync._storeLocal(resStore);
+                            cb();
+                        }
+                    });
+                });
+            });
+        } else {
+            if (cb) cb();
+        }
+    }
+    
+    function setLng(lng, options, cb) {
+        if (typeof options === 'function') {
+            cb = options;
+            options = {};
+        } else if (!options) {
+            options = {};
+        }
+    
+        options.lng = lng;
+        return init(options, cb);
+    }
+    
+    function lng() {
+        return currentLng;
+    }
+    
+    function reload(cb) {
+        resStore = {};
+        setLng(currentLng, cb);
+    }
+    
+    function noConflict() {
+        
+        window.i18next = window.i18n;
+    
+        if (conflictReference) {
+            window.i18n = conflictReference;
+        } else {
+            delete window.i18n;
+        }
+    }
+    function addJqueryFunct() {
+        // $.t shortcut
+        $.t = $.t || translate;
+    
+        function parse(ele, key, options) {
+            if (key.length === 0) return;
+    
+            var attr = 'text';
+    
+            if (key.indexOf('[') === 0) {
+                var parts = key.split(']');
+                key = parts[1];
+                attr = parts[0].substr(1, parts[0].length-1);
+            }
+    
+            if (key.indexOf(';') === key.length-1) {
+                key = key.substr(0, key.length-2);
+            }
+    
+            var optionsToUse;
+            if (attr === 'html') {
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.html() }, options) : options;
+                ele.html($.t(key, optionsToUse));
+            } else if (attr === 'text') {
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.text() }, options) : options;
+                ele.text($.t(key, optionsToUse));
+            } else if (attr === 'prepend') {
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.html() }, options) : options;
+                ele.prepend($.t(key, optionsToUse));
+            } else if (attr === 'append') {
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.html() }, options) : options;
+                ele.append($.t(key, optionsToUse));
+            } else if (attr.indexOf("data-") === 0) {
+                var dataAttr = attr.substr(("data-").length);
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.data(dataAttr) }, options) : options;
+                var translated = $.t(key, optionsToUse);
+                //we change into the data cache
+                ele.data(dataAttr, translated);
+                //we change into the dom
+                ele.attr(attr, translated);
+            } else {
+                optionsToUse = o.defaultValueFromContent ? $.extend({ defaultValue: ele.attr(attr) }, options) : options;
+                ele.attr(attr, $.t(key, optionsToUse));
+            }
+        }
+    
+        function localize(ele, options) {
+            var key = ele.attr(o.selectorAttr);
+            if (!key && typeof key !== 'undefined' && key !== false) key = ele.text() || ele.val();
+            if (!key) return;
+    
+            var target = ele
+              , targetSelector = ele.data("i18n-target");
+            if (targetSelector) {
+                target = ele.find(targetSelector) || ele;
+            }
+    
+            if (!options && o.useDataAttrOptions === true) {
+                options = ele.data("i18n-options");
+            }
+            options = options || {};
+    
+            if (key.indexOf(';') >= 0) {
+                var keys = key.split(';');
+    
+                $.each(keys, function(m, k) {
+                    if (k !== '') parse(target, k, options);
+                });
+    
+            } else {
+                parse(target, key, options);
+            }
+    
+            if (o.useDataAttrOptions === true) {
+              var clone = $.extend({lng: 'non', lngs: [], _origLng: 'non'}, options);
+              delete clone.lng;
+              delete clone.lngs;
+              delete clone._origLng;
+              ele.data("i18n-options", clone);
+            }
+        }
+    
+        // fn
+        $.fn.i18n = function (options) {
+            return this.each(function() {
+                // localize element itself
+                localize($(this), options);
+    
+                // localize childs
+                var elements =  $(this).find('[' + o.selectorAttr + ']');
+                elements.each(function() {
+                    localize($(this), options);
+                });
+            });
+        };
+    }
+    function addJqueryLikeFunctionality() {
+    
+        function parse(ele, key, options) {
+            if (key.length === 0) return;
+    
+            var attr = 'text';
+    
+            if (key.indexOf('[') === 0) {
+                var parts = key.split(']');
+                key = parts[1];
+                attr = parts[0].substr(1, parts[0].length-1);
+            }
+    
+            if (key.indexOf(';') === key.length-1) {
+                key = key.substr(0, key.length-2);
+            }
+    
+            if (attr === 'html') {
+                ele.innerHTML = translate(key, options);
+            } else if (attr === 'text') {
+                ele.textContent = translate(key, options);
+            } else if (attr === 'prepend') {
+                ele.insertAdjacentHTML(translate(key, options), 'afterbegin');
+            } else if (attr === 'append') {
+                ele.insertAdjacentHTML(translate(key, options), 'beforeend');
+            } else {
+                ele.setAttribute(attr, translate(key, options));
+            }
+        }
+    
+        function localize(ele, options) {
+            var key = ele.getAttribute(o.selectorAttr);
+            if (!key && typeof key !== 'undefined' && key !== false) key = ele.textContent || ele.value;
+            if (!key) return;
+    
+            var target = ele
+              , targetSelector = ele.getAttribute("i18n-target");
+            if (targetSelector) {
+                target = ele.querySelector(targetSelector) || ele;
+            }
+            
+            if (key.indexOf(';') >= 0) {
+                var keys = key.split(';'), index = 0, length = keys.length;
+                
+                for ( ; index < length; index++) {
+                    if (keys[index] !== '') parse(target, keys[index], options);
+                }
+    
+            } else {
+                parse(target, key, options);
+            }
+        }
+    
+        // fn
+        i18n.translateObject = function (object, options) {
+            // localize childs
+            var elements =  object.querySelectorAll('[' + o.selectorAttr + ']');
+            var index = 0, length = elements.length;
+            for ( ; index < length; index++) {
+                localize(elements[index], options);
+            }
+        };
+    }
+    function applyReplacement(str, replacementHash, nestedKey, options) {
+        if (!str) return str;
+    
+        options = options || replacementHash; // first call uses replacement hash combined with options
+        if (str.indexOf(options.interpolationPrefix || o.interpolationPrefix) < 0) return str;
+    
+        var prefix = options.interpolationPrefix ? f.regexEscape(options.interpolationPrefix) : o.interpolationPrefixEscaped
+          , suffix = options.interpolationSuffix ? f.regexEscape(options.interpolationSuffix) : o.interpolationSuffixEscaped
+          , unEscapingSuffix = 'HTML'+suffix;
+    
+        var hash = replacementHash.replace && typeof replacementHash.replace === 'object' ? replacementHash.replace : replacementHash;
+        var replacementRegex = new RegExp([prefix, '(.+?)', '(HTML)?', suffix].join(''), 'g');
+        var escapeInterpolation = options.escapeInterpolation || o.escapeInterpolation;
+        return str.replace(replacementRegex, function (wholeMatch, keyMatch, htmlMatched) {
+            // Check for recursive matches of object
+            var objectMatching = hash;
+            var keyLeaf = keyMatch;
+            while (keyLeaf.indexOf(o.keyseparator) >= 0 && typeof objectMatching === 'object' && objectMatching) {
+                var propName = keyLeaf.slice(0, keyLeaf.indexOf(o.keyseparator));
+                keyLeaf = keyLeaf.slice(keyLeaf.indexOf(o.keyseparator) + 1);
+                objectMatching = objectMatching[propName];
+            }
+            if (objectMatching && typeof objectMatching === 'object' && objectMatching.hasOwnProperty(keyLeaf)) {
+                    var value = objectMatching[keyLeaf];
+                if (escapeInterpolation && !htmlMatched) {
+                    return f.escape(objectMatching[keyLeaf]);
+                } else {
+                    return objectMatching[keyLeaf];
+                }
+            } else {
+                return wholeMatch;
+            }
+        });
+    }
+    
+    // append it to functions
+    f.applyReplacement = applyReplacement;
+    
+    function applyReuse(translated, options) {
+        var comma = ',';
+        var options_open = '{';
+        var options_close = '}';
+    
+        var opts = f.extend({}, options);
+        delete opts.postProcess;
+    
+        while (translated.indexOf(o.reusePrefix) != -1) {
+            replacementCounter++;
+            if (replacementCounter > o.maxRecursion) { break; } // safety net for too much recursion
+            var index_of_opening = translated.lastIndexOf(o.reusePrefix);
+            var index_of_end_of_closing = translated.indexOf(o.reuseSuffix, index_of_opening) + o.reuseSuffix.length;
+            var token = translated.substring(index_of_opening, index_of_end_of_closing);
+            var token_without_symbols = token.replace(o.reusePrefix, '').replace(o.reuseSuffix, '');
+    
+            if (index_of_end_of_closing <= index_of_opening) {
+                f.error('there is an missing closing in following translation value', translated);
+                return '';
+            }
+    
+            if (token_without_symbols.indexOf(comma) != -1) {
+                var index_of_token_end_of_closing = token_without_symbols.indexOf(comma);
+                if (token_without_symbols.indexOf(options_open, index_of_token_end_of_closing) != -1 && token_without_symbols.indexOf(options_close, index_of_token_end_of_closing) != -1) {
+                    var index_of_opts_opening = token_without_symbols.indexOf(options_open, index_of_token_end_of_closing);
+                    var index_of_opts_end_of_closing = token_without_symbols.indexOf(options_close, index_of_opts_opening) + options_close.length;
+                    try {
+                        opts = f.extend(opts, JSON.parse(token_without_symbols.substring(index_of_opts_opening, index_of_opts_end_of_closing)));
+                        token_without_symbols = token_without_symbols.substring(0, index_of_token_end_of_closing);
+                    } catch (e) {
+                    }
+                }
+            }
+    
+            var translated_token = _translate(token_without_symbols, opts);
+            translated = translated.replace(token, f.regexReplacementEscape(translated_token));
+        }
+        return translated;
+    }
+    
+    function hasContext(options) {
+        return (options.context && (typeof options.context == 'string' || typeof options.context == 'number'));
+    }
+    
+    function needsPlural(options, lng) {
+        return (options.count !== undefined && typeof options.count != 'string'/* && pluralExtensions.needsPlural(lng, options.count)*/);
+    }
+    
+    function needsIndefiniteArticle(options) {
+        return (options.indefinite_article !== undefined && typeof options.indefinite_article != 'string' && options.indefinite_article);
+    }
+    
+    function exists(key, options) {
+        options = options || {};
+    
+        var notFound = _getDefaultValue(key, options)
+            , found = _find(key, options);
+    
+        return found !== undefined || found === notFound;
+    }
+    
+    function translate(key, options) {
+        options = options || {};
+    
+        if (!initialized) {
+            f.log('i18next not finished initialization. you might have called t function before loading resources finished.')
+            return options.defaultValue || '';
+        };
+        replacementCounter = 0;
+        return _translate.apply(null, arguments);
+    }
+    
+    function _getDefaultValue(key, options) {
+        return (options.defaultValue !== undefined) ? options.defaultValue : key;
+    }
+    
+    function _injectSprintfProcessor() {
+    
+        var values = [];
+    
+        // mh: build array from second argument onwards
+        for (var i = 1; i < arguments.length; i++) {
+            values.push(arguments[i]);
+        }
+    
+        return {
+            postProcess: 'sprintf',
+            sprintf:     values
+        };
+    }
+    
+    function _translate(potentialKeys, options) {
+        if (options && typeof options !== 'object') {
+            if (o.shortcutFunction === 'sprintf') {
+                // mh: gettext like sprintf syntax found, automatically create sprintf processor
+                options = _injectSprintfProcessor.apply(null, arguments);
+            } else if (o.shortcutFunction === 'defaultValue') {
+                options = {
+                    defaultValue: options
+                }
+            }
+        } else {
+            options = options || {};
+        }
+    
+        if (typeof o.defaultVariables === 'object') {
+            options = f.extend({}, o.defaultVariables, options);
+        }
+    
+        if (potentialKeys === undefined || potentialKeys === null || potentialKeys === '') return '';
+    
+        if (typeof potentialKeys === 'number') {
+            potentialKeys = String(potentialKeys);
+        }
+    
+        if (typeof potentialKeys === 'string') {
+            potentialKeys = [potentialKeys];
+        }
+    
+        var key = potentialKeys[0];
+    
+        if (potentialKeys.length > 1) {
+            for (var i = 0; i < potentialKeys.length; i++) {
+                key = potentialKeys[i];
+                if (exists(key, options)) {
+                    break;
+                }
+            }
+        }
+    
+        var notFound = _getDefaultValue(key, options)
+            , found = _find(key, options)
+            , lngs = options.lng ? f.toLanguages(options.lng, options.fallbackLng) : languages
+            , ns = options.ns || o.ns.defaultNs
+            , parts;
+    
+        // split ns and key
+        if (key.indexOf(o.nsseparator) > -1) {
+            parts = key.split(o.nsseparator);
+            ns = parts[0];
+            key = parts[1];
+        }
+    
+        if (found === undefined && o.sendMissing && typeof o.missingKeyHandler === 'function') {
+            if (options.lng) {
+                o.missingKeyHandler(lngs[0], ns, key, notFound, lngs);
+            } else {
+                o.missingKeyHandler(o.lng, ns, key, notFound, lngs);
+            }
+        }
+    
+        var postProcessorsToApply;
+        if (typeof o.postProcess === 'string' && o.postProcess !== '') {
+            postProcessorsToApply = [o.postProcess];
+        } else if (typeof o.postProcess === 'array' || typeof o.postProcess === 'object') {
+            postProcessorsToApply = o.postProcess;
+        } else {
+            postProcessorsToApply = [];
+        }
+    
+        if (typeof options.postProcess === 'string' && options.postProcess !== '') {
+            postProcessorsToApply = postProcessorsToApply.concat([options.postProcess]);
+        } else if (typeof options.postProcess === 'array' || typeof options.postProcess === 'object') {
+            postProcessorsToApply = postProcessorsToApply.concat(options.postProcess);
+        }
+    
+        if (found !== undefined && postProcessorsToApply.length) {
+            postProcessorsToApply.forEach(function(postProcessor) {
+                if (postProcessors[postProcessor]) {
+                    found = postProcessors[postProcessor](found, key, options);
+                }
+            });
+        }
+    
+        // process notFound if function exists
+        var splitNotFound = notFound;
+        if (notFound.indexOf(o.nsseparator) > -1) {
+            parts = notFound.split(o.nsseparator);
+            splitNotFound = parts[1];
+        }
+        if (splitNotFound === key && o.parseMissingKey) {
+            notFound = o.parseMissingKey(notFound);
+        }
+    
+        if (found === undefined) {
+            notFound = applyReplacement(notFound, options);
+            notFound = applyReuse(notFound, options);
+    
+            if (postProcessorsToApply.length) {
+                var val = _getDefaultValue(key, options);
+                postProcessorsToApply.forEach(function(postProcessor) {
+                    if (postProcessors[postProcessor]) {
+                        found = postProcessors[postProcessor](val, key, options);
+                    }
+                });
+            }
+        }
+    
+        return (found !== undefined) ? found : notFound;
+    }
+    
+    function _find(key, options) {
+        options = options || {};
+    
+        var optionWithoutCount, translated
+            , notFound = _getDefaultValue(key, options)
+            , lngs = languages;
+    
+        if (!resStore) { return notFound; } // no resStore to translate from
+    
+        // CI mode
+        if (lngs[0].toLowerCase() === 'cimode') return notFound;
+    
+        // passed in lng
+        if (options.lngs) lngs = options.lngs;
+        if (options.lng) {
+            lngs = f.toLanguages(options.lng, options.fallbackLng);
+    
+            if (!resStore[lngs[0]]) {
+                var oldAsync = o.getAsync;
+                o.getAsync = false;
+    
+                i18n.sync.load(lngs, o, function(err, store) {
+                    f.extend(resStore, store);
+                    o.getAsync = oldAsync;
+                });
+            }
+        }
+    
+        var ns = options.ns || o.ns.defaultNs;
+        if (key.indexOf(o.nsseparator) > -1) {
+            var parts = key.split(o.nsseparator);
+            ns = parts[0];
+            key = parts[1];
+        }
+    
+        if (hasContext(options)) {
+            optionWithoutCount = f.extend({}, options);
+            delete optionWithoutCount.context;
+            optionWithoutCount.defaultValue = o.contextNotFound;
+    
+            var contextKey = ns + o.nsseparator + key + '_' + options.context;
+    
+            translated = translate(contextKey, optionWithoutCount);
+            if (translated != o.contextNotFound) {
+                return applyReplacement(translated, { context: options.context }); // apply replacement for context only
+            } // else continue translation with original/nonContext key
+        }
+    
+        if (needsPlural(options, lngs[0])) {
+            optionWithoutCount = f.extend({ lngs: [lngs[0]]}, options);
+            delete optionWithoutCount.count;
+            optionWithoutCount._origLng = optionWithoutCount._origLng || optionWithoutCount.lng || lngs[0];
+            delete optionWithoutCount.lng;
+            optionWithoutCount.defaultValue = o.pluralNotFound;
+    
+            var pluralKey;
+            if (!pluralExtensions.needsPlural(lngs[0], options.count)) {
+                pluralKey = ns + o.nsseparator + key;
+            } else {
+                pluralKey = ns + o.nsseparator + key + o.pluralSuffix;
+                var pluralExtension = pluralExtensions.get(lngs[0], options.count);
+                if (pluralExtension >= 0) {
+                    pluralKey = pluralKey + '_' + pluralExtension;
+                } else if (pluralExtension === 1) {
+                    pluralKey = ns + o.nsseparator + key; // singular
+                }
+            }
+    
+            translated = translate(pluralKey, optionWithoutCount);
+    
+            if (translated != o.pluralNotFound) {
+                return applyReplacement(translated, {
+                    count: options.count,
+                    interpolationPrefix: options.interpolationPrefix,
+                    interpolationSuffix: options.interpolationSuffix
+                }); // apply replacement for count only
+            } else if (lngs.length > 1) {
+                // remove failed lng
+                var clone = lngs.slice();
+                clone.shift();
+                options = f.extend(options, { lngs: clone });
+                options._origLng = optionWithoutCount._origLng;
+                delete options.lng;
+                // retry with fallbacks
+                translated = translate(ns + o.nsseparator + key, options);
+                if (translated != o.pluralNotFound) return translated;
+            } else {
+                optionWithoutCount.lng = optionWithoutCount._origLng;
+                delete optionWithoutCount._origLng;
+                translated = translate(ns + o.nsseparator + key, optionWithoutCount);
+    
+                return applyReplacement(translated, {
+                    count: options.count,
+                    interpolationPrefix: options.interpolationPrefix,
+                    interpolationSuffix: options.interpolationSuffix
+                });
+            }
+        }
+    
+        if (needsIndefiniteArticle(options)) {
+            var optionsWithoutIndef = f.extend({}, options);
+            delete optionsWithoutIndef.indefinite_article;
+            optionsWithoutIndef.defaultValue = o.indefiniteNotFound;
+            // If we don't have a count, we want the indefinite, if we do have a count, and needsPlural is false
+            var indefiniteKey = ns + o.nsseparator + key + (((options.count && !needsPlural(options, lngs[0])) || !options.count) ? o.indefiniteSuffix : "");
+            translated = translate(indefiniteKey, optionsWithoutIndef);
+            if (translated != o.indefiniteNotFound) {
+                return translated;
+            }
+        }
+    
+        var found;
+        var keys = key.split(o.keyseparator);
+        for (var i = 0, len = lngs.length; i < len; i++ ) {
+            if (found !== undefined) break;
+    
+            var l = lngs[i];
+    
+            var x = 0;
+            var value = resStore[l] && resStore[l][ns];
+            while (keys[x]) {
+                value = value && value[keys[x]];
+                x++;
+            }
+            if (value !== undefined && (!o.showKeyIfEmpty || value !== '')) {
+                var valueType = Object.prototype.toString.apply(value);
+                if (typeof value === 'string') {
+                    value = applyReplacement(value, options);
+                    value = applyReuse(value, options);
+                } else if (valueType === '[object Array]' && !o.returnObjectTrees && !options.returnObjectTrees) {
+                    value = value.join('\n');
+                    value = applyReplacement(value, options);
+                    value = applyReuse(value, options);
+                } else if (value === null && o.fallbackOnNull === true) {
+                    value = undefined;
+                } else if (value !== null) {
+                    if (!o.returnObjectTrees && !options.returnObjectTrees) {
+                        if (o.objectTreeKeyHandler && typeof o.objectTreeKeyHandler == 'function') {
+                            value = o.objectTreeKeyHandler(key, value, l, ns, options);
+                        } else {
+                            value = 'key \'' + ns + ':' + key + ' (' + l + ')\' ' +
+                                'returned an object instead of string.';
+                            f.log(value);
+                        }
+                    } else if (valueType !== '[object Number]' && valueType !== '[object Function]' && valueType !== '[object RegExp]') {
+                        var copy = (valueType === '[object Array]') ? [] : {}; // apply child translation on a copy
+                        f.each(value, function(m) {
+                            copy[m] = _translate(ns + o.nsseparator + key + o.keyseparator + m, options);
+                        });
+                        value = copy;
+                    }
+                }
+    
+                if (typeof value === 'string' && value.trim() === '' && o.fallbackOnEmpty === true)
+                    value = undefined;
+    
+                found = value;
+            }
+        }
+    
+        if (found === undefined && !options.isFallbackLookup && (o.fallbackToDefaultNS === true || (o.fallbackNS && o.fallbackNS.length > 0))) {
+            // set flag for fallback lookup - avoid recursion
+            options.isFallbackLookup = true;
+    
+            if (o.fallbackNS.length) {
+    
+                for (var y = 0, lenY = o.fallbackNS.length; y < lenY; y++) {
+                    found = _find(o.fallbackNS[y] + o.nsseparator + key, options);
+    
+                    if (found || (found==="" && o.fallbackOnEmpty === false)) {
+                        /* compare value without namespace */
+                        var foundValue = found.indexOf(o.nsseparator) > -1 ? found.split(o.nsseparator)[1] : found
+                          , notFoundValue = notFound.indexOf(o.nsseparator) > -1 ? notFound.split(o.nsseparator)[1] : notFound;
+    
+                        if (foundValue !== notFoundValue) break;
+                    }
+                }
+            } else {
+                options.ns = o.ns.defaultNs;
+                found = _find(key, options); // fallback to default NS
+            }
+            options.isFallbackLookup = false;
+        }
+    
+        return found;
+    }
+    function detectLanguage() {
+        var detectedLng;
+        var whitelist = o.lngWhitelist || [];
+        var userLngChoices = [];
+    
+        // get from qs
+        var qsParm = [];
+        if (typeof window !== 'undefined') {
+            (function() {
+                var query = window.location.search.substring(1);
+                var params = query.split('&');
+                for (var i=0; i<params.length; i++) {
+                    var pos = params[i].indexOf('=');
+                    if (pos > 0) {
+                        var key = params[i].substring(0,pos);
+                        if (key == o.detectLngQS) {
+                            userLngChoices.push(params[i].substring(pos+1));
+                        }
+                    }
+                }
+            })();
+        }
+    
+        // get from cookie
+        if (o.useCookie && typeof document !== 'undefined') {
+            var c = f.cookie.read(o.cookieName);
+            if (c) userLngChoices.push(c);
+        }
+    
+        // get from localStorage
+        if (o.detectLngFromLocalStorage && typeof window !== 'undefined' && window.localStorage) {
+            var lang = f.localStorage.getItem('i18next_lng');
+            if (lang) {
+                userLngChoices.push(lang);
+            }
+        }
+    
+        // get from navigator
+        if (typeof navigator !== 'undefined') {
+            if (navigator.languages) { // chrome only; not an array, so can't use .push.apply instead of iterating
+                for (var i=0;i<navigator.languages.length;i++) {
+                    userLngChoices.push(navigator.languages[i]);
+                }
+            }
+            if (navigator.userLanguage) {
+                userLngChoices.push(navigator.userLanguage);
+            }
+            if (navigator.language) {
+                userLngChoices.push(navigator.language);
+            }
+        }
+    
+        (function() {
+            for (var i=0;i<userLngChoices.length;i++) {
+                var lng = userLngChoices[i];
+    
+                if (lng.indexOf('-') > -1) {
+                    var parts = lng.split('-');
+                    lng = o.lowerCaseLng ?
+                        parts[0].toLowerCase() +  '-' + parts[1].toLowerCase() :
+                        parts[0].toLowerCase() +  '-' + parts[1].toUpperCase();
+                }
+    
+                if (whitelist.length === 0 || whitelist.indexOf(lng) > -1) {
+                    detectedLng = lng;
+                    break;
+                }
+            }
+        })();
+    
+        //fallback
+        if (!detectedLng){
+          detectedLng = o.fallbackLng[0];
+        }
+        
+        return detectedLng;
+    }
+    // definition http://translate.sourceforge.net/wiki/l10n/pluralforms
+    
+    /* [code, name, numbers, pluralsType] */
+    var _rules = [
+        ["ach", "Acholi", [1,2], 1],
+        ["af", "Afrikaans",[1,2], 2],
+        ["ak", "Akan", [1,2], 1],
+        ["am", "Amharic", [1,2], 1],
+        ["an", "Aragonese",[1,2], 2],
+        ["ar", "Arabic", [0,1,2,3,11,100],5],
+        ["arn", "Mapudungun",[1,2], 1],
+        ["ast", "Asturian", [1,2], 2],
+        ["ay", "Aymará", [1], 3],
+        ["az", "Azerbaijani",[1,2],2],
+        ["be", "Belarusian",[1,2,5],4],
+        ["bg", "Bulgarian",[1,2], 2],
+        ["bn", "Bengali", [1,2], 2],
+        ["bo", "Tibetan", [1], 3],
+        ["br", "Breton", [1,2], 1],
+        ["bs", "Bosnian", [1,2,5],4],
+        ["ca", "Catalan", [1,2], 2],
+        ["cgg", "Chiga", [1], 3],
+        ["cs", "Czech", [1,2,5],6],
+        ["csb", "Kashubian",[1,2,5],7],
+        ["cy", "Welsh", [1,2,3,8],8],
+        ["da", "Danish", [1,2], 2],
+        ["de", "German", [1,2], 2],
+        ["dev", "Development Fallback", [1,2], 2],
+        ["dz", "Dzongkha", [1], 3],
+        ["el", "Greek", [1,2], 2],
+        ["en", "English", [1,2], 2],
+        ["eo", "Esperanto",[1,2], 2],
+        ["es", "Spanish", [1,2], 2],
+        ["es_ar","Argentinean Spanish", [1,2], 2],
+        ["et", "Estonian", [1,2], 2],
+        ["eu", "Basque", [1,2], 2],
+        ["fa", "Persian", [1], 3],
+        ["fi", "Finnish", [1,2], 2],
+        ["fil", "Filipino", [1,2], 1],
+        ["fo", "Faroese", [1,2], 2],
+        ["fr", "French", [1,2], 9],
+        ["fur", "Friulian", [1,2], 2],
+        ["fy", "Frisian", [1,2], 2],
+        ["ga", "Irish", [1,2,3,7,11],10],
+        ["gd", "Scottish Gaelic",[1,2,3,20],11],
+        ["gl", "Galician", [1,2], 2],
+        ["gu", "Gujarati", [1,2], 2],
+        ["gun", "Gun", [1,2], 1],
+        ["ha", "Hausa", [1,2], 2],
+        ["he", "Hebrew", [1,2], 2],
+        ["hi", "Hindi", [1,2], 2],
+        ["hr", "Croatian", [1,2,5],4],
+        ["hu", "Hungarian",[1,2], 2],
+        ["hy", "Armenian", [1,2], 2],
+        ["ia", "Interlingua",[1,2],2],
+        ["id", "Indonesian",[1], 3],
+        ["is", "Icelandic",[1,2], 12],
+        ["it", "Italian", [1,2], 2],
+        ["ja", "Japanese", [1], 3],
+        ["jbo", "Lojban", [1], 3],
+        ["jv", "Javanese", [0,1], 13],
+        ["ka", "Georgian", [1], 3],
+        ["kk", "Kazakh", [1], 3],
+        ["km", "Khmer", [1], 3],
+        ["kn", "Kannada", [1,2], 2],
+        ["ko", "Korean", [1], 3],
+        ["ku", "Kurdish", [1,2], 2],
+        ["kw", "Cornish", [1,2,3,4],14],
+        ["ky", "Kyrgyz", [1], 3],
+        ["lb", "Letzeburgesch",[1,2],2],
+        ["ln", "Lingala", [1,2], 1],
+        ["lo", "Lao", [1], 3],
+        ["lt", "Lithuanian",[1,2,10],15],
+        ["lv", "Latvian", [1,2,0],16],
+        ["mai", "Maithili", [1,2], 2],
+        ["mfe", "Mauritian Creole",[1,2],1],
+        ["mg", "Malagasy", [1,2], 1],
+        ["mi", "Maori", [1,2], 1],
+        ["mk", "Macedonian",[1,2],17],
+        ["ml", "Malayalam",[1,2], 2],
+        ["mn", "Mongolian",[1,2], 2],
+        ["mnk", "Mandinka", [0,1,2],18],
+        ["mr", "Marathi", [1,2], 2],
+        ["ms", "Malay", [1], 3],
+        ["mt", "Maltese", [1,2,11,20],19],
+        ["nah", "Nahuatl", [1,2], 2],
+        ["nap", "Neapolitan",[1,2], 2],
+        ["nb", "Norwegian Bokmal",[1,2],2],
+        ["ne", "Nepali", [1,2], 2],
+        ["nl", "Dutch", [1,2], 2],
+        ["nn", "Norwegian Nynorsk",[1,2],2],
+        ["no", "Norwegian",[1,2], 2],
+        ["nso", "Northern Sotho",[1,2],2],
+        ["oc", "Occitan", [1,2], 1],
+        ["or", "Oriya", [2,1], 2],
+        ["pa", "Punjabi", [1,2], 2],
+        ["pap", "Papiamento",[1,2], 2],
+        ["pl", "Polish", [1,2,5],7],
+        ["pms", "Piemontese",[1,2], 2],
+        ["ps", "Pashto", [1,2], 2],
+        ["pt", "Portuguese",[1,2], 2],
+        ["pt_br","Brazilian Portuguese",[1,2], 2],
+        ["rm", "Romansh", [1,2], 2],
+        ["ro", "Romanian", [1,2,20],20],
+        ["ru", "Russian", [1,2,5],4],
+        ["sah", "Yakut", [1], 3],
+        ["sco", "Scots", [1,2], 2],
+        ["se", "Northern Sami",[1,2], 2],
+        ["si", "Sinhala", [1,2], 2],
+        ["sk", "Slovak", [1,2,5],6],
+        ["sl", "Slovenian",[5,1,2,3],21],
+        ["so", "Somali", [1,2], 2],
+        ["son", "Songhay", [1,2], 2],
+        ["sq", "Albanian", [1,2], 2],
+        ["sr", "Serbian", [1,2,5],4],
+        ["su", "Sundanese",[1], 3],
+        ["sv", "Swedish", [1,2], 2],
+        ["sw", "Swahili", [1,2], 2],
+        ["ta", "Tamil", [1,2], 2],
+        ["te", "Telugu", [1,2], 2],
+        ["tg", "Tajik", [1,2], 1],
+        ["th", "Thai", [1], 3],
+        ["ti", "Tigrinya", [1,2], 1],
+        ["tk", "Turkmen", [1,2], 2],
+        ["tr", "Turkish", [1,2], 1],
+        ["tt", "Tatar", [1], 3],
+        ["ug", "Uyghur", [1], 3],
+        ["uk", "Ukrainian",[1,2,5],4],
+        ["ur", "Urdu", [1,2], 2],
+        ["uz", "Uzbek", [1,2], 1],
+        ["vi", "Vietnamese",[1], 3],
+        ["wa", "Walloon", [1,2], 1],
+        ["wo", "Wolof", [1], 3],
+        ["yo", "Yoruba", [1,2], 2],
+        ["zh", "Chinese", [1], 3]
+    ];
+    
+    var _rulesPluralsTypes = {
+        1: function(n) {return Number(n > 1);},
+        2: function(n) {return Number(n != 1);},
+        3: function(n) {return 0;},
+        4: function(n) {return Number(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);},
+        5: function(n) {return Number(n===0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);},
+        6: function(n) {return Number((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);},
+        7: function(n) {return Number(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);},
+        8: function(n) {return Number((n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3);},
+        9: function(n) {return Number(n >= 2);},
+        10: function(n) {return Number(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4) ;},
+        11: function(n) {return Number((n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : (n > 2 && n < 20) ? 2 : 3);},
+        12: function(n) {return Number(n%10!=1 || n%100==11);},
+        13: function(n) {return Number(n !== 0);},
+        14: function(n) {return Number((n==1) ? 0 : (n==2) ? 1 : (n == 3) ? 2 : 3);},
+        15: function(n) {return Number(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);},
+        16: function(n) {return Number(n%10==1 && n%100!=11 ? 0 : n !== 0 ? 1 : 2);},
+        17: function(n) {return Number(n==1 || n%10==1 ? 0 : 1);},
+        18: function(n) {return Number(0 ? 0 : n==1 ? 1 : 2);},
+        19: function(n) {return Number(n==1 ? 0 : n===0 || ( n%100>1 && n%100<11) ? 1 : (n%100>10 && n%100<20 ) ? 2 : 3);},
+        20: function(n) {return Number(n==1 ? 0 : (n===0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2);},
+        21: function(n) {return Number(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0); }
+    };
+    
+    var pluralExtensions = {
+    
+        rules: (function () {
+            var l, rules = {};
+            for (l=_rules.length; l-- ;) {
+                rules[_rules[l][0]] = {
+                    name: _rules[l][1],
+                    numbers: _rules[l][2],
+                    plurals: _rulesPluralsTypes[_rules[l][3]]
+                }
+            }
+            return rules;
+        }()),
+    
+        // you can add your own pluralExtensions
+        addRule: function(lng, obj) {
+            pluralExtensions.rules[lng] = obj;
+        },
+    
+        setCurrentLng: function(lng) {
+            if (!pluralExtensions.currentRule || pluralExtensions.currentRule.lng !== lng) {
+                var parts = lng.split('-');
+    
+                pluralExtensions.currentRule = {
+                    lng: lng,
+                    rule: pluralExtensions.rules[parts[0]]
+                };
+            }
+        },
+    
+        needsPlural: function(lng, count) {
+            var parts = lng.split('-');
+    
+            var ext;
+            if (pluralExtensions.currentRule && pluralExtensions.currentRule.lng === lng) {
+                ext = pluralExtensions.currentRule.rule; 
+            } else {
+                ext = pluralExtensions.rules[parts[f.getCountyIndexOfLng(lng)]];
+            }
+    
+            if (ext && ext.numbers.length <= 1) {
+                return false;
+            } else {
+                return this.get(lng, count) !== 1;
+            }
+        },
+    
+        get: function(lng, count) {
+            var parts = lng.split('-');
+    
+            function getResult(l, c) {
+                var ext;
+                if (pluralExtensions.currentRule && pluralExtensions.currentRule.lng === lng) {
+                    ext = pluralExtensions.currentRule.rule; 
+                } else {
+                    ext = pluralExtensions.rules[l];
+                }
+                if (ext) {
+                    var i;
+                    if (ext.noAbs) {
+                        i = ext.plurals(c);
+                    } else {
+                        i = ext.plurals(Math.abs(c));
+                    }
+                    
+                    var number = ext.numbers[i];
+                    if (ext.numbers.length === 2 && ext.numbers[0] === 1) {
+                        if (number === 2) { 
+                            number = -1; // regular plural
+                        } else if (number === 1) {
+                            number = 1; // singular
+                        }
+                    }//console.log(count + '-' + number);
+                    return number;
+                } else {
+                    return c === 1 ? '1' : '-1';
+                }
+            }
+                        
+            return getResult(parts[f.getCountyIndexOfLng(lng)], count);
+        }
+    
+    };
+    var postProcessors = {};
+    var addPostProcessor = function(name, fc) {
+        postProcessors[name] = fc;
+    };
+    // sprintf support
+    var sprintf = (function() {
+        function get_type(variable) {
+            return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+        }
+        function str_repeat(input, multiplier) {
+            for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+            return output.join('');
+        }
+    
+        var str_format = function() {
+            if (!str_format.cache.hasOwnProperty(arguments[0])) {
+                str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+            }
+            return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
+        };
+    
+        str_format.format = function(parse_tree, argv) {
+            var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+            for (i = 0; i < tree_length; i++) {
+                node_type = get_type(parse_tree[i]);
+                if (node_type === 'string') {
+                    output.push(parse_tree[i]);
+                }
+                else if (node_type === 'array') {
+                    match = parse_tree[i]; // convenience purposes only
+                    if (match[2]) { // keyword argument
+                        arg = argv[cursor];
+                        for (k = 0; k < match[2].length; k++) {
+                            if (!arg.hasOwnProperty(match[2][k])) {
+                                throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+                            }
+                            arg = arg[match[2][k]];
+                        }
+                    }
+                    else if (match[1]) { // positional argument (explicit)
+                        arg = argv[match[1]];
+                    }
+                    else { // positional argument (implicit)
+                        arg = argv[cursor++];
+                    }
+    
+                    if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
+                        throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+                    }
+                    switch (match[8]) {
+                        case 'b': arg = arg.toString(2); break;
+                        case 'c': arg = String.fromCharCode(arg); break;
+                        case 'd': arg = parseInt(arg, 10); break;
+                        case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+                        case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+                        case 'o': arg = arg.toString(8); break;
+                        case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+                        case 'u': arg = Math.abs(arg); break;
+                        case 'x': arg = arg.toString(16); break;
+                        case 'X': arg = arg.toString(16).toUpperCase(); break;
+                    }
+                    arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
+                    pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+                    pad_length = match[6] - String(arg).length;
+                    pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+                    output.push(match[5] ? arg + pad : pad + arg);
+                }
+            }
+            return output.join('');
+        };
+    
+        str_format.cache = {};
+    
+        str_format.parse = function(fmt) {
+            var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+            while (_fmt) {
+                if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+                    parse_tree.push(match[0]);
+                }
+                else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+                    parse_tree.push('%');
+                }
+                else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+                    if (match[2]) {
+                        arg_names |= 1;
+                        var field_list = [], replacement_field = match[2], field_match = [];
+                        if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+                            field_list.push(field_match[1]);
+                            while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                                if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+                                    field_list.push(field_match[1]);
+                                }
+                                else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+                                    field_list.push(field_match[1]);
+                                }
+                                else {
+                                    throw('[sprintf] huh?');
+                                }
+                            }
+                        }
+                        else {
+                            throw('[sprintf] huh?');
+                        }
+                        match[2] = field_list;
+                    }
+                    else {
+                        arg_names |= 2;
+                    }
+                    if (arg_names === 3) {
+                        throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+                    }
+                    parse_tree.push(match);
+                }
+                else {
+                    throw('[sprintf] huh?');
+                }
+                _fmt = _fmt.substring(match[0].length);
+            }
+            return parse_tree;
+        };
+    
+        return str_format;
+    })();
+    
+    var vsprintf = function(fmt, argv) {
+        argv.unshift(fmt);
+        return sprintf.apply(null, argv);
+    };
+    
+    addPostProcessor("sprintf", function(val, key, opts) {
+        if (!opts.sprintf) return val;
+    
+        if (Object.prototype.toString.apply(opts.sprintf) === '[object Array]') {
+            return vsprintf(val, opts.sprintf);
+        } else if (typeof opts.sprintf === 'object') {
+            return sprintf(val, opts.sprintf);
+        }
+    
+        return val;
+    });
+    // public api interface
+    i18n.init = init;
+    i18n.isInitialized = isInitialized;
+    i18n.setLng = setLng;
+    i18n.preload = preload;
+    i18n.addResourceBundle = addResourceBundle;
+    i18n.hasResourceBundle = hasResourceBundle;
+    i18n.getResourceBundle = getResourceBundle;
+    i18n.addResource = addResource;
+    i18n.addResources = addResources;
+    i18n.removeResourceBundle = removeResourceBundle;
+    i18n.loadNamespace = loadNamespace;
+    i18n.loadNamespaces = loadNamespaces;
+    i18n.setDefaultNamespace = setDefaultNamespace;
+    i18n.t = translate;
+    i18n.translate = translate;
+    i18n.exists = exists;
+    i18n.detectLanguage = f.detectLanguage;
+    i18n.pluralExtensions = pluralExtensions;
+    i18n.sync = sync;
+    i18n.functions = f;
+    i18n.lng = lng;
+    i18n.addPostProcessor = addPostProcessor;
+    i18n.applyReplacement = f.applyReplacement;
+    i18n.options = o;
+    i18n.noConflict = noConflict;
+
+})(typeof exports === 'undefined' ? window : exports);
 'use strict';
 
 var GreaterThan = GreaterThan || {};
 
 GreaterThan.UI = {
     worldSizeX: 2000,
-    worldSizeY: 2000
+    worldSizeY: 2000,
+
+    viewSizeX: 1024,
+    viewSizeY: 768
 };
 
 GreaterThan.CONFIG = {
-    bronzePoints: 100,
-    silverPoints: 200,
-    goldPoints: 300,
-    //180 seconds (3mins)
-    roundTime: 180000
+    //Points to earn a medal
+    bronzePoints: 500,
+    silverPoints: 1000,
+    goldPoints: 1500,
+
+    //5mins in milliseconds
+    roundTime: 300000,
+
+    //Points for Medal rounds
+    bonusPoints: 500,
+
+    //Points for fish
+    fishPointsA: 5,
+    fishPointsB: 4,
+    fishPointsC: 1,
+
+    //Answers in a row to move depths
+    rightInARow: 6,
+    wrongInARow: 2,
+
+    //How many depths needed to unlock next world
+    unlockDepth: 10
+
 };
 
 GreaterThan.WORLDS = {
     1: {
         name: '> Positive Integers',
-        highestLevel: 9,
-        lowestLevel: 0
+        highestDepth: 9,
+        lowestDepth: 0
     },
     2: {
         name: '< Positive Integers',
-        highestLevel: 19,
-        lowestLevel: 10
+        highestDepth: 19,
+        lowestDepth: 10
     },
     3: {
         name: '< and > Positive Integer',
-        highestLevel: 29,
-        lowestLevel: 20
+        highestDepth: 29,
+        lowestDepth: 20
     },
     4: {
         name: '> Integers',
-        highestLevel: 39,
-        lowestLevel: 30
+        highestDepth: 39,
+        lowestDepth: 30
     },
     5: {
         name: '< Integers',
-        highestLevel: 49,
-        lowestLevel: 40
+        highestDepth: 49,
+        lowestDepth: 40
     },
     6: {
         name: '< and > Integer',
-        highestLevel: 59,
-        lowestLevel: 50
+        highestDepth: 59,
+        lowestDepth: 50
     }
 };
 
-GreaterThan.LEVELS = [{
-    levelName: '1:1',
+GreaterThan.DEPTHS = [{
+    depthName: '1:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -81328,13 +83643,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '1:2',
+    depthName: '1:2',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -81353,13 +83668,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '1:3',
+    depthName: '1:3',
     playerValue: 10,
     equalTo: true,
     greater: [{
@@ -81378,13 +83693,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '1:4',
+    depthName: '1:4',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -81403,7 +83718,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -81417,7 +83732,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:5',
+    depthName: '1:5',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -81436,7 +83751,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -81450,7 +83765,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:6',
+    depthName: '1:6',
     playerValue: 15,
     equalTo: true,
     greater: [{
@@ -81469,7 +83784,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -81483,7 +83798,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:7',
+    depthName: '1:7',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -81502,7 +83817,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81528,7 +83843,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:8',
+    depthName: '1:8',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -81547,7 +83862,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81573,7 +83888,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:9',
+    depthName: '1:9',
     playerValue: 20,
     equalTo: true,
     greater: [{
@@ -81592,7 +83907,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81618,7 +83933,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '1:10',
+    depthName: '1:10',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -81637,7 +83952,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81663,7 +83978,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:1',
+    depthName: '2:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -81682,13 +83997,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.3
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '2:2',
+    depthName: '2:2',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -81707,13 +84022,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.3
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '2:3',
+    depthName: '2:3',
     playerValue: 10,
     equalTo: true,
     greater: [{
@@ -81732,13 +84047,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '2:4',
+    depthName: '2:4',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -81757,21 +84072,21 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
-        amount: 5
+        amount: 2
     }, {
         text: '-2',
         value: -2,
-        amount: 3
+        amount: 1
     }, {
         text: '-3',
         value: -3,
-        amount: 3
+        amount: 1
     }]
 }, {
-    levelName: '2:5',
+    depthName: '2:5',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -81790,7 +84105,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -81804,7 +84119,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:6',
+    depthName: '2:6',
     playerValue: 15,
     equalTo: true,
     greater: [{
@@ -81823,7 +84138,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -81837,7 +84152,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:7',
+    depthName: '2:7',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -81856,7 +84171,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81882,7 +84197,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:8',
+    depthName: '2:8',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -81901,7 +84216,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81927,7 +84242,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:9',
+    depthName: '2:9',
     playerValue: 20,
     equalTo: true,
     greater: [{
@@ -81946,7 +84261,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -81972,7 +84287,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '2:10',
+    depthName: '2:10',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -81991,7 +84306,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82017,7 +84332,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:1',
+    depthName: '3:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -82036,13 +84351,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '3:2',
+    depthName: '3:2',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -82061,13 +84376,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '3:3',
+    depthName: '3:3',
     playerValue: 10,
     equalTo: true,
     greater: [{
@@ -82086,13 +84401,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.3
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '3:4',
+    depthName: '3:4',
     playerValue: 10,
     equalTo: false,
     greater: [{
@@ -82111,7 +84426,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82125,7 +84440,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:5',
+    depthName: '3:5',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -82144,7 +84459,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82158,7 +84473,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:6',
+    depthName: '3:6',
     playerValue: 15,
     equalTo: true,
     greater: [{
@@ -82177,7 +84492,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82191,7 +84506,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:7',
+    depthName: '3:7',
     playerValue: 15,
     equalTo: false,
     greater: [{
@@ -82210,7 +84525,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82236,7 +84551,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:8',
+    depthName: '3:8',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -82255,7 +84570,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82281,7 +84596,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:9',
+    depthName: '3:9',
     playerValue: 20,
     equalTo: true,
     greater: [{
@@ -82300,7 +84615,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82326,7 +84641,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '3:10',
+    depthName: '3:10',
     playerValue: 20,
     equalTo: false,
     greater: [{
@@ -82345,7 +84660,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82371,7 +84686,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:1',
+    depthName: '4:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -82390,13 +84705,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '4:2',
+    depthName: '4:2',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -82415,13 +84730,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '4:3',
+    depthName: '4:3',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -82440,13 +84755,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '4:4',
+    depthName: '4:4',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -82465,7 +84780,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -82479,7 +84794,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:5',
+    depthName: '4:5',
     playerValue: -5,
     equalTo: false,
     greater: [{
@@ -82498,7 +84813,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -82512,7 +84827,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:6',
+    depthName: '4:6',
     playerValue: -5,
     equalTo: true,
     greater: [{
@@ -82531,7 +84846,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 5
@@ -82545,7 +84860,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:7',
+    depthName: '4:7',
     playerValue: -5,
     equalTo: false,
     greater: [{
@@ -82564,7 +84879,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82590,7 +84905,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:8',
+    depthName: '4:8',
     playerValue: -10,
     equalTo: false,
     greater: [{
@@ -82609,7 +84924,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82635,7 +84950,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:9',
+    depthName: '4:9',
     playerValue: -10,
     equalTo: true,
     greater: [{
@@ -82654,7 +84969,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82680,7 +84995,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '4:10',
+    depthName: '4:10',
     playerValue: -10,
     equalTo: false,
     greater: [{
@@ -82699,7 +85014,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82725,7 +85040,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:1',
+    depthName: '5:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -82744,13 +85059,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.3
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '5:2',
+    depthName: '5:2',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -82769,13 +85084,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.3
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '5:3',
+    depthName: '5:3',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -82794,13 +85109,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '5:4',
+    depthName: '5:4',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -82819,7 +85134,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82833,7 +85148,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:5',
+    depthName: '5:5',
     playerValue: -5,
     equalTo: false,
     greater: [{
@@ -82852,7 +85167,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82866,7 +85181,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:6',
+    depthName: '5:6',
     playerValue: -5,
     equalTo: true,
     greater: [{
@@ -82885,7 +85200,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -82899,7 +85214,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:7',
+    depthName: '5:7',
     playerValue: -5,
     equalTo: false,
     greater: [{
@@ -82918,7 +85233,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82944,7 +85259,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:8',
+    depthName: '5:8',
     playerValue: -10,
     equalTo: false,
     greater: [{
@@ -82963,7 +85278,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -82989,7 +85304,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:9',
+    depthName: '5:9',
     playerValue: -10,
     equalTo: true,
     greater: [{
@@ -83008,7 +85323,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83034,7 +85349,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '5:10',
+    depthName: '5:10',
     playerValue: -10,
     equalTo: false,
     greater: [{
@@ -83053,7 +85368,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.2,
         proportionBelow: 0.8
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83079,7 +85394,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:1',
+    depthName: '6:1',
     playerValue: 5,
     equalTo: false,
     greater: [{
@@ -83098,13 +85413,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '0',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '6:2',
+    depthName: '6:2',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -83123,13 +85438,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '6:3',
+    depthName: '6:3',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -83148,13 +85463,13 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.25
     }],
-    treasure: [{
+    oxygen: [{
         text: '',
         value: 0,
         amount: 0
     }]
 }, {
-    levelName: '6:4',
+    depthName: '6:4',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -83173,7 +85488,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -83187,7 +85502,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:5',
+    depthName: '6:5',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -83206,7 +85521,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.25
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -83220,7 +85535,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:6',
+    depthName: '6:6',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -83239,7 +85554,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.25
     }],
-    treasure: [{
+    oxygen: [{
         text: '-1',
         value: -1,
         amount: 5
@@ -83253,7 +85568,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:7',
+    depthName: '6:7',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -83272,7 +85587,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83298,7 +85613,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:8',
+    depthName: '6:8',
     playerValue: 0,
     equalTo: false,
     greater: [{
@@ -83317,7 +85632,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0,
         proportionBelow: 0.5
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83343,7 +85658,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:9',
+    depthName: '6:9',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -83362,7 +85677,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.25
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83388,7 +85703,7 @@ GreaterThan.LEVELS = [{
         amount: 3
     }]
 }, {
-    levelName: '6:10',
+    depthName: '6:10',
     playerValue: 0,
     equalTo: true,
     greater: [{
@@ -83407,7 +85722,7 @@ GreaterThan.LEVELS = [{
         proportionEqual: 0.5,
         proportionBelow: 0.25
     }],
-    treasure: [{
+    oxygen: [{
         text: '+1',
         value: 1,
         amount: 1
@@ -83436,7 +85751,7 @@ GreaterThan.LEVELS = [{
 
 testing = [{
     totalEaten: 0,
-    treasure: 0,
+    oxygen: 0,
     rightAnswers: 0,
     wrongAnswers: 0,
     pointsAtBronze: 0,
@@ -83446,20 +85761,19 @@ testing = [{
     bronzePoints: 3,
     silverPoints: 4,
     goldPoints: 5,
-    treasurePoints: 2,
-    levelUpBonus: 500
+    oxygenPoints: 2,
+    DepthUpBonus: 500
 
 }];
 
 player = [{
-    currentLevel: 0,
+    currentDepth: 0,
     currentWorld: 0,
-    startLevel: 0,
-    endLevel: 0,
-    levelLocation: 0,
-    levelMax: 0,
-    maxLevelLine: 155,
-    currentDepth: 100,
+    startDepth: 0,
+    endDepth: 0,
+    DepthLocation: 0,
+    DepthMax: 0,
+    maxDepthLine: 155,
     currentScore: 0,
     totalScore: 0,
     bronze: 10,
@@ -83470,58 +85784,97 @@ player = [{
 }];
 //# sourceMappingURL=data.js.map
 
+"use strict";
+
+GreaterThan = GreaterThan || {};
+
+GreaterThan.Fish = function (game, x, y, sprite, opts) {
+  Phaser.Sprite.call(this, game, x, y);
+
+  this.relation = opts.relation;
+  this.value = opts.value;
+  this.equalTo = opts.equalTo;
+
+  this.init();
+};
+
+GreaterThan.Fish.prototype = Object.create(Phaser.Sprite.prototype);
+GreaterThan.Fish.prototype.constructor = GreaterThan.Fish;
+
+GreaterThan.Fish.prototype.init = function () {
+  this.anchor.setTo(0.5, 0.5);
+
+  this._addBody();
+  this._addNumber(this.value);
+  this._addSign(this.relation);
+
+  this.game.physics.arcade.enable(this);
+  this.body.velocity.x = game.rnd.integerInRange(-100, 100);
+  this.body.velocity.y = game.rnd.integerInRange(-100, 100);
+
+  this.body.collideWorldBounds = true;
+  this.body.bounce.x = 1;
+  this.body.bounce.y = 1;
+  this.body.minBounceVelocity = 0;
+};
+
+GreaterThan.Fish.prototype._addBody = function () {
+  var bodyImage,
+      i = this.game.rnd.integerInRange(0, 2);
+
+  switch (i) {
+    case 0:
+      bodyImage = "bodyA";
+      this.pointsValue = 3;
+      break;
+    case 1:
+      bodyImage = "bodyB";
+      this.pointsValue = 4;
+      break;
+    case 2:
+      bodyImage = "bodyC";
+      this.pointsValue = 5;
+  }
+
+  //Fish Base behind number
+  this.fishBody = game.add.sprite(0, -5, bodyImage);
+  this.fishBody.anchor.setTo(0.5, 0.5);
+  this.addChild(this.fishBody);
+};
+
+GreaterThan.Fish.prototype._addNumber = function (number) {
+  this.baseText = game.make.text(12, 3, number, { fill: '#000000' });
+  this.baseText.anchor.setTo(0.5, 0.5);
+  this.addChild(this.baseText);
+
+  //top level text
+  this.text = game.make.text(10, 1, number, { fill: '#ffffff' });
+  this.text.anchor.setTo(0.5, 0.5);
+  this.addChild(this.text);
+};
+
+GreaterThan.Fish.prototype._addSign = function (relation) {
+  var sign = this.equalTo ? 'equalTo' : 'sign';
+
+  this.mathSign = game.add.image(-8, 0, sign);
+  this.mathSign.anchor.setTo(0.5, 0.5);
+
+  if (relation === 'less') {
+    this.mathSign.scale.x *= -1;
+  }
+
+  this.addChild(this.mathSign);
+};
+//# sourceMappingURL=fish.js.map
+
 'use strict';
 
 var GreaterThan;
 
 (function (GreaterThan) {
+    'use strict';
+
     var _Game = function (_super) {
-
-        _Game = function Game(gameVars) {
-            _super.call(this, {
-                renderer: Phaser.CANVAS,
-                parent: 'canvasContainer'
-            });
-            this.devicePixelRatio = Math.min(Math.round(window.devicePixelRatio), _Game.MAX_DPR) || 1;
-
-            this.apiManager = undefined;
-            this.userManager = new GreaterThan.Lib.UserManager(this);
-
-            this.gameVars = gameVars;
-            this.userData = {};
-            this.readyToBoot = false;
-
-            this.state.add('boot', GreaterThan.Boot);
-            this.state.add('preloader', GreaterThan.Preloader);
-            this.state.add('title', GreaterThan.Title);
-            this.state.add('menu', GreaterThan.Menu);
-            this.state.add('settings', GreaterThan.Settings);
-            this.state.add('main', GreaterThan.Main);
-            this.state.add('gameOver', GreaterThan.GameOver);
-
-            _initApi(this).then(function (data) {
-                _addUserData(this, data);
-
-                this.play();
-            }.bind(this));
-        };
-        _Game.prototype = Object.create(_super.prototype);
-        _Game.prototype.constructor = _Game;
-
-        _Game.MAX_DPR = 1;
-
-        _Game.prototype.play = function () {
-            if (this.readyToBoot === true) {
-                this.state.start('boot', true);
-            }
-        };
-
-        _Game.prototype.boot = function () {
-            _super.prototype.boot.call(this);
-            _setScale(this);
-        };
-
-        /** private */
         var _initApi = function _initApi(game) {
             game.apiManager = game.gameVars.userId ? new GreaterThan.Lib.ApiManager(game) : new GreaterThan.Lib.ApiGuestManager();
 
@@ -83538,11 +85891,12 @@ var GreaterThan;
             if (game.gameVars.activityId) {
                 game.userManager.addChallenge(game.gameVars.activityId);
             }
+
             game.readyToBoot = true;
         };
 
-        var _toScreenPx = function _toScreenPx(size) {
-            return this.devicePixelRatio * size;
+        var _toScreenPx = function _toScreenPx(size, dpr) {
+            return dpr * size;
         };
 
         var _setScale = function _setScale(game) {
@@ -83560,9 +85914,67 @@ var GreaterThan;
                 h = desiredHeight;
             }
 
-            game.scale.setGameSize(_toScreenPx(desiredWidth), _toScreenPx(desiredHeight));
+            game.scale.setGameSize(_toScreenPx(desiredWidth, game.devicePixelRatio), _toScreenPx(desiredHeight, game.devicePixelRatio));
             game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
             game.scale.setMinMax(w, h, w, h);
+        };
+
+        var _onPluginLoad = function _onPluginLoad(game) {
+            game.pluginsReady++;
+
+            game.play();
+        };
+
+        _Game = function Game(gameVars) {
+            _super.call(this, {
+                renderer: Phaser.CANVAS,
+                parent: 'canvasContainer'
+            });
+
+            this.devicePixelRatio = Math.min(Math.round(window.devicePixelRatio), _Game.MAX_DPR) || 1;
+
+            this.apiManager = undefined;
+            this.userManager = new GreaterThan.Lib.UserManager(this);
+
+            this.gameVars = gameVars;
+            this.userData = {};
+            this.pluginsReady = 0;
+
+            this.state.add('boot', GreaterThan.Boot);
+            this.state.add('preloader', GreaterThan.Preloader);
+            this.state.add('title', GreaterThan.Title);
+            this.state.add('menu', GreaterThan.Menu);
+            this.state.add('settings', GreaterThan.Settings);
+            this.state.add('main', GreaterThan.Main);
+            this.state.add('gameOver', GreaterThan.GameOver);
+
+            i18n.init({
+                fallbackLng: 'en',
+                lng: gameVars.locale,
+                resGetPath: (gameVars.resourceUrl ? gameVars.resourceUrl : '/') + 'locales/__lng__/__ns__.json'
+            }, _onPluginLoad(this));
+
+            _initApi(this).then(function (data) {
+                _addUserData(this, data);
+
+                _onPluginLoad(this);
+            }.bind(this));
+        };
+        _Game.prototype = Object.create(_super.prototype);
+        _Game.prototype.constructor = _Game;
+
+        _Game.MAX_DPR = 1;
+        _Game.PLUGINS_REQUIRED = 2;
+
+        _Game.prototype.play = function () {
+            if (this.pluginsReady === _Game.PLUGINS_REQUIRED) {
+                this.state.start('boot', true);
+            }
+        };
+
+        _Game.prototype.boot = function () {
+            _super.prototype.boot.call(this);
+            _setScale(this);
         };
 
         return _Game;
@@ -83595,7 +86007,7 @@ var GreaterThan;
                 // local storage solution
             };
 
-            ApiGuestManager.prototype.startLevel = function (levelId) {
+            ApiGuestManager.prototype.startWorld = function (worldId) {
                 // probably not needed for guest
             };
 
@@ -83649,10 +86061,10 @@ var GreaterThan;
 
             /**
              * Initialises API to save details for a particular activity play
-             * @param levelId {number}
+             * @param worldId {number}
              */
-            ApiManager.prototype.startLevel = function (levelId) {
-                this.api.start(levelId);
+            ApiManager.prototype.startWorld = function (worldId) {
+                this.api.start(worldId);
             };
 
             /**
@@ -83751,14 +86163,11 @@ var GreaterThan;
             };
 
             var DEFAULT_GAMEDATA = {
-                currentLevel: 0,
-                currentStage: 0,
-                startLevel: 0,
-                endLevel: 0,
+                currentDepth: 0,
+                currentWorld: 0,
+                startDepth: 0,
+                endDepth: 0,
                 timePlayer: 0,
-                levelLocation: 0,
-                maxLevelLine: 155,
-                currentDepth: 100,
                 currentScore: 0,
                 totalScore: 0,
                 bronze: 10,
@@ -83773,31 +86182,43 @@ var GreaterThan;
                         score: 0
                     },
                     2: {
-                        locked: true,
+                        locked: false,
                         medal: null,
                         score: 0
                     },
                     3: {
-                        locked: true,
+                        locked: false,
                         medal: null,
                         score: 0
                     },
                     4: {
-                        locked: true,
+                        locked: false,
                         medal: null,
                         score: 0
                     },
                     5: {
-                        locked: true,
+                        locked: false,
                         medal: null,
                         score: 0
                     },
                     6: {
-                        locked: true,
+                        locked: false,
                         medal: null,
                         score: 0
                     }
                 }
+            };
+
+            /** @private */
+            var _mapProps = function _mapProps(data, target, properties) {
+                properties.forEach(function (property) {
+                    target[property] = data[property];
+                });
+            };
+
+            /** @private */
+            var _loadData = function _loadData(data, target) {
+                _mapProps(data, target, ['settings', 'user', 'gameData', 'school', 'achievements']);
             };
 
             UserManager.prototype.init = function () {};
@@ -83819,18 +86240,6 @@ var GreaterThan;
             UserManager.prototype.addChallenge = function (activityId) {
                 this.game.userData.challengeMode = true;
                 this.game.userData.challengeId = activityId;
-            };
-
-            /** @private */
-            var _loadData = function _loadData(data, target) {
-                _mapProps(data, target, ['settings', 'user', 'gameData', 'school', 'achievements']);
-            };
-
-            /** @private */
-            var _mapProps = function _mapProps(data, target, properties) {
-                properties.forEach(function (property) {
-                    target[property] = data[property];
-                });
             };
 
             return UserManager;
@@ -83890,70 +86299,43 @@ GreaterThan.GameOver.prototype = {
         this.config = {
             highScore: false,
             medal: 'none',
-
             clicked: false
         };
 
-        this.checkLanguage();
         this._calculateHighScore();
         this.addGraphics();
-        this._updateDataWithMedal(this.gameData.currentStage);
+        this._updateDataWithMedal(this.gameData.currentWorld);
         // this.showTestingData();
     },
 
     update: function update() {},
 
-    checkLanguage: function checkLanguage() {
-
-        if (this.game.userData.school.locale == 'pt-br') {
-            this.textGameOver = PTR_BR[0].gameOver[0].gameOver;
-            this.textScore = PTR_BR[0].gameOver[0].score;
-            this.textHighScore = PTR_BR[0].gameOver[0].highScore;
-            this.textNext = PTR_BR[0].gameOver[0].next;
-            this.textEarned = PTR_BR[0].gameOver[0].earned;
-            this.textBronze = PTR_BR[0].gameOver[0].bronze;
-            this.textSilver = PTR_BR[0].gameOver[0].silver;
-            this.textGold = PTR_BR[0].gameOver[0].gold;
-            this.textMedal = PTR_BR[0].gameOver[0].medal;
-        } else {
-            this.textGameOver = ENG_UK[0].gameOver[0].gameOver;
-            this.textScore = ENG_UK[0].gameOver[0].score;
-            this.textHighScore = ENG_UK[0].gameOver[0].highScore;
-            this.textNext = ENG_UK[0].gameOver[0].next;
-            this.textEarned = ENG_UK[0].gameOver[0].earned;
-            this.textBronze = ENG_UK[0].gameOver[0].bronze;
-            this.textSilver = ENG_UK[0].gameOver[0].silver;
-            this.textGold = ENG_UK[0].gameOver[0].gold;
-            this.textMedal = ENG_UK[0].gameOver[0].medal;
-        }
-    },
-
     _calculateHighScore: function _calculateHighScore() {
-        var currentStage = this.gameData.currentStage;
+        var currentWorld = this.gameData.currentWorld;
 
         //if new score is bigger/equal to old score - replace
-        if (this.gameData.currentScore > this.gameData.worldProgress[currentStage].score) {
-            this.gameData.worldProgress[currentStage].score = this.gameData.currentScore;
+        if (this.gameData.currentScore > this.gameData.worldProgress[currentWorld].score) {
+            this.gameData.worldProgress[currentWorld].score = this.gameData.currentScore;
             this.config.highScore = true;
-            this._calculateMedal(currentStage);
+            this._calculateMedal(currentWorld);
         } else {
             this.config.highScore = false;
         }
     },
-    _calculateMedal: function _calculateMedal(currentStage) {
-        var score = this.gameData.worldProgress[currentStage].score;
+    _calculateMedal: function _calculateMedal(currentWorld) {
+        var score = this.gameData.worldProgress[currentWorld].score;
 
         if (score >= GreaterThan.CONFIG.goldPoints) {
-            this.gameData.worldProgress[currentStage].medal = 'G';
+            this.gameData.worldProgress[currentWorld].medal = 'G';
         } else if (score >= GreaterThan.CONFIG.silverPoints) {
-            this.gameData.worldProgress[currentStage].medal = 'S';
+            this.gameData.worldProgress[currentWorld].medal = 'S';
         } else if (score >= GreaterThan.CONFIG.bronzePoints) {
-            this.gameData.worldProgress[currentStage].medal = 'B';
+            this.gameData.worldProgress[currentWorld].medal = 'B';
         }
     },
 
     addGraphics: function addGraphics() {
-        var currentStage = this.gameData.currentStage;
+        var currentWorld = this.gameData.currentWorld;
 
         this.background = game.add.sprite(0, 0, 'splash');
 
@@ -83962,17 +86344,17 @@ GreaterThan.GameOver.prototype = {
 
         this.homeButton = game.add.button(x / 2, y / 2, 'play', this._goHome);
         this.homeButton.anchor.setTo(0.5, 0.5);
-        this.nextText = this.add.text(0, 0, this.textNext, { fill: '#24475b' });
+        this.nextText = this.add.text(0, 0, i18n.t("next"), { fill: '#24475b' });
         this.nextText.anchor.setTo(0.5, 0.5);
         this.homeButton.addChild(this.nextText);
 
-        this.title = this.add.text(x / 2, y / 5, this.textGameOver, { fill: '#19a3e0' });
+        this.title = this.add.text(x / 2, y / 5, i18n.t("gameOver"), { fill: '#19a3e0' });
         this.title.anchor.setTo(0.5, 0.5);
 
         this.scoreBox = this.add.image(x / 2, y / 3, 'title');
         this.scoreBox.anchor.setTo(0.5, 0.5);
 
-        this.scoreText = this.make.text(5, 5, this.textScore + ': ' + this.gameData.currentScore, { fill: '#24475b' });
+        this.scoreText = this.make.text(5, 5, i18n.t("score") + ': ' + this.gameData.currentScore, { fill: '#24475b' });
         this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
 
@@ -83984,21 +86366,21 @@ GreaterThan.GameOver.prototype = {
             this._showInformation();
         }, this);
 
-        if (this.gameData.worldProgress[currentStage].medal == 'G') {
-            this.medalText = this.textGold;
-        } else if (this.gameData.worldProgress[currentStage].medal == 'S') {
-            this.medalText = this.textSilver;
-        } else if (this.gameData.worldProgress[currentStage].medal == 'B') {
-            this.medalText = this.textBronze;
+        if (this.gameData.worldProgress[currentWorld].medal === 'G') {
+            this.medalText = i18n.t("gold");
+        } else if (this.gameData.worldProgress[currentWorld].medal === 'S') {
+            this.medalText = i18n.t("silver");
+        } else if (this.gameData.worldProgress[currentWorld].medal === 'B') {
+            this.medalText = i18n.t("bronze");
         }
 
-        if (this.config.highScore == true) {
-            this.highScore = this.add.text(x / 2, y / 2.5, this.textHighScore, { fill: '#19a3e0' });
+        if (this.config.highScore === true) {
+            this.highScore = this.add.text(x / 2, y / 2.5, i18n.t("highScore"), { fill: '#19a3e0' });
             this.highScore.anchor.setTo(0.5, 0.5);
         }
 
         if (this.medalText !== undefined) {
-            this.highScore = this.add.text(x / 2, y / 1.5, this.textEarned + " " + this.medalText + " " + this.textMedal, { fill: '#19a3e0' });
+            this.highScore = this.add.text(x / 2, y / 1.5, i18n.t("earned") + " " + this.medalText + " " + i18n.t("medal"), { fill: '#19a3e0' });
             this.highScore.anchor.setTo(0.5, 0.5);
         }
     },
@@ -84007,7 +86389,7 @@ GreaterThan.GameOver.prototype = {
     },
 
     showTestingData: function showTestingData() {
-        console.log('Stage ' + player[0].currentStage + ' report');
+        console.log('Stage ' + player[0].currentWorld + ' report');
         console.log('amount of right answers: ' + testing[0].rightAnswers);
         console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
         console.log('total Eaten: ' + testing[0].totalEaten);
@@ -84015,16 +86397,16 @@ GreaterThan.GameOver.prototype = {
         console.log('points earned at Silver: ' + testing[0].pointsAtSilver);
         console.log('points earned at Gold: ' + testing[0].pointsAtGold);
 
-        var highestLevel = player[0].currentLevel - player[0].startLevel;
+        var highestDepth = player[0].currentDepth - player[0].startDepth;
 
-        console.log('Highest Level: ' + highestLevel);
+        console.log('Highest Depth: ' + highestDepth);
         console.log('Treasure Eaten: ' + testing[0].treasure);
-        console.log('Level Up Bonus: ' + testing[0].levelUpBoonus);
+        console.log('Depth Up Bonus: ' + testing[0].depthUpBoonus);
     },
     createInformationBox: function createInformationBox() {
-        var levelNormalisation = this.gameData.currentLevel - this.gameData.startLevel;
-        var stage = this.gameData.currentStage;
-        var highestLevel = levelNormalisation + 1;
+        var depthNormalisation = this.gameData.currentDepth - this.gameData.startDepth;
+        var stage = this.gameData.currentWorld;
+        var highestDepth = depthNormalisation + 1;
 
         this.informBox = this.add.image(200, 150, 'box1');
         this.textGroup = this.add.group();
@@ -84042,9 +86424,9 @@ GreaterThan.GameOver.prototype = {
         this._addInformationText(x, y, 'Points earned at Bronze: ', testing[0].pointsAtBronze);
         this._addInformationText(x, y, 'Points earned at Silver: ', testing[0].pointsAtSilver);
         this._addInformationText(x, y, 'Points earned at Gold: ', testing[0].pointsAtGold);
-        this._addInformationText(x, y, 'Highest Level Reached: ', highestLevel);
+        this._addInformationText(x, y, 'Highest Depth Reached: ', highestDepth);
         this._addInformationText(x, y, 'Bubbles Collected: ', testing[0].treasure);
-        this._addInformationText(x, y, 'Level Up Bonus Points:  ', testing[0].levelUpBoonus);
+        this._addInformationText(x, y, 'Depth Up Bonus Points:  ', testing[0].depthUpBoonus);
 
         this.textGroup.visible = false;
         this.informBox.visible = false;
@@ -84056,7 +86438,7 @@ GreaterThan.GameOver.prototype = {
         this.height += 40;
     },
     _showInformation: function _showInformation() {
-        if (this.config.clicked == false) {
+        if (this.config.clicked === false) {
             this.informBox.visible = true;
             this.textGroup.visible = true;
             this.config.clicked = true;
@@ -84066,12 +86448,12 @@ GreaterThan.GameOver.prototype = {
             this.config.clicked = false;
         }
     },
-    _updateDataWithMedal: function _updateDataWithMedal(currentStage) {
+    _updateDataWithMedal: function _updateDataWithMedal(currentWorld) {
         this.game.apiManager.handleWorldEnd({
             timePlayed: this.gameData.timePlayed,
             gameData: this.gameData,
-            achievements: this.gameData.worldProgress[this.gameData.currentStage].medal
-        }, currentStage);
+            achievements: this.gameData.worldProgress[this.gameData.currentWorld].medal
+        }, currentWorld);
     }
 };
 //# sourceMappingURL=gameOver.js.map
@@ -84084,21 +86466,34 @@ GreaterThan.Main = function (game) {
 
 GreaterThan.Main.prototype = {
     config: {
-        viewSizeX: 1024,
-        viewSizeY: 768,
+        //UI and world size information
+        viewSizeX: GreaterThan.UI.viewSizeX,
+        viewSizeY: GreaterThan.UI.viewSizeY,
+
         worldSizeX: GreaterThan.UI.worldSizeX,
         worldSizeY: GreaterThan.UI.worldSizeY,
-        coolDownTime: 0.5,
-        arrowMove: 75,
-        lineMove: 75,
-        rightInARow: 6,
-        wrongInARow: 3,
-        unlockLevel: 10, // should this be the same as the bronze limit?
-        minutes: 0,
-        seconds: 30
-    },
 
-    testingData: {},
+        //Answers in a row to move depths
+        rightInARow: GreaterThan.CONFIG.rightInARow,
+        wrongInARow: GreaterThan.CONFIG.wrongInARow,
+        unlockDepth: GreaterThan.CONFIG.unlockDepth,
+
+        //Points to earn a medal
+        bronzePoints: GreaterThan.CONFIG.bronzePoints,
+        silverPoints: GreaterThan.CONFIG.silverPoints,
+        goldPoints: GreaterThan.CONFIG.goldPoints,
+
+        //180 seconds (3mins)
+        roundTime: GreaterThan.CONFIG.roundTime,
+
+        //Points for Medal rounds
+        bonusPoints: GreaterThan.CONFIG.bonusPoints,
+
+        //Points for fish
+        fishPointsA: GreaterThan.CONFIG.fishPointsA,
+        fishPointsB: GreaterThan.CONFIG.fishPointsB,
+        fishPointsC: GreaterThan.CONFIG.fishPointsC
+    },
 
     gameState: {},
 
@@ -84109,123 +86504,116 @@ GreaterThan.Main.prototype = {
         this.userInfo = this.game.userData.user;
         this.userSettings = this.game.userData.settings;
 
-        this.checkLanguage();
-
         this.addGameInformation();
-
         this._initGameInformation();
 
-        this.addTestingData();
-        this.addWorld();
+        // nb These methods populate the game with its objects.  The order in which groups are added to the state matters!
+        this.addBackground();
+        this.addTreasureGroup();
         this.addTreasure();
         this.addGreaterLesserGroup();
-
         this.addGreaterLesserEntities();
         this.addPlayer();
+        this.addBubbleGroup();
+
+        this.answerGroup = this.add.group();
         this.addUI();
-        //addTimer - minutes and seconds
+
         this.addTimer(GreaterThan.CONFIG.roundTime);
         this.animateFuel();
-
         this.game.time.advancedTiming = true;
 
-        this._notifyLevelStart(this.gameData.currentStage);
+        this._notifyWorldStart(this.gameData.currentWorld);
 
         //Testing Data
         //this.showTestingData();
     },
 
     update: function update() {
-
         //speed of player movement
         this._playerMovement(this.gameState.playerSpeed);
         this.collisionDetection();
-        this.updateUI();
     },
 
     render: function render() {
-
+        // This is needed as pausing the phaser game disables all other methods in the loop
+        if (this.game.paused === true && this.pauseGroup.visible === false || this.pauseGroup.visible === true && this.game.paused === false) {
+            this._togglePauseMenu();
+        }
         // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
 
         // game.debug.body(this.player);
-        if (this.timer.running == true) {
+        if (this.timer.running === true) {
             game.debug.text(this._formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000)), 540, 35, "#fff");
         } else {
             game.debug.text("GameOver!", 600, 60, "#fff");
         }
 
         game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
-    },
 
-    checkLanguage: function checkLanguage() {
-        if (this.game.userData.school.locale == 'pt-br') {
-            this.textStage = PTR_BR[0].game[0].stage;
-            this.textScore = PTR_BR[0].game[0].score;
-            this.textPauseMenu = PTR_BR[0].game[0].pause;
-            this.textQuit = PTR_BR[0].game[0].quit;
-            this.textContinue = PTR_BR[0].game[0].continue;
-        } else {
-            this.textStage = ENG_UK[0].game[0].stage;
-            this.textScore = ENG_UK[0].game[0].score;
-            this.textPauseMenu = ENG_UK[0].game[0].pause;
-            this.textQuit = ENG_UK[0].game[0].quit;
-            this.textContinue = ENG_UK[0].game[0].continue;
-        }
+        //game.debug.body(this.stopCircle);
     },
 
     addGameInformation: function addGameInformation() {
-
-        var levelId = this.gameData.currentLevel;
-        var worldId = this.gameData.currentStage;
+        var depthId = this.gameData.currentDepth;
+        var worldId = this.gameData.currentWorld;
 
         // todo: sort running game variables, inter-gamestate variables, and user savable variables
         this.gameState = {
             //World Data
-            levelName: GreaterThan.LEVELS[levelId].levelName,
+            depthName: GreaterThan.DEPTHS[depthId].depthName,
             worldSizeX: this.config.worldSizeX,
             worldSizeY: this.config.worldSizeY,
-            equalToLevel: GreaterThan.LEVELS[levelId].equalTo,
+            equalToDepth: GreaterThan.DEPTHS[depthId].equalTo,
             pauseEnabled: player[0].pauseEnabled,
+
             //Stage Data
-            depth: player[0].currentDepth, //The height of the arrow, indicating depth/level progression
+            depth: player[0].currentDepth, //The height of the arrow, indicating depth/Depth progression
             backgroundColour: '#6f9695',
-            currentStage: worldId,
-            currentLevel: levelId,
-            lowestLevel: GreaterThan.WORLDS[worldId].lowestLevel,
-            highestLevel: GreaterThan.WORLDS[worldId].highestLevel,
+            currentWorld: worldId,
+            currentDepth: depthId,
+            lowestDepth: GreaterThan.WORLDS[worldId].lowestDepth,
+            highestDepth: GreaterThan.WORLDS[worldId].highestDepth,
             score: this.gameData.currentScore,
-            //unlockNextLevel: player[0].worldData[stageId].locked,
-            //criteria for unlocking the next level
-            toNextLevel: this.config.unlockLevel,
+
+            //unlockNextDepth: player[0].worldData[stageId].locked,
+            //criteria for unlocking the next Depth
+            toNextDepth: this.config.unlockDepth,
+
             //Player information
-            playerCurrentValue: GreaterThan.LEVELS[levelId].playerValue,
+            playerCurrentValue: GreaterThan.DEPTHS[depthId].playerValue,
             alive: true,
             playerSpeed: 500,
-            //Level Progression Information
-            levelUp: 0,
-            levelDown: 0,
-            levelLocation: player[0].levelLocation, //If the level you are playing is the highest level you have attempted
-            maxLevel: player[0].maxLevel,
-            maxLevelLine: player[0].maxLevelLine,
+            coolDownTime: 0.75,
+
+            //Depth Progression Information
+            depthUp: 0,
+            depthDown: 0,
+            depthLocation: player[0].depthLocation, //If the Depth you are playing is the highest Depth you have attempted
+            maxDepth: player[0].maxDepth,
+            maxDepthLine: player[0].maxDepthLine,
+
             //Greater Than Information
-            greaterMinValue: GreaterThan.LEVELS[levelId].greater[0].minValue,
-            greaterMaxValue: GreaterThan.LEVELS[levelId].greater[0].maxValue,
-            greaterAmount: GreaterThan.LEVELS[levelId].greater[0].amount,
-            greaterPropAbove: GreaterThan.LEVELS[levelId].greater[0].proportionAbove,
-            greaterPropEqual: GreaterThan.LEVELS[levelId].greater[0].proportionEqual,
-            greaterPropBelow: GreaterThan.LEVELS[levelId].greater[0].proportionBelow,
+            greaterMinValue: GreaterThan.DEPTHS[depthId].greater[0].minValue,
+            greaterMaxValue: GreaterThan.DEPTHS[depthId].greater[0].maxValue,
+            greaterAmount: GreaterThan.DEPTHS[depthId].greater[0].amount,
+            greaterPropAbove: GreaterThan.DEPTHS[depthId].greater[0].proportionAbove,
+            greaterPropEqual: GreaterThan.DEPTHS[depthId].greater[0].proportionEqual,
+            greaterPropBelow: GreaterThan.DEPTHS[depthId].greater[0].proportionBelow,
             greater: [],
+
             //Less Than Information
-            lesserMinValue: GreaterThan.LEVELS[levelId].lesser[0].minValue,
-            lesserMaxValue: GreaterThan.LEVELS[levelId].lesser[0].maxValue,
-            lesserAmount: GreaterThan.LEVELS[levelId].lesser[0].amount,
-            lesserPropAbove: GreaterThan.LEVELS[levelId].lesser[0].proportionAbove,
-            lesserPropEqual: GreaterThan.LEVELS[levelId].lesser[0].proportionEqual,
-            lesserPropBelow: GreaterThan.LEVELS[levelId].lesser[0].proportionBelow,
+            lesserMinValue: GreaterThan.DEPTHS[depthId].lesser[0].minValue,
+            lesserMaxValue: GreaterThan.DEPTHS[depthId].lesser[0].maxValue,
+            lesserAmount: GreaterThan.DEPTHS[depthId].lesser[0].amount,
+            lesserPropAbove: GreaterThan.DEPTHS[depthId].lesser[0].proportionAbove,
+            lesserPropEqual: GreaterThan.DEPTHS[depthId].lesser[0].proportionEqual,
+            lesserPropBelow: GreaterThan.DEPTHS[depthId].lesser[0].proportionBelow,
             lesser: [],
-            //Treasure Information
-            treasure: []
-            //pause menu clicked
+
+            //Oxygen Information
+            oxygen: []
+
         };
     },
 
@@ -84233,38 +86621,18 @@ GreaterThan.Main.prototype = {
     _initGameInformation: function _initGameInformation() {
         // todo: distinguish 'continue' from 'new'
         this.gameData.timePlayed = 0;
-        this.gameState.paused = false;
+        this.game.paused = false;
         this.gameState.score = 0;
     },
     /** Start the next stage in a world */
     _refreshGameInformation: function _refreshGameInformation() {
-        this.gameState.levelUp = 0;
-        this.gameState.levelDown = 0;
+        this.gameState.depthUp = 0;
+        this.gameState.depthDown = 0;
     },
 
-    addTestingData: function addTestingData() {
-        testing[0].totalEaten = 0;
-        testing[0].treasure = 0;
-        testing[0].rightAnswers = 0;
-        testing[0].wrongAnswers = 0;
-        testing[0].pointsAtBronze = 0;
-        testing[0].pointsAtSilver = 0;
-        testing[0].pointsAtGold = 0;
-        testing[0].levelUpBoonus = 0;
+    addBackground: function addBackground() {
+        var i;
 
-        this.testing = {
-            treasure: testing[0].totalEaten,
-            rightAnswers: testing[0].rightAnswers,
-            wrongAnswers: testing[0].wrongAnswers,
-            pointsAtBronze: testing[0].pointsAtBronze,
-            pointsAtSilver: testing[0].pointsAtSilver,
-            pointsAtGold: testing[0].pointsAtGold,
-            levelUpBoonus: testing[0].levelUpBoonus
-
-        };
-    },
-
-    addWorld: function addWorld() {
         this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         // /1.2
@@ -84275,11 +86643,10 @@ GreaterThan.Main.prototype = {
         // this.background2 = game.add.image(0,0, 'bgTop');
         // this.background2.fixedToCamera = true;
 
-
         //Random background fish
         this.bgFishes = this.add.group();
 
-        for (var i = 0; i < 15; i++) {
+        for (i = 0; i < 15; i++) {
             this.bgFish = this.bgFishes.create(this.bounds.randomX, this.bounds.randomY, 'bgFish');
             this.physics.enable(this.bgFish, Phaser.Physics.ARCADE);
             this.bgFish.scale.setTo(game.rnd.integerInRange(0.5, 1.2));
@@ -84301,7 +86668,7 @@ GreaterThan.Main.prototype = {
         this.dusts = this.add.group();
         this.dustPhysicsGroup = this.game.make.group();
 
-        for (var i = 0; i < 100; i++) {
+        for (i = 0; i < 100; i++) {
             this.dust = this.dusts.create(this.bounds.randomX, this.bounds.randomY, 'particle');
             this.physics.enable(this.dust, Phaser.Physics.ARCADE);
             this.dust.scale.setTo(game.rnd.integerInRange(0.001, 1));
@@ -84319,12 +86686,8 @@ GreaterThan.Main.prototype = {
         this.dusts.setAll('body.bounce.y', 1);
         this.dusts.setAll('body.minBounceVelocity', 0);
 
-        //this.lightAnim.animations.play('twinkle', 0.25, true);
-
-
-        //this._addBackgroundColour();
-
         //enable Input
+        // todo: factor out
         this.game.cursors = this.game.input.keyboard.createCursorKeys();
     },
     _addBackgroundColour: function _addBackgroundColour() {
@@ -84333,24 +86696,24 @@ GreaterThan.Main.prototype = {
         this.game.stage.backgroundColor = this.gameState.backgroundColour;
     },
     _defineBackground: function _defineBackground() {
-        var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel;
-        if (currentLevel == 0) {
+        var currentDepth = this.gameState.currentDepth - this.gameState.lowestDepth;
+        if (currentDepth === 0) {
             this.gameState.backgroundColour = '#z6f9695';
-        } else if (currentLevel == 1) {
+        } else if (currentDepth === 1) {
             this.gameState.backgroundColour = '#56908E';
-        } else if (currentLevel == 2) {
+        } else if (currentDepth === 2) {
             this.gameState.backgroundColour = '#4D8B86';
-        } else if (currentLevel == 3) {
+        } else if (currentDepth === 3) {
             this.gameState.backgroundColour = '#418481';
-        } else if (currentLevel == 4) {
+        } else if (currentDepth === 4) {
             this.gameState.backgroundColour = '#377F7B';
-        } else if (currentLevel == 5) {
+        } else if (currentDepth === 5) {
             this.gameState.backgroundColour = '#327A76';
-        } else if (currentLevel == 6) {
+        } else if (currentDepth === 6) {
             this.gameState.backgroundColour = '#307571';
-        } else if (currentLevel == 7) {
+        } else if (currentDepth === 7) {
             this.gameState.backgroundColour = '#2E716C';
-        } else if (currentLevel == 8) {
+        } else if (currentDepth === 8) {
             this.gameState.backgroundColour = '#2C6C68';
         }
     },
@@ -84372,12 +86735,10 @@ GreaterThan.Main.prototype = {
     },
     _endTimer: function _endTimer() {
         this._updateGameData();
-        this.addTestingInformation();
 
         this.timer.stop();
         this.game.state.start("gameOver", true);
     },
-
     addUI: function addUI() {
         //seUiPosition x and y are game screen size / number
 
@@ -84392,11 +86753,11 @@ GreaterThan.Main.prototype = {
         this._addPauseMenu();
     },
     _addTitle: function _addTitle(textStyle) {
-        this.levelTitle = this.add.image(0, 0, 'scoreBox');
-        this._setUIPosition(this.levelTitle, 10, 20);
-        this.titleText = this.make.text(5, 5, this.gameState.levelName, textStyle);
+        this.depthTitle = this.add.image(0, 0, 'scoreBox');
+        this._setUIPosition(this.depthTitle, 10, 20);
+        this.titleText = this.make.text(5, 5, this.gameState.depthName, textStyle);
         this.titleText.anchor.setTo(0.5, 0.5);
-        this.levelTitle.addChild(this.titleText);
+        this.depthTitle.addChild(this.titleText);
     },
     _addScore: function _addScore(textStyle) {
         this.scoreBox = this.add.image(0, 0, 'scoreBox');
@@ -84422,30 +86783,7 @@ GreaterThan.Main.prototype = {
         this.fuelBase.addChild(this.fuelTop);
     },
     animateFuel: function animateFuel() {
-        // var minutes = this.config.minutes;
-        // var seconds = this.config.seconds;
-        //
-        // var minutesToMill = minutes * 60000;
-        // var secondsToMill = seconds * 1000;
-        //
-        // var totalTime = minutesToMill + secondsToMill;
-
         game.add.tween(this.fuelTop.scale).to({ x: 0, y: 1 }, GreaterThan.CONFIG.roundTime, null, true, 0, Infinity);
-    },
-    _addDepthUi: function _addDepthUi() {
-        //depth UI
-        this.depthUI = this.add.image(0, 0, 'depth');
-        this.depthUI.scale.setTo(1.2, 1.5);
-        this._setUIPosition(this.depthUI, 150, 80);
-
-        //add arrow UI (part of the depth UI)
-        this.arrow = this.add.image(0, 0, 'arrow');
-        this._setUIPosition(this.arrow, 115, this.gameState.depth);
-
-        //deepest depth line
-        this.deepestDepth = this.add.image(0, 0, 'deepestLine');
-        this.deepestDepth.scale.setTo(1.2, 1.5);
-        this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
     },
     _addHomeButton: function _addHomeButton() {
         this.homeButton = game.add.sprite(40, 700, 'home');
@@ -84455,22 +86793,6 @@ GreaterThan.Main.prototype = {
             this._pause();
         }, this);
     },
-    // _checkHomePauseButtons(){
-    //     if (this.gameState.pauseEnabled == true) {
-    //         //Home button
-    //         this.homeButton = game.add.button(40, 700, 'home', this._pause);
-    //         this._setUIPosition(this.homeButton, 1.05, 15);
-    //
-    //         //Pause button
-    //         this.pauseButton = game.add.button(40, 700, 'pause', this._pause);
-    //         this._setUIPosition(this.pauseButton, 1.150, 15);
-    //     }
-    //     else {
-    //         //Home button
-    //         this.homeButton = game.add.button(40, 700, 'home', this._pause);
-    //         this._setUIPosition(this.homeButton, 10, 1.15);
-    //     }
-    // },
     _setUIPosition: function _setUIPosition(uiElement, positionX, positionY) {
         uiElement.fixedToCamera = true;
 
@@ -84483,27 +86805,26 @@ GreaterThan.Main.prototype = {
     },
     _goHome: function _goHome() {
         this.gameData.currentScore = this.gameState.score;
-        this.addTestingInformation();
-        this.timer.stop();
-        game.physics.arcade.isPaused = game.physics.arcade.isPaused ? false : true;
         this.game.state.start("gameOver", true);
     },
     _pause: function _pause() {
+        // This listener is needed because setting game.paused to true disables all event listeners not set globally
+        this.game.input.onDown.add(this._unpause, this);
 
-        game.physics.arcade.isPaused = game.physics.arcade.isPaused ? false : true;
-
-        if (this.timer.running) {
-            this.timer.pause();
-        } else {
-            this.timer.resume();
-        }
-
-        if (this.gameState.paused == false) {
-            this.pauseGroup.visible = true;
-            this.gameState.paused = true;
-        } else {
-            this.pauseGroup.visible = false;
-            this.gameState.paused = false;
+        this.game.tweens.pauseAll();
+        this.game.paused = true;
+    },
+    // This checks click events - if they hit a button the handler takes the appropriate action.
+    _unpause: function _unpause() {
+        if (this.game.paused) {
+            if (this.quitButton.getBounds().contains(this.game.input.x, this.game.input.y)) {
+                this.game.paused = false;
+                this._goHome();
+            }
+            if (this.continueButton.getBounds().contains(this.game.input.x, this.game.input.y)) {
+                this.game.paused = false;
+                this.game.tweens.resumeAll();
+            }
         }
     },
     _addPauseMenu: function _addPauseMenu() {
@@ -84528,9 +86849,9 @@ GreaterThan.Main.prototype = {
         }, this);
         this.pauseGroup.add(this.continueButton);
 
-        this._addPauseText(this.textPauseMenu, "#213f6b", 2, 4);
-        this._addPauseText(this.textQuit, "#19a3e0", 3.5, 2);
-        this._addPauseText(this.textContinue, "#19a3e0", 1.4, 2);
+        this._addPauseText(i18n.t("paused"), "#213f6b", 2, 4);
+        this._addPauseText(i18n.t("quit"), "#19a3e0", 3.5, 2);
+        this._addPauseText(i18n.t("continue"), "#19a3e0", 1.4, 2);
 
         this.pauseGroup.add(this.box);
         this.pauseGroup.visible = false;
@@ -84544,32 +86865,33 @@ GreaterThan.Main.prototype = {
 
         this._setUIPosition(this.pauseText, x, y);
     },
-    updateUI: function updateUI() {
-        // this.fuelTop.scale.y
+    _togglePauseMenu: function _togglePauseMenu() {
+        this.pauseGroup.visible = !this.pauseGroup.visible;
     },
     addPlayer: function addPlayer() {
-
         this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
 
+        this._addStopCircle();
         this._addSlowCircle();
         this._addMediumCircle();
 
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
-        //this.player.body.setSize(75, 75, 0, 0);
         this.player.anchor.setTo(0.5, 0.5);
 
         this.game.camera.follow(this.player);
 
-        if (testing[0].worldWrap == true) {
-            this.game.camera.bounds = null;
-        } else {
-            this.game.camera.bounds = this.bounds;
-            this.player.body.collideWorldBounds = true;
-            this.player.body.bounce.x = 1;
-            this.player.body.bounce.y = 1;
-            this.player.body.minBounceVelocity = 0;
-        }
+        this.game.camera.bounds = this.bounds;
+        this.player.body.collideWorldBounds = true;
+        this.player.body.bounce.x = 1;
+        this.player.body.bounce.y = 1;
+        this.player.body.minBounceVelocity = 0;
+
+        //Propella behind sub
+        this.prop = this.add.sprite(-60, -10, 'prop');
+        this.prop.anchor.setTo(0.5, 0.5);
+        this.prop.scale.setTo(0.5);
+        this.player.addChild(this.prop);
 
         //Submarine behind player
         this.sub = this.add.sprite(-1.5, -12, 'sub');
@@ -84581,15 +86903,25 @@ GreaterThan.Main.prototype = {
         // this.numberCircle.anchor.setTo(0.5, 0.5);
         // this.player.addChild(this.numberCircle);
 
-
         //Text on Player - Showing the players value
         this.playerNumberBase = this.make.text(-11, -15, this.gameState.playerCurrentValue, { fill: '#FFFFFF' });
         this.playerNumber = this.make.text(-9, -13, this.gameState.playerCurrentValue, { fill: '#000000' });
         this.player.addChild(this.playerNumber);
         this.player.addChild(this.playerNumberBase);
     },
-    _addSlowCircle: function _addSlowCircle() {
+    _addStopCircle: function _addStopCircle() {
 
+        //this works for the bottom right corner - probably means that the anchor point of this sprite is top left
+        //needs to be moved into the middle of the player...
+
+        this.stopCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
+
+        //Player Physics
+        this.physics.enable(this.stopCircle, Phaser.Physics.ARCADE);
+        this.stopCircle.body.setSize(125, 75);
+        this.stopCircle.anchor.setTo(2, 1.5);
+    },
+    _addSlowCircle: function _addSlowCircle() {
         //this works for the bottom right corner - probably means that the anchor point of this sprite is top left
         //needs to be moved into the middle of the player...
 
@@ -84602,7 +86934,6 @@ GreaterThan.Main.prototype = {
     },
 
     _addMediumCircle: function _addMediumCircle() {
-
         this.mediumCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
 
         //Player Physics
@@ -84617,29 +86948,33 @@ GreaterThan.Main.prototype = {
         var mousePositionX = game.input.x + game.camera.x;
         var mousePositionY = game.input.y + game.camera.y;
 
-        if (Phaser.Rectangle.contains(this.player.body, mousePositionX, mousePositionY)) {
+        if (Phaser.Rectangle.contains(this.stopCircle.body, mousePositionX, mousePositionY)) {
             this.player.body.velocity.setTo(0, 0);
+            this.stopCircle.body.velocity.setTo(0, 0);
             this.slowCircle.body.velocity.setTo(0, 0);
             this.mediumCircle.body.velocity.setTo(0, 0);
         } else if (Phaser.Rectangle.contains(this.slowCircle.body, mousePositionX, mousePositionY)) {
             game.physics.arcade.moveToPointer(this.player, speedMax / 2);
+            game.physics.arcade.moveToPointer(this.stopCircle, speedMax / 2);
             game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 2);
             game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 2);
         } else if (Phaser.Rectangle.contains(this.mediumCircle.body, mousePositionX, mousePositionY)) {
             game.physics.arcade.moveToPointer(this.player, speedMax / 1.5);
+            game.physics.arcade.moveToPointer(this.stopCircle, speedMax / 1.5);
             game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 1.5);
             game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 1.5);
         } else {
             game.physics.arcade.moveToPointer(this.player, speedMax);
+            game.physics.arcade.moveToPointer(this.stopCircle, speedMax);
             game.physics.arcade.moveToPointer(this.slowCircle, speedMax);
             game.physics.arcade.moveToPointer(this.mediumCircle, speedMax);
         }
 
         this.checkAnimation(this.player, this.sub);
+        this._checkFlipProp(this.player, this.prop, this.speed);
     },
 
     checkAnimation: function checkAnimation(object, frame) {
-
         var pointA = object.body.x;
 
         game.time.events.add(Phaser.Timer.SECOND * 0.1, function () {
@@ -84656,35 +86991,40 @@ GreaterThan.Main.prototype = {
         }
     },
 
-    _playerMovementMouse: function _playerMovementMouse(speed) {
-        if (this.game.input.activePointer.isDown) {
-            this.game.physics.arcade.moveToPointer(this.player, speed);
+    _checkFlipProp: function _checkFlipProp(object, prop, speed) {
+        var pointA = object.body.x;
 
-            //  if it's overlapping the mouse, don't move any more
-            //this only works for top left corner where this is true - because the game world is bigger than the screen
-            //this dose not work !!! need to find a different way to calculate the position of the mouse is over the player.
-            if (Phaser.Rectangle.contains(this.player.body, game.input.x, game.input.y)) {
-                this.player.body.velocity.setTo(0, 0);
-            }
-        } else {
-            this.player.body.velocity.setTo(0, 0);
-        }
+        game.time.events.add(Phaser.Timer.SECOND * 0.1, function () {
+            this._updateProp(pointA, object.body.x, prop, speed);
+        }, this);
     },
-    _playerMovementArrows: function _playerMovementArrows(speed) {
 
-        // if (this.game.cursors.left.isDown) {
-        //     this.player.x -= speed / 80;
-        // }
-        // else if (this.game.cursors.right.isDown) {
-        //     this.player.x += speed / 80;
-        // }
-        //
-        // if (this.game.cursors.up.isDown) {
-        //     this.player.y -= speed / 80;
-        // }
-        // else if (this.game.cursors.down.isDown) {
-        //     this.player.y += speed / 80;
-        // }
+    _updateProp: function _updateProp(pointA, objectBodyX, prop) {
+        var pointB = objectBodyX;
+
+        var mousePositionX = game.input.x + game.camera.x;
+        var mousePositionY = game.input.y + game.camera.y;
+
+        var angleSpeed;
+
+        if (Phaser.Rectangle.contains(this.stopCircle.body, mousePositionX, mousePositionY)) {
+            angleSpeed = 0;
+        } else if (Phaser.Rectangle.contains(this.slowCircle.body, mousePositionX, mousePositionY)) {
+            angleSpeed = 2;
+        } else if (Phaser.Rectangle.contains(this.mediumCircle.body, mousePositionX, mousePositionY)) {
+            angleSpeed = 5;
+        } else {
+            angleSpeed = 10;
+        }
+
+        if (pointA > pointB) {
+            //looking left
+            prop.x = 60;
+            prop.angle += angleSpeed;
+        } else if (pointA < pointB) {
+            prop.x = -60;
+            prop.angle -= angleSpeed;
+        }
     },
 
     addGreaterLesserGroup: function addGreaterLesserGroup() {
@@ -84701,169 +87041,42 @@ GreaterThan.Main.prototype = {
     },
     _createGreater: function _createGreater(groupOfObjects, amount) {
         //this.createEntityGroup(groupOfObjects, amount, image, minValue, maxValue, percentage)
-        this._calculateValue(groupOfObjects, amount, this.gameState.greaterMinValue, this.gameState.playerCurrentValue - 1, this.gameState.greaterPropBelow);
-        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.greaterMaxValue, this.gameState.greaterPropAbove);
-        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.greaterPropEqual);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.greaterMinValue, this.gameState.playerCurrentValue - 1, this.gameState.greaterPropBelow);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.greaterMaxValue, this.gameState.greaterPropAbove);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.greaterPropEqual);
     },
     _createLesser: function _createLesser(groupOfObjects, amount) {
         //this.createEntityGroup(groupOfObjects, amount, image, minValue, maxValue, percentage)
-        this._calculateValue(groupOfObjects, amount, this.gameState.lesserMinValue, this.gameState.playerCurrentValue - 1, this.gameState.lesserPropBelow);
-        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.lesserMaxValue, this.gameState.lesserPropAbove);
-        this._calculateValue(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.lesserPropEqual);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.lesserMinValue, this.gameState.playerCurrentValue - 1, this.gameState.lesserPropBelow);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.playerCurrentValue + 1, this.gameState.lesserMaxValue, this.gameState.lesserPropAbove);
+        this._calculateAndCreateFishAmount(groupOfObjects, amount, this.gameState.playerCurrentValue, this.gameState.playerCurrentValue, this.gameState.lesserPropEqual);
     },
-    _calculateValue: function _calculateValue(groupOfObjects, amount, minValue, maxValue, percentage) {
-        var value = game.rnd.integerInRange(minValue, maxValue);
-        this._calculateAmount(groupOfObjects, amount, minValue, maxValue, percentage, value);
-    },
-    _calculateAmount: function _calculateAmount(groupOfObjects, amount, minValue, maxValue, percentage, value) {
+    _calculateAndCreateFishAmount: function _calculateAndCreateFishAmount(groupOfObjects, amount, minValue, maxValue, percentage) {
         var rawValue = amount * percentage;
-        var amount = game.math.roundTo(rawValue, 0);
+        var finalAmount = game.math.roundTo(rawValue, 0);
 
-        this._createAmountOfEntities(groupOfObjects, amount, minValue, maxValue, value);
+        this._createFishes(groupOfObjects, finalAmount, minValue, maxValue);
     },
-    _createAmountOfEntities: function _createAmountOfEntities(groupOfObjects, amount, minValue, maxValue, value) {
-        // this.greaterLesserGroup = this.add.group();
-        // this.greaterLesserGroup.enableBody = true;
-        // this.greaterLesserGroup.inputEnabled = true;
-        // this.greaterLesserGroup.physicsBodyType = Phaser.Physics.ARCADE;
-
+    _createFishes: function _createFishes(groupOfObjects, amount, minValue, maxValue) {
         for (var i = 0; i < amount; i++) {
-            this._createEntities(groupOfObjects, this.greaterLesserGroup, minValue, maxValue, value);
+            this._createFish(groupOfObjects, this.greaterLesserGroup, minValue, maxValue);
         }
     },
-    _createEntities: function _createEntities(groupOfObjects, greaterLesserGroup, minValue, maxValue, value) {
+    _createFish: function _createFish(groupOfObjects, greaterLesserGroup, minValue, maxValue) {
+        var value = game.rnd.integerInRange(minValue, maxValue),
+            relation = groupOfObjects === this.gameState.greater ? 'greater' : 'less',
+            equalTo = this.gameState.equalToDepth ? true : false;
 
-        value = game.rnd.integerInRange(minValue, maxValue);
+        var fish = new GreaterThan.Fish(game, this.bounds.randomX, this.bounds.randomY, "", {
+            value: value,
+            relation: relation,
+            equalTo: equalTo
+        });
+        this.greaterLesserGroup.add(fish);
 
-        this._defineImage(groupOfObjects, value);
-
-        this.object = this.greaterLesserGroup.create(this.bounds.randomX, this.bounds.randomY, image);
-        this.object.anchor.setTo(0.5, 0.5);
-        this.object.value = value;
-
-        if (testing[0].worldWrap == !true) {
-            this._addGroupPhysics(this.greaterLesserGroup);
-        }
-
-        this._addFish(this.object, headImage, finImage, tailImage);
-        this._addFishNumber(this.object, value, groupOfObjects);
-        this._addSpeed(this.object);
-
-        groupOfObjects.push(this.object);
+        groupOfObjects.push(fish);
     },
-    _addFish: function _addFish(object, headImage, finImage, tailImage) {
-        //Fish Base behind number
-        this.fishBase = this.add.sprite(0, 0, image);
-        this.fishBase.anchor.setTo(0.5, 0.5);
-        object.addChild(this.fishBase);
 
-        this._addFishDetail(this.fishBase, headImage, finImage, tailImage);
-    },
-    _addFishDetail: function _addFishDetail(fish, headImage, finImage, tailImage) {
-
-        //Fish Base behind number
-        this.fishHead = this.add.sprite(-40, 0, headImage);
-        this.fishHead.anchor.setTo(1, 0.5);
-        fish.addChild(this.fishHead);
-
-        //Fish Base behind number
-        this.fishFin = this.add.sprite(0, -45, finImage);
-        this.fishFin.anchor.setTo(0.5, 1);
-        fish.addChild(this.fishFin);
-
-        //Fish Base behind number
-        this.fishTail = this.add.sprite(40, 0, tailImage);
-        this.fishTail.anchor.setTo(0, 0.5);
-        fish.addChild(this.fishTail);
-    },
-    _addFishNumber: function _addFishNumber(object, value, groupOfObjects) {
-        //Blank circle for fish number
-        this.fishCircle = this.add.image(0, 0, 'number');
-        this.fishCircle.anchor.setTo(0.5, 0.5);
-        object.addChild(this.fishCircle);
-
-        this._addText(object, value);
-        this._addMathsSign(groupOfObjects, object);
-    },
-    _addSpeed: function _addSpeed(object) {
-        object.body.velocity.x = game.rnd.integerInRange(-100, 100);
-        object.body.velocity.y = game.rnd.integerInRange(-100, 100);
-    },
-    _addMathsSign: function _addMathsSign(groupOfObjects, object) {
-        //Check if the sign is equal to or not
-        if (this.gameState.equalToLevel == true) {
-            var image = 'equalTo';
-        } else {
-            var image = 'sign';
-        }
-
-        if (groupOfObjects == this.gameState.greater) {
-            this.mathSign = this.add.image(-8, 0, image);
-            this.mathSign.anchor.setTo(0.5, 0.5);
-            this.fishCircle.addChild(this.mathSign);
-        } else {
-            this.mathSign = this.add.image(-8, 0, image);
-            this.mathSign.anchor.setTo(0.5, 0.5);
-            this.mathSign.scale.x *= -1;
-            this.fishCircle.addChild(this.mathSign);
-        }
-    },
-    _addText: function _addText(object, text) {
-        this.text = this.make.text(12, 0, text, { fill: '#213f6b' });
-        this.text.anchor.setTo(0.5, 0.5);
-        object.addChild(this.text);
-    },
-    _defineImage: function _defineImage(groupOfObjects, value) {
-        if (groupOfObjects == this.gameState.greater) {
-            var min = this.gameState.greaterMinValue;
-            var max = this.gameState.greaterMaxValue;
-            var mid = game.math.roundTo(max - min, 0);
-        } else if (groupOfObjects == this.gameState.lesser) {
-            var min = this.gameState.lesserMinValue;
-            var max = this.gameState.lesserMaxValue;
-            var mid = game.math.roundTo(max - min, 0);
-        }
-
-        var thirds = game.math.roundTo(mid / 3, 0);
-        var topThird = max - thirds;
-        var midThird = max - 2 * thirds;
-
-        if (groupOfObjects == this.gameState.greater) {
-            if (value >= topThird) {
-                image = 'fishC';
-                headImage = 'headC';
-                finImage = 'finC';
-                tailImage = 'tailC';
-            } else if (value >= midThird) {
-                image = 'fishB';
-                headImage = 'headB';
-                finImage = 'finB';
-                tailImage = 'tailB';
-            } else if (value >= min) {
-                image = 'fishA';
-                headImage = 'headA';
-                finImage = 'finA';
-                tailImage = 'tailA';
-            }
-        } else if (groupOfObjects == this.gameState.lesser) {
-            if (value >= topThird) {
-                image = 'fishA';
-                headImage = 'headA';
-                finImage = 'finA';
-                tailImage = 'tailA';
-            } else if (value >= midThird) {
-                image = 'fishB';
-                headImage = 'headB';
-                finImage = 'finB';
-                tailImage = 'tailB';
-            } else if (value >= min) {
-                image = 'fishC';
-                headImage = 'headC';
-                finImage = 'finC';
-                tailImage = 'tailC';
-            }
-        }
-    },
     _addGroupPhysics: function _addGroupPhysics(greaterLesserGroup) {
         this.physicsGroup = this.game.make.group();
         greaterLesserGroup.add(this.physicsGroup);
@@ -84873,37 +87086,42 @@ GreaterThan.Main.prototype = {
         greaterLesserGroup.setAll('body.bounce.y', 1);
         greaterLesserGroup.setAll('body.minBounceVelocity', 0);
     },
-
+    addTreasureGroup: function addTreasureGroup() {
+        this.oxygenGroup = this.add.group();
+        this.oxygenGroup.enableBody = true;
+        this.oxygenGroup.physicsBodyType = Phaser.Physics.ARCADE;
+    },
     addTreasure: function addTreasure() {
-        var treasure = GreaterThan.LEVELS[this.gameState.currentLevel].treasure;
-        for (var i = 0; i < treasure.length; ++i) {
-            var treasureConfig = treasure[i];
-            this._createAmountOfTreasure(treasureConfig.amount, this.gameState.treasure, treasureConfig.value, treasureConfig.text, 'treasure');
+        var oxygen = GreaterThan.DEPTHS[this.gameState.currentDepth].oxygen;
+        for (var i = 0; i < oxygen.length; ++i) {
+            var oxygenConfig = oxygen[i];
+            this._createAmountOfTreasure(oxygenConfig.amount, this.gameState.oxygen, oxygenConfig.value, oxygenConfig.text, 'number');
         }
     },
-    _createAmountOfTreasure: function _createAmountOfTreasure(amount, treasureConfigGroup, value, textValue, image) {
-        this.treasureGroup = this.add.group();
-        this.treasureGroup.enableBody = true;
-        this.treasureGroup.physicsBodyType = Phaser.Physics.ARCADE;
-
+    _createAmountOfTreasure: function _createAmountOfTreasure(amount, oxygenConfigGroup, value, textValue, image) {
         for (var i = 0; i < amount; i++) {
-            this._createTreasure(treasureConfigGroup, value, textValue, image);
+            this._createTreasure(oxygenConfigGroup, value, textValue, image);
         }
     },
-    _createTreasure: function _createTreasure(treasureConfigGroup, value, textValue, image) {
+    _createTreasure: function _createTreasure(oxygenConfigGroup, value, textValue, image) {
+        this.oxygen = this.oxygenGroup.create(this.bounds.randomX, this.bounds.randomY, image);
+        this.oxygen.value = value;
+        this.oxygen.text = textValue;
+        this.oxygen.anchor.setTo(0.5, 0.5);
 
-        this.treasure = this.treasureGroup.create(this.bounds.randomX, this.bounds.randomY, image);
-        this.treasure.value = value;
-        this.treasure.text = textValue;
+        this._addGroupPhysics(this.oxygenGroup);
+        this._addTreasureSpeed(this.oxygen);
+        this._addTreasureText(this.oxygen, textValue);
 
-        this._addGroupPhysics(this.treasureGroup);
-        this._addTreasureSpeed(this.treasure);
-        this._addTreasureText(this.treasure, textValue);
-
-        treasureConfigGroup.push(this.treasure);
+        oxygenConfigGroup.push(this.oxygen);
     },
     _addTreasureText: function _addTreasureText(object, text) {
-        this.text = this.make.text(5, 5, text, { fill: '#24475b' });
+        this.textShaddow = this.make.text(0, 0, text, { fill: '#000000' });
+        this.textShaddow.anchor.setTo(0.5, 0.5);
+        object.addChild(this.textShaddow);
+
+        this.text = this.make.text(2, 2, text, { fill: '#ffffff' });
+        this.text.anchor.setTo(0.5, 0.5);
         object.addChild(this.text);
     },
     _addTreasureSpeed: function _addTreasureSpeed(object) {
@@ -84913,21 +87131,20 @@ GreaterThan.Main.prototype = {
 
     //collision detection
     collisionDetection: function collisionDetection() {
-        if (this.gameState.alive == true) {
+        if (this.gameState.alive === true) {
             this._checkGreater();
             this._checkLesser();
             this._checkTreasure();
         }
     },
     _checkGreater: function _checkGreater() {
-        for (var i = 0; i < this.gameState.greater.length; ++i) {
-            var currentGreater = this.gameState.greater[i];
-            var location = i;
+        var i, currentGreater, location;
 
-            if (testing[0].worldWrap == true) {
-                game.world.wrap(currentGreater);
-            }
+        for (i = 0; i < this.gameState.greater.length; ++i) {
+            currentGreater = this.gameState.greater[i];
+            location = i;
 
+            //for fish parts use currentGreater.children[0]
             this.checkAnimation(currentGreater, currentGreater.children[0]);
 
             this.game.physics.arcade.overlap(this.player, currentGreater, function (player, greater) {
@@ -84936,13 +87153,13 @@ GreaterThan.Main.prototype = {
         }
     },
     _checkLesser: function _checkLesser() {
-        for (var i = 0; i < this.gameState.lesser.length; ++i) {
-            var currentLesser = this.gameState.lesser[i];
-            var location = i;
+        var i, currentLesser, location;
 
-            if (testing[0].worldWrap == true) {
-                game.world.wrap(currentLesser);
-            }
+        for (i = 0; i < this.gameState.lesser.length; ++i) {
+            currentLesser = this.gameState.lesser[i];
+            location = i;
+
+            this.checkAnimation(currentLesser, currentLesser.children[0]);
 
             this.game.physics.arcade.overlap(this.player, currentLesser, function (player, lesser) {
                 this._lesserCollided(lesser, location, currentLesser, currentLesser.value);
@@ -84950,36 +87167,34 @@ GreaterThan.Main.prototype = {
         }
     },
     _checkTreasure: function _checkTreasure() {
+        var i, currentTreasure, location;
+        for (i = 0; i < this.gameState.oxygen.length; ++i) {
+            currentTreasure = this.gameState.oxygen[i];
+            location = i;
 
-        for (var i = 0; i < this.gameState.treasure.length; ++i) {
-            var currentTreasure = this.gameState.treasure[i];
-            var location = i;
-
-            if (testing[0].worldWrap == true) {
-                game.world.wrap(currentTreasure);
-            }
-
-            this.game.physics.arcade.overlap(this.player, currentTreasure, function (player, treasure) {
-                this._treasureCollided(treasure, location, currentTreasure.value);
+            this.game.physics.arcade.overlap(this.player, currentTreasure, function (player, oxygen) {
+                this._oxygenCollided(oxygen, location, currentTreasure.value);
             }, null, this);
         }
     },
     _greaterCollided: function _greaterCollided(greater, location, greaterGroup, greaterValue) {
-        if (this.gameState.equalToLevel == true && this.gameState.playerCurrentValue < greaterValue) {
+        var greaterImage, greaterSymbol, maxValue;
+
+        if (this.gameState.equalToDepth === true && this.gameState.playerCurrentValue < greaterValue) {
             this._wrongAnswer(greater);
-        } else if (this.gameState.equalToLevel == false && this.gameState.playerCurrentValue <= greaterValue) {
+        } else if (this.gameState.equalToDepth === false && this.gameState.playerCurrentValue <= greaterValue) {
             this._wrongAnswer(greater);
         } else {
 
             //check if equal to world
-            if (this.gameState.equalToLevel == true) {
-                var greaterImage = 'greaterEqual';
-                var greaterSymbol = '≥';
-                var maxValue = this.gameState.playerCurrentValue;
+            if (this.gameState.equalToDepth === true) {
+                greaterImage = 'greaterEqual';
+                greaterSymbol = '≥';
+                maxValue = this.gameState.playerCurrentValue;
             } else {
-                var greaterImage = 'greater';
-                var greaterSymbol = '>';
-                var maxValue = this.gameState.playerCurrentValue - 1;
+                greaterImage = 'greater';
+                greaterSymbol = '>';
+                maxValue = this.gameState.playerCurrentValue - 1;
             }
 
             this._addEntityPoints(greater);
@@ -84992,21 +87207,23 @@ GreaterThan.Main.prototype = {
         }
     },
     _lesserCollided: function _lesserCollided(lesser, location, lesserGroup, lesserValue) {
-        if (this.gameState.equalToLevel == true && this.gameState.playerCurrentValue > lesserValue) {
+        var lesserImage, lesserSymbol, minValue;
+
+        if (this.gameState.equalToDepth === true && this.gameState.playerCurrentValue > lesserValue) {
             this._wrongAnswer(lesser);
-        } else if (this.gameState.equalToLevel == false && this.gameState.playerCurrentValue >= lesserValue) {
+        } else if (this.gameState.equalToDepth === false && this.gameState.playerCurrentValue >= lesserValue) {
             this._wrongAnswer(lesser);
         } else {
 
             //check if equal to world
-            if (this.gameState.equalToLevel == true) {
-                var lesserImage = 'lesserEqual';
-                var lesserSymbol = '≤';
-                var minValue = this.gameState.playerCurrentValue;
+            if (this.gameState.equalToDepth === true) {
+                lesserImage = 'lesserEqual';
+                lesserSymbol = '≤';
+                minValue = this.gameState.playerCurrentValue;
             } else {
-                var lesserImage = 'lesser';
-                var lesserSymbol = '<';
-                var minValue = this.gameState.playerCurrentValue + 1;
+                lesserImage = 'lesser';
+                lesserSymbol = '<';
+                minValue = this.gameState.playerCurrentValue + 1;
             }
 
             this._addEntityPoints(lesser);
@@ -85018,112 +87235,108 @@ GreaterThan.Main.prototype = {
             this._rightAnswer(minValue, this.gameState.lesserMaxValue, lesserValue, lesserSymbol, this.gameState.lesser, 1, lesserImage);
         }
     },
-    _treasureCollided: function _treasureCollided(treasure, location, treasureValue) {
-
+    _oxygenCollided: function _oxygenCollided(oxygen, location, oxygenValue) {
         this.addSFX('pop');
 
-        this.gameState.playerCurrentValue += treasureValue;
-        this.addPoints(testing[0].treasurePoints);
-        this.testing.treasure += 1;
-        treasure.kill();
-        this.gameState.treasure.splice(location, 1);
+        this.gameState.playerCurrentValue += oxygenValue;
+        oxygen.kill();
+        this.gameState.oxygen.splice(location, 1);
 
         this.playerNumber.setText(this.gameState.playerCurrentValue);
         this.playerNumberBase.setText(this.gameState.playerCurrentValue);
     },
 
-    //level progression
-    updateLevelUp: function updateLevelUp() {
-        this.gameState.levelUp += 1;
-        this.gameState.levelDown = 0;
+    //Depth progression
+    _updateDepthUp: function _updateDepthUp() {
+        this.gameState.depthUp += 1;
+        this.gameState.depthDown = 0;
 
-        this._checkChangeLevel();
+        this._checkChangeDepth();
     },
-    _updateLevelDown: function _updateLevelDown() {
-        this.gameState.levelUp = 0;
-        this.gameState.levelDown += 1;
+    _updateDepthDown: function _updateDepthDown() {
+        this.gameState.depthUp = 0;
+        this.gameState.depthDown += 1;
 
-        this._checkChangeLevel();
+        this._checkChangeDepth();
     },
-    _checkChangeLevel: function _checkChangeLevel() {
-        if (this.gameState.levelUp == this.config.rightInARow && this.gameState.currentLevel < this.gameState.highestLevel) {
-            if (this.gameState.levelLocation == this.gameState.maxLevel) {
+    _checkChangeDepth: function _checkChangeDepth() {
+        if (this.gameState.depthUp === this.config.rightInARow && this.gameState.currentDepth < this.gameState.highestDepth) {
+            if (this.gameState.depthLocation === this.gameState.maxDepth) {
 
-                if (this.gameState.currentLevel == 2) {
-                    this.addPoints(testing[0].levelUpBonus);
-                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                if (this.gameState.currentDepth === 2) {
+                    this.addPoints(this.config.bonusPoints);
                 }
-                if (this.gameState.currentLevel == 5) {
-                    this.addPoints(testing[0].levelUpBonus);
-                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                if (this.gameState.currentDepth === 5) {
+                    this.addPoints(this.config.bonusPoints);
                 }
-                if (this.gameState.currentLevel == 7) {
-                    this.addPoints(testing[0].levelUpBonus);
-                    this.testing.levelUpBoonus += testing[0].levelUpBonus;
+                if (this.gameState.currentDepth === 8) {
+                    this.addPoints(this.config.bonusPoints);
                 }
 
-                this.gameState.maxLevel += 1;
+                this.gameState.maxDepth += 1;
             }
-            this.gameState.levelLocation += 1;
-            this.gameData.currentLevel += 1;
+
+            this.gameState.depthLocation += 1;
+            this.gameData.currentDepth += 1;
             this.addSFX('win');
-            this._levelChangeScreen();
+            this._depthChangeScreen();
         }
-        if (this.gameState.levelDown == this.config.wrongInARow && this.gameState.currentLevel > this.gameState.lowestLevel) {
+        if (this.gameState.depthDown === this.config.wrongInARow && this.gameState.currentDepth > this.gameState.lowestDepth) {
             this.addSFX('wave');
-            this._levelChangeScreen();
-            this.gameData.currentLevel -= 1;
-            this.gameState.levelLocation -= 1;
+            this._depthChangeScreen();
+            this.gameData.currentDepth -= 1;
+            this.gameState.depthLocation -= 1;
         }
     },
     _removeGreaterLesser: function _removeGreaterLesser(group) {
-        // todo: use this once treasure group sorted
+        var i;
+        // todo: use this once oxygen group sorted
         // this.greaterLesserGroup.callAll('kill');
 
-        for (var i = 0; i < group.length; ++i) {
+        for (i = 0; i < group.length; ++i) {
             var current = group[i];
             current.kill();
         }
-        for (var i = 0; i < group.length; ++i) {
+        for (i = 0; i < group.length; ++i) {
             group.splice(i);
         }
     },
-    _levelChangeScreen: function _levelChangeScreen() {
-
+    _depthChangeScreen: function _depthChangeScreen() {
         this._lotsOfBubbles();
 
         game.time.events.add(Phaser.Timer.SECOND * 0, this._removeEntities, this);
     },
     _lotsOfBubbles: function _lotsOfBubbles() {
+        var delay = 0,
+            speed,
+            i;
 
-        var delay = 0;
-
-        for (var i = 0; i < 150; i++) {
+        for (i = 0; i < 150; i++) {
             this.bubble = game.add.sprite(-100 + this.bounds.randomX, 2500, 'bubble');
-
             this.bubble.scale.set(game.rnd.realInRange(0.01, 0.1));
 
-            var speed = game.rnd.between(3000, 8000);
+            speed = game.rnd.between(3000, 8000);
 
+            this.bubbleGroup.add(this.bubble);
             game.add.tween(this.bubble).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true);
-
             delay += 200;
         }
     },
+    // Adds group to maintain bubble layer
+    addBubbleGroup: function addBubbleGroup() {
+        this.bubbleGroup = this.add.group();
+    },
     _removeEntities: function _removeEntities() {
-        if (this.gameState.currentLevel >= this.gameState.lowestLevel && this.gameState.currentLevel <= this.gameState.highestLevel) {
+        if (this.gameState.currentDepth >= this.gameState.lowestDepth && this.gameState.currentDepth <= this.gameState.highestDepth) {
             this._removeGreaterLesser(this.gameState.greater);
             this._removeGreaterLesser(this.gameState.lesser);
-            this._removeGreaterLesser(this.gameState.treasure);
+            this._removeGreaterLesser(this.gameState.oxygen);
 
-            game.time.events.add(Phaser.Timer.SECOND * 4.5, this._nextLevel, this);
-
-            this.addTestingInformation();
-            //this.showTestingData();
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, this._nextDepth, this);
         }
     },
-    _nextLevel: function _nextLevel() {
-        //update last level information
+    _nextDepth: function _nextDepth() {
+        //update last Depth information
         this._addToPlayerInformation();
 
         this._updateGameData();
@@ -85133,40 +87346,27 @@ GreaterThan.Main.prototype = {
         this._addBackgroundColour();
         this.addGreaterLesserEntities();
         this.addTreasure();
-        this._setNewLevelText();
+        this._setNewDepthText();
     },
 
-    _setNewLevelText: function _setNewLevelText() {
+    _setNewDepthText: function _setNewDepthText() {
         this.playerNumber.setText(this.gameState.playerCurrentValue);
         this.playerNumberBase.setText(this.gameState.playerCurrentValue);
-        this.titleText.setText(this.gameState.levelName);
+        this.titleText.setText(this.gameState.depthName);
         this.scoreText.setText(this.gameState.score);
         //this._setUIPosition(this.arrow, 115, this.gameState.depth);
-        //this._setUIPosition(this.deepestDepth, 145, this.gameState.maxLevelLine);
+        //this._setUIPosition(this.deepestDepth, 145, this.gameState.maxDepthLine);
     },
     _addToPlayerInformation: function _addToPlayerInformation() {
-        if (this.gameState.currentStage === 6) {
+        var nextWorld;
+
+        if (this.gameState.currentWorld === 6) {
             return;
         }
 
-        if (this.gameState.score >= this.gameState.toNextLevel) {
-            var nextWorld = this.gameState.currentStage + 1;
+        if (this.gameState.score >= this.gameState.toNextDepth) {
+            nextWorld = this.gameState.currentWorld + 1;
             this.gameData.worldProgress[nextWorld].locked = false;
-        }
-    },
-
-    _checkMoveUpDown: function _checkMoveUpDown() {
-        if (this.gameState.levelUp == this.config.rightInARow) {
-            //Level Up
-            this.gameData.currentLevel += 1;
-            player[0].currentLevel += 1;
-            //player[0].currentDepth += this.config.arrowMove;
-        }
-        if (this.gameState.levelDown == this.config.wrongInARow && this.gameData.currentLevel > 0) {
-            //Level Down
-            this.gameData.currentLevel -= 1;
-            player[0].currentLevel -= 1;
-            //player[0].currentDepth -= this.config.arrowMove;
         }
     },
 
@@ -85174,9 +87374,6 @@ GreaterThan.Main.prototype = {
     addPoints: function addPoints(value) {
         this.gameState.score += value;
         this.scoreText.setText(this.gameState.score);
-        // if (this.gameState.levelLocation == this.gameState.maxLevel) {
-        //     this.gameState.score += value;
-        // }
     },
     _wrongAnswer: function _wrongAnswer(entity) {
 
@@ -85184,13 +87381,36 @@ GreaterThan.Main.prototype = {
 
         this._animateFishEscape(entity);
         this._died();
-        this._updateLevelDown();
-
-        this.testing.wrongAnswers += 1;
+        this._updateDepthDown();
     },
     _animateFishEscape: function _animateFishEscape(entity) {
+        var tweenA;
+
+        tweenA = this.game.add.tween(this.player.scale).to({ x: -1 }, 50, Phaser.Easing.Linear.None, true);
+        tweenA.onComplete.add(this._tweenB, this);
+
+        tweenA.start();
+
         this.fade = game.add.tween(entity).to({ alpha: 0.5 }, 1, Phaser.Easing.Linear.None, true);
         this.fade.onComplete.add(this._unfade, this);
+    },
+    _tweenB: function _tweenB() {
+        var tweenB;
+        tweenB = this.game.add.tween(this.player.scale).to({ x: 1 }, 100, Phaser.Easing.Linear.None, true);
+        tweenB.onComplete.add(this._tweenC, this);
+        tweenB.start();
+    },
+    _tweenC: function _tweenC() {
+        var tweenC;
+        tweenC = this.game.add.tween(this.player.scale).to({ x: -1 }, 200, Phaser.Easing.Linear.None, true);
+        tweenC.onComplete.add(this._tweenD, this);
+        tweenC.start();
+    },
+    _tweenD: function _tweenD() {
+        var tweenD;
+        tweenD = this.game.add.tween(this.player.scale).to({ x: 1 }, 300, Phaser.Easing.Linear.None, true);
+
+        tweenD.start();
     },
     _unfade: function _unfade(entity) {
         this.game.add.tween(entity).to({ alpha: 1 }, 3000, Phaser.Easing.Linear.None, true);
@@ -85203,53 +87423,64 @@ GreaterThan.Main.prototype = {
         this.maxValue = max;
         //this._addEntityPoints();
         this._textSolvedAnimation(value, symbol);
-        //_createAmountOfEntities(groupOfObjects, amount, image, minValue, maxValue, value)
-        this._createAmountOfEntities(groupOfObjects, 1, min, max, value);
+        //_createFishes(groupOfObjects, amount, image, minValue, maxValue, value)
+        this._createFishes(groupOfObjects, 1, min, max, value);
 
-        this.updateLevelUp();
-
-        this.testing.rightAnswers += 1;
+        this._updateDepthUp();
     },
     _textSolvedAnimation: function _textSolvedAnimation(value, sign) {
-        this.solvedEquation = game.add.text(this.player.x, this.player.y, this.gameState.playerCurrentValue + sign + value, { fill: "#24475b" });
+        var screenX = this.config.viewSizeX;
+        var screenY = this.config.viewSizeY;
+
+        this.solvedEquation = game.add.text(this.player.x, this.player.y, this.gameState.playerCurrentValue + sign + value, { fill: "#24475b", font: "Comic Sans MS", fontSize: "20pt" });
+        this.answerGroup.add(this.solvedEquation);
+
+        this.solvedEquation.fixedToCamera = true;
+        this.solvedEquation.cameraOffset.setTo(screenX / 2, screenY / 2 - 250);
+        this.solvedEquation.anchor.setTo(0.5, 0.5);
+
+        game.add.tween(this.solvedEquation).to({ x: 100 }, 3000, Phaser.Easing.Linear.None, true);
         game.add.tween(this.solvedEquation).to({ alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
+
+        // game.add.tween(this.solvedEquation.scale).to({x: 5, y: 5}, 3000, Phaser.Easing.Linear.None, true);
+        // game.add.tween(this.solvedEquation).to({alpha: 0}, 3000, Phaser.Easing.Linear.None, true);
     },
     _died: function _died() {
         this.gameState.alive = false;
         //this.player.frame = 1;
-        this.game.time.events.add(Phaser.Timer.SECOND * this.config.coolDownTime, this._reBorn, this);
+        this.game.time.events.add(Phaser.Timer.SECOND * this.gameState.coolDownTime, this._reBorn, this);
     },
     _reBorn: function _reBorn() {
         this.gameState.alive = true;
         this.player.frame = 0;
     },
     _addEntityPoints: function _addEntityPoints(entity) {
+        this.addPoints(entity.pointsValue);
 
-        if (entity.key == 'fishA') {
-            this.addPoints(3);
-        } else if (entity.key == 'fishB') {
-            this.addPoints(4);
-        } else if (entity.key == 'fishC') {
-            this.addPoints(5);
-        }
+        this._showPoints(entity.pointsValue);
+    },
+    _showPoints: function _showPoints(valueOfPoints) {
+        var screenX = this.config.viewSizeX;
+        var screenY = this.config.viewSizeY;
 
-        // var currentLevel = this.gameState.currentLevel - this.gameState.lowestLevel
-        // if (currentLevel >= 6) {
-        //     this.addPoints(testing[0].goldPoints);
-        //     this.testing.pointsAtGold += testing[0].goldPoints;
-        //
-        // } else if (currentLevel >= 3) {
-        //     this.addPoints(testing[0].silverPoints);
-        //     this.testing.pointsAtSilver += testing[0].silverPoints;
-        // } else {
-        //     this.addPoints(testing[0].bronzePoints);
-        //     this.testing.pointsAtBronze += testing[0].bronzePoints;
-        // }
+        this.textGroup = game.add.group();
+
+        this.textPointsShadow = game.add.text(this.player.x, this.player.y + 400, "+ " + valueOfPoints, { fill: "#24475b", font: "Comic Sans MS", fontSize: "20pt" });
+        this.textPoints = game.add.text(this.player.x, this.player.y, '+ ' + valueOfPoints, { fill: "#ffffff" });
+
+        this.textGroup.add(this.textPointsShadow);
+        this.textGroup.add(this.textPoints);
+
+        this.textGroup.fixedToCamera = true;
+        this.textGroup.cameraOffset.setTo(screenX / 2, screenY / 2);
+
+        game.add.tween(this.textGroup).to({ x: 100 }, 3000, Phaser.Easing.Linear.None, true);
+        game.add.tween(this.textGroup).to({ alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
     },
 
     //API methods
-    _notifyLevelStart: function _notifyLevelStart(worldId) {
-        this.game.apiManager.startLevel(worldId);
+    _notifyWorldStart: function _notifyWorldStart(worldId) {
+        this.game.apiManager.startWorld(worldId);
     },
     _updateGameData: function _updateGameData() {
         this.gameData.currentScore = this.gameState.score;
@@ -85261,34 +87492,6 @@ GreaterThan.Main.prototype = {
             settings: this.userSettings,
             user: this.userInfo
         });
-    },
-
-    addTestingInformation: function addTestingInformation() {
-
-        var totalEaten = this.testing.rightAnswers + this.testing.wrongAnswers;
-        testing[0].totalEaten = totalEaten;
-        testing[0].treasure = this.testing.treasure;
-        testing[0].rightAnswers = this.testing.rightAnswers;
-        testing[0].wrongAnswers = this.testing.wrongAnswers;
-        testing[0].pointsAtBronze = this.testing.pointsAtBronze;
-        testing[0].pointsAtSilver = this.testing.pointsAtSilver;
-        testing[0].pointsAtGold = this.testing.pointsAtGold;
-        testing[0].levelUpBoonus = this.testing.levelUpBoonus;
-    },
-    showTestingData: function showTestingData() {
-
-        console.log('amount of right answers: ' + testing[0].rightAnswers);
-        console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
-        console.log('total Eaten: ' + testing[0].totalEaten);
-        console.log('points earned at Bronze: ' + testing[0].pointsAtBronze);
-        console.log('points earned at Silver: ' + testing[0].pointsAtSilver);
-        console.log('points earned at Gold: ' + testing[0].pointsAtGold);
-
-        var highestLevel = player[0].currentLevel - player[0].startLevel;
-
-        console.log('Highest Level: ' + highestLevel);
-        console.log('Treasure Eaten: ' + testing[0].treasure);
-        console.log('Level Up Bonus: ' + testing[0].levelUpBoonus);
     },
 
     addSFX: function addSFX(sound) {
@@ -85316,59 +87519,30 @@ GreaterThan.Menu.prototype = {
     preload: function preload() {},
 
     create: function create() {
+        var bgX, bgY, menuHeaderText;
+
         this.gameData = game.userData.gameData;
-
-        this.checkLanguage();
-
         this.background = game.add.sprite(0, 0, 'splash');
 
-        var bgX = this.background.width / 2;
-        var bgY = this.background.height / 5;
+        bgX = this.background.width / 2;
+        bgY = this.background.height / 5;
 
-        this.titleText = this.add.text(bgX, bgY, this.textTitle, { fill: '#19a3e0', align: "center", wordWrap: true, wordWrapWidth: this.background.width });
-
+        menuHeaderText = i18n.t("menuTitle") + ":";
+        this.titleText = this.add.text(bgX, bgY, menuHeaderText, { fill: '#19a3e0', align: "center", wordWrap: true, wordWrapWidth: this.background.width });
         this.titleText.anchor.setTo(0.5, 0.5);
         this.background.addChild(this.titleText);
 
-        this.addLevels();
+        this.addWorlds();
         //this.addTestSettings();
 
         if (this.game.userData.challengeMode) {
-            this._startLevel(this.game.userData.challengeId);
+            this._startDepth(this.game.userData.challengeId);
         }
     },
 
     update: function update() {},
 
-    checkLanguage: function checkLanguage() {
-        if (this.game.userData.school.locale == 'pt-br') {
-            this.textTitle = PTR_BR[0].menu[0].title;
-            this.textWorld = PTR_BR[0].menu[0].world;
-            this.textWorld1 = PTR_BR[0].menu[0].world1;
-            this.textWorld2 = PTR_BR[0].menu[0].world2;
-            this.textWorld3 = PTR_BR[0].menu[0].world3;
-            this.textWorld4 = PTR_BR[0].menu[0].world4;
-            this.textWorld5 = PTR_BR[0].menu[0].world5;
-            this.textWorld6 = PTR_BR[0].menu[0].world6;
-            this.textPlay = PTR_BR[0].menu[0].play;
-            this.textFuel = PTR_BR[0].menu[0].fuel;
-            this.textFish = PTR_BR[0].menu[0].fish;
-        } else {
-            this.textTitle = ENG_UK[0].menu[0].title;
-            this.textWorld = ENG_UK[0].menu[0].world;
-            this.textWorld1 = ENG_UK[0].menu[0].world1;
-            this.textWorld2 = ENG_UK[0].menu[0].world2;
-            this.textWorld3 = ENG_UK[0].menu[0].world3;
-            this.textWorld4 = ENG_UK[0].menu[0].world4;
-            this.textWorld5 = ENG_UK[0].menu[0].world5;
-            this.textWorld6 = ENG_UK[0].menu[0].world6;
-            this.textPlay = ENG_UK[0].menu[0].play;
-            this.textFuel = ENG_UK[0].menu[0].fuel;
-            this.textFish = ENG_UK[0].menu[0].fish;
-        }
-    },
-
-    addLevels: function addLevels() {
+    addWorlds: function addWorlds() {
         var topY = 250;
         var bottomY = 500;
 
@@ -85376,14 +87550,14 @@ GreaterThan.Menu.prototype = {
         var midX = 425;
         var rightX = 650;
 
-        this._addLevel(leftX, topY, 1, this.textWorld1);
-        this._addLevel(midX, topY, 2, this.textWorld2);
-        this._addLevel(rightX, topY, 3, this.textWorld3);
-        this._addLevel(leftX, bottomY, 4, this.textWorld4);
-        this._addLevel(midX, bottomY, 5, this.textWorld5);
-        this._addLevel(rightX, bottomY, 6, this.textWorld6);
+        this._addWorld(leftX, topY, 1, i18n.t("worldName1"));
+        this._addWorld(midX, topY, 2, i18n.t("worldName2"));
+        this._addWorld(rightX, topY, 3, i18n.t("worldName3"));
+        this._addWorld(leftX, bottomY, 4, i18n.t("worldName4"));
+        this._addWorld(midX, bottomY, 5, i18n.t("worldName5"));
+        this._addWorld(rightX, bottomY, 6, i18n.t("worldName6"));
     },
-    _addLevel: function _addLevel(x, y, worldId, text) {
+    _addWorld: function _addWorld(x, y, worldId, text) {
         if (this.gameData.worldProgress[worldId].locked === false) {
 
             this._addButton(x, y, worldId, text);
@@ -85394,53 +87568,51 @@ GreaterThan.Menu.prototype = {
     },
     _addButton: function _addButton(x, y, worldId, text) {
 
-        this.levelButton = game.add.sprite(x, y, 'unlocked');
-        this.levelButton.inputEnabled = true;
-        this.levelButton.events.onInputDown.add(function () {
-            this._startLevel(worldId);
+        this.depthButton = game.add.sprite(x, y, 'unlocked');
+        this.depthButton.inputEnabled = true;
+        this.depthButton.events.onInputDown.add(function () {
+            this._startDepth(worldId);
         }, this);
 
-        var textStyle = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.levelButton.width };
+        var textStyle = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.depthButton.width };
 
-        var textX = this.levelButton.width / 2;
-        var textY = this.levelButton.height / 5;
+        var textX = this.depthButton.width / 2;
+        var textY = this.depthButton.height / 5;
 
-        var scoreY = this.levelButton.height / 1.8;
-        var starY = this.levelButton.height / 1.2;
+        var scoreY = this.depthButton.height / 1.8;
+        var starY = this.depthButton.height / 1.2;
 
         this.text = game.add.text(textX, textY, text, textStyle);
         this.text.anchor.setTo(0.5, 0.5);
-        this.levelButton.addChild(this.text);
+        this.depthButton.addChild(this.text);
 
         this.stageScore = this.make.text(textX, scoreY, this.gameData.worldProgress[worldId].score, textStyle);
         this.stageScore.anchor.setTo(0.5, 0.5);
-        this.levelButton.addChild(this.stageScore);
+        this.depthButton.addChild(this.stageScore);
 
         this.stars = game.add.sprite(textX, starY, 'stars');
         this.stars.anchor.setTo(0.5, 0.5);
-        this.levelButton.addChild(this.stars);
+        this.depthButton.addChild(this.stars);
     },
     _addMedal: function _addMedal(worldId) {
         var medal = this.gameData.worldProgress[worldId].medal;
 
-        if (medal == 'G') {
+        if (medal === 'G') {
             this.stars.frame = 3;
-        } else if (medal == 'S') {
+        } else if (medal === 'S') {
             this.stars.frame = 2;
-        } else if (medal == 'B') {
+        } else if (medal === 'B') {
             this.stars.frame = 1;
         } else {
             this.stars.frame = 0;
         }
 
-        this.levelButton.addChild(this.stars);
+        this.depthButton.addChild(this.stars);
     },
-    _startLevel: function _startLevel(worldId) {
+    _startDepth: function _startDepth(worldId) {
         game.world.removeAll();
 
         this.game.stage.backgroundColor = '#213f6b';
-
-        this.checkLanguage();
 
         this._setGameData(worldId);
         this.addStartWorld(worldId);
@@ -85448,19 +87620,19 @@ GreaterThan.Menu.prototype = {
     _setGameData: function _setGameData(worldId) {
         // This will always start at the beginning of a world
 
-        this.gameData.currentStage = worldId;
-        this.gameData.currentLevel = GreaterThan.WORLDS[worldId].lowestLevel;
-        this.gameData.startLevel = GreaterThan.WORLDS[worldId].lowestLevel; // not strictly necessary
+        this.gameData.currentWorld = worldId;
+        this.gameData.currentDepth = GreaterThan.WORLDS[worldId].lowestDepth;
+        this.gameData.startDepth = GreaterThan.WORLDS[worldId].lowestDepth; // not strictly necessary
 
-        // player[0].currentLevel = GreaterThan.WORLDS[worldId].lowestLevel;
-        // player[0].currentStage = worldId;
+        // player[0].currentDepth = GreaterThan.WORLDS[worldId].lowestDepth;
+        // player[0].currentWorld = worldId;
         // player[0].currentDepth = 100;
         // player[0].currentScore = 0;
-        // player[0].levelLocation = 0;
-        // player[0].maxLevel = 0;
-        // player[0].maxLevelLine = 155;
-        // player[0].startLevel = GreaterThan.WORLDS[worldId].lowestLevel;
-        // player[0].endLevel = GreaterThan.WORLDS[worldId].highestLevel;
+        // player[0].DepthLocation = 0;
+        // player[0].maxDepth = 0;
+        // player[0].maxDepthLine = 155;
+        // player[0].startDepth = GreaterThan.WORLDS[worldId].lowestDepth;
+        // player[0].endDepth = GreaterThan.WORLDS[worldId].highestDepth;
     },
 
     addStartWorld: function addStartWorld(worldId) {
@@ -85475,37 +87647,25 @@ GreaterThan.Menu.prototype = {
     },
     _addTitle: function _addTitle(worldId) {
         // todo
+        var titleStyle = { fill: "#213f6b" },
+            nameKey = 'worldName' + worldId.toString(),
+            textWorldName = i18n.t(nameKey),
+            titleText = [i18n.t('world'), worldId, ":", textWorldName].join(" ");
 
-        if (worldId == 6) {
-            var textWorldName = this.textWorld6;
-        } else if (worldId == 5) {
-            var textWorldName = this.textWorld5;
-        } else if (worldId == 4) {
-            var textWorldName = this.textWorld4;
-        } else if (worldId == 3) {
-            var textWorldName = this.textWorld3;
-        } else if (worldId == 2) {
-            var textWorldName = this.textWorld2;
-        } else {
-            var textWorldName = this.textWorld1;
-        }
-
-        var titleStyle = { fill: "#213f6b" };
-
-        this.title = this.add.text(0, 0, this.textWorld + worldId + ": " + textWorldName, titleStyle);
+        this.title = this.add.text(0, 0, titleText, titleStyle);
         this._setScreenPosition(this.title, 2, 7);
     },
     _addFuel: function _addFuel() {
         var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width };
 
-        this.fuelText = game.add.text(0, 0, this.textFuel + ": 4mins", style);
+        this.fuelText = game.add.text(0, 0, i18n.t("fuel") + ": 4 mins", style); // todo: translate
 
         this._setScreenPosition(this.fuelText, 4, 4);
     },
     _addFish: function _addFish() {
         var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width };
 
-        this.fishText = game.add.text(0, 0, this.textFish, style);
+        this.fishText = game.add.text(0, 0, i18n.t("fish"), style);
 
         this._setScreenPosition(this.fishText, 4, 3);
     },
@@ -85521,16 +87681,16 @@ GreaterThan.Menu.prototype = {
 
         var style = { fill: "#19a3e0", align: "center", wordWrap: true, wordWrapWidth: this.playButton.width };
 
-        this.playText = game.add.text(0, 0, this.textPlay, style);
+        this.playText = game.add.text(0, 0, i18n.t("play"), style);
         this.playText.anchor.setTo(0.5, 0.5);
         this.playButton.addChild(this.playText);
     },
     _setScreenPosition: function _setScreenPosition(image, x, y) {
+        var screenX = 1025,
+            screenY = 768;
+
         image.anchor.setTo(0.5, 0.5);
         image.fixedToCamera = true;
-
-        var screenX = 1025;
-        var screenY = 768;
 
         image.cameraOffset.setTo(screenX / x, screenY / y);
     },
@@ -85538,6 +87698,145 @@ GreaterThan.Menu.prototype = {
         this.game.state.start("main", true);
     }
 
+    // addTestSettings: function(){
+    //
+    //     this._addSettingButton();
+    //     this._addWrapWorld();
+    //     this._addWorldSize();
+    //     this._addAllPoints();
+    //
+    //     this.settings.add(this.settingsBg);
+    //     this.settings.add(this.title);
+    //     this.settings.add(this.wrapText);
+    //     this.settings.add(this.checkBox);
+    //     this.settings.add(this.worldSizeText);
+    //     this.settings.add(this.worldSize);
+    //     this.settings.add(this.pointsTitle);
+    //     this.settings.add(this.pointsBox);
+    //     this.settings.add(this.pointsText);
+    //
+    //     this.settings.visible = false;
+    // },
+    // _showSettings: function(){
+    //     if(this.config.settingsClicked == false){
+    //         this.settings.visible = true;
+    //         this.config.settingsClicked = true;
+    //     }else{
+    //         this.settings.visible = false;
+    //         this.config.settingsClicked = false;
+    //     }
+    // },
+    // _addSettingButton: function(){
+    //     this.settingsButton = game.add.sprite(10, 680, 'settings');
+    //     this.settingsButton.inputEnabled = true;
+    //     this.settingsButton.events.onInputDown.add(
+    //         function () {
+    //             this._showSettings();
+    //         },
+    //         this);
+    //
+    //     //Settings Box
+    //     this.settings = this.add.group();
+    //     this.settingsBg = this.add.image(200, 150, 'box1');
+    //     this.title = this.make.text(450, 180, 'Settings for Testing ', {fill: '#f4f0ce'});
+    // },
+    // _addWrapWorld: function(){
+    //     this.wrapText = this.make.text(260, 240, 'Wrap World? ', {fill: '#6f9695'});
+    //     this.checkBox = this.add.sprite(470, 240, 'checkBox');
+    //     this.checkBox.inputEnabled = true;
+    //     this.checkBox.events.onInputDown.add(
+    //         function () {
+    //             this._checkBoxClicked();
+    //         },
+    //         this);
+    //
+    //     if(testing[0].worldWrap == false){
+    //         this.checkBox.frame = 0;
+    //     }else{
+    //         this.checkBox.frame = 1;
+    //     }
+    // },
+    // _checkBoxClicked: function(){
+    //     if(this.config.checkBoxTicked == false){
+    //         this.checkBox.frame = 1;
+    //         testing[0].worldWrap = true;
+    //         this.config.checkBoxTicked =  true;
+    //     }else{
+    //         this.checkBox.frame = 0;
+    //         testing[0].worldWrap = false;
+    //         this.config.checkBoxTicked =  false;
+    //     }
+    //
+    // },
+    // _addWorldSize: function(){
+    //     this.worldSizeText = this.make.text(260, 280, 'World Size? ', {fill: '#6f9695'});
+    //     this.worldSize = this.add.sprite(470, 280, 'worldSize');
+    //     this.worldSize.inputEnabled = true;
+    //     this.worldSize.events.onInputDown.add(
+    //         function () {
+    //             this._changeWorldSize();
+    //         },
+    //         this);
+    //
+    //     if(ui[0].worldSizeX == 1500){
+    //         this.worldSize.frame = 0;
+    //         this.config.worldSize = 'small';
+    //     }else if(ui[0].worldSizeX == 2000){
+    //         this.worldSize.frame = 1;
+    //         this.config.worldSize = 'medium';
+    //     }else{
+    //         this.worldSize.frame = 2;
+    //         this.config.worldSize = 'large';
+    //     }
+    // },
+    // _changeWorldSize: function(){
+    //     if(this.config.worldSize == 'small'){
+    //         this.worldSize.frame = 1;
+    //         this.config.worldSize = 'medium';
+    //         ui[0].worldSizeX = 2000;
+    //         ui[0].worldSizeY = 2000;
+    //     }else if (this.config.worldSize == 'medium'){
+    //         this.worldSize.frame = 2;
+    //         this.config.worldSize = 'large';
+    //         ui[0].worldSizeX = 2500;
+    //         ui[0].worldSizeY = 2500;
+    //     }else{
+    //         this.worldSize.frame = 0;
+    //         this.config.worldSize = 'small';
+    //         ui[0].worldSizeX = 1500;
+    //         ui[0].worldSizeY = 1500;
+    //     }
+    // },
+    // _addAllPoints: function(){
+    //     this._addPoints(260, 320, testing[0].bronzePoints, 'Bronze Points:  ', this._changeBronzePoints );
+    //     //this._addPoints(260, 330, testing[0].silverPoints, 'Silver Points:  ', this._changeSilverPoints );
+    //     //this._addPoints(260, 340, testing[0].goldPoints, 'Gold Points:  ', this._changeGoldPoints );
+    //
+    // },
+    // _addPoints: function(x, y, points, title, onClick){
+    //
+    //     var spritePosition = x + 210;
+    //     var pointsTextPosition = x + 220
+    //
+    //     this.pointsTitle = this.make.text(x, y, title, {fill: '#6f9695'});
+    //     this.pointsBox = this.add.sprite(spritePosition, y, 'points');
+    //     this.pointsBox.inputEnabled = true;
+    //     this.pointsBox.events.onInputDown.add(
+    //         function () {
+    //             onClick();
+    //         },
+    //         this);
+    //     this.pointsText = this.make.text(pointsTextPosition, y, points, {fill: '#b4d6ae'});
+    // },
+    // _changeBronzePoints: function(){
+    //
+    // },
+    // _changeSilverPoints: function(){
+    //
+    // },
+    // _changeGoldPoints: function(){
+    //
+    // },
 };
 //# sourceMappingURL=menu.js.map
 
@@ -85571,10 +87870,6 @@ GreaterThan.Preloader.prototype = {
         this.game.load.spritesheet('stars', 'assets2/starSprites.png', 160, 60, 4);
         this.game.load.spritesheet('light', 'assets2/lightAnim.png', 1024, 768, 3);
         this.game.load.spritesheet('you', 'assets/player.png', 75, 75, 4);
-
-        // game.load.spritesheet('checkBox', 'assets/checkBox.png', 30, 30, 2);
-        // game.load.spritesheet('worldSize', 'assets/worldSize.png', 90, 30, 3);
-        // game.load.spritesheet('lives', 'assets/lives.png', 150, 30, 5);
     },
 
     create: function create() {
@@ -85607,8 +87902,6 @@ GreaterThan.Title.prototype = {
     },
 
     create: function create() {
-        this.checkLanguage();
-
         this.background = game.add.sprite(0, 0, 'splash');
 
         var x = this.background.width / 2;
@@ -85616,7 +87909,7 @@ GreaterThan.Title.prototype = {
 
         this.titleImage = game.add.sprite(x, y, 'titleImage');
 
-        this._addText(this.titleImage, this.textTitle);
+        this._addText(this.titleImage, i18n.t("gameTitle"));
         this.addButton();
 
         this.titleImage.anchor.setTo(0.5, 0.5);
@@ -85627,18 +87920,6 @@ GreaterThan.Title.prototype = {
 
     update: function update() {},
 
-    checkLanguage: function checkLanguage() {
-        if (this.game.userData.school.locale == 'pt-br') {
-            this.textPlay = PTR_BR[0].title[0].play;
-            this.textHelp = PTR_BR[0].title[0].help;
-            this.textTitle = PTR_BR[0].title[0].title;
-        } else {
-            this.textPlay = ENG_UK[0].title[0].play;
-            this.textHelp = ENG_UK[0].title[0].help;
-            this.textTitle = ENG_UK[0].title[0].title;
-        }
-    },
-
     addHelpMenu: function addHelpMenu() {
 
         var x = this.background.width / 2;
@@ -85646,7 +87927,7 @@ GreaterThan.Title.prototype = {
 
         this.helpGroup = this.add.group();
         this.helpBg = this.add.image(x, y, 'helpBox');
-        this.helpTitle = game.add.text(x - 20, y - 275, this.textHelp, { fill: "#213f6b" });
+        this.helpTitle = game.add.text(x - 20, y - 275, i18n.t("help"), { fill: "#213f6b" });
 
         this.helpGroup.add(this.helpBg);
         this.helpGroup.add(this.helpTitle);
@@ -85657,12 +87938,11 @@ GreaterThan.Title.prototype = {
     },
 
     addButton: function addButton() {
-
         var x = this.background.width / 2;
         var y = this.background.height / 3;
 
-        this._playButton(x, y * 2, 'play', this.textPlay);
-        this._helpButton(x, y * 2.5, 'help', this.textHelp);
+        this._playButton(x, y * 2, 'play', i18n.t("play"));
+        this._helpButton(x, y * 2.5, 'help', i18n.t("help"));
     },
     _playButton: function _playButton(x, y, image, text) {
 
@@ -85713,91 +87993,6 @@ GreaterThan.Title.prototype = {
 
 };
 //# sourceMappingURL=title.js.map
-
-'use strict';
-
-GreaterThan = GreaterThan || {};
-
-ENG_UK = [{
-    title: [{
-        play: 'Play',
-        help: 'Help',
-        title: 'Greater Than You'
-    }],
-    menu: [{
-        title: 'Choose a World:',
-        world: 'World ',
-        world1: 'Coral Reef',
-        world2: 'Kelp Forest',
-        world3: 'Ship Wreck',
-        world4: 'The Abyss',
-        world5: 'Volcano',
-        world6: 'Atlantis',
-        play: 'Play',
-        fuel: 'Fuel',
-        fish: 'Fish'
-
-    }],
-    game: [{
-        stage: 'Stage',
-        score: 'Score',
-        pause: 'Paused',
-        quit: 'Quit?',
-        continue: 'Play On?'
-    }],
-    gameOver: [{
-        gameOver: 'Game Over',
-        score: 'Score',
-        highScore: 'High Score',
-        next: 'Next',
-        earned: 'You have earned a',
-        bronze: 'bronze',
-        silver: 'silver',
-        gold: 'gold',
-        medal: 'medal'
-    }]
-}];
-
-PTR_BR = [{
-    title: [{
-        play: 'Jogar',
-        help: 'Ajuda',
-        title: 'Greater Than You'
-    }],
-    menu: [{
-        title: 'Escolher um Mundo:',
-        world: 'World ',
-        world1: 'Recife de corais',
-        world2: 'Floresta de Algas',
-        world3: 'Naufrágio',
-        world4: 'O Abismo',
-        world5: 'Vulcão',
-        world6: 'Atlantis',
-        play: 'Jogar',
-        fuel: 'Combustível',
-        fish: 'Peixe'
-    }],
-    game: [{
-        stage: 'Etapa',
-        score: 'Ponto',
-        pause: 'Pausa',
-        quit: 'Desistir?',
-        continue: 'Jogar Em?'
-    }],
-    gameOver: [{
-        gameOver: 'Fim de Jogo',
-        score: 'Partitura',
-        highScore: 'Pontuação Máxima',
-        next: 'Seguinte',
-        earned: 'Você ganhou um',
-        bronze: 'Bronze',
-        silver: 'Prata',
-        gold: 'Ouro',
-        medal: 'Medalha'
-
-    }]
-}];
-//# sourceMappingURL=text.js.map
 
 var GreaterThan;
 (function (GreaterThan) {

@@ -1,0 +1,31 @@
+{
+  "play": "Play",
+  "help": "Help",
+  "gameTitle": "Greater Than You",
+
+  "menuTitle": "Choose a World",
+  "world": "World",
+  "worldName1": "Coral Reef",
+  "worldName2": "Kelp Forest",
+  "worldName3": "Ship Wreck",
+  "worldName4": "The Abyss",
+  "worldName5": "Volcano",
+  "worldName6": "Atlantis",
+  "fuel": "Fuel",
+  "fish": "Fish",
+
+  "stage": "Stage",
+  "paused": "Paused",
+  "quit": "Quit?",
+  "continue": "Play On?",
+
+  "gameOver": "Game Over",
+  "score": "Score",
+  "highScore": "High Score",
+  "next": "Next",
+  "earned": "You have earned a",
+  "bronze": "bronze",
+  "silver": "silver",
+  "gold": "gold",
+  "medal": "medal"
+}

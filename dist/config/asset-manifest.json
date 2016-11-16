@@ -22,7 +22,7 @@
 
     "up": "assets/levelUp.png",
     "loose": "assets/levelDown.png",
-    "blob": "assets/dust.png",
+    "block": "assets/dust.png",
     "eatsUI": "assets/uiBar.png",
     "title": "assets/levelNameUI.png",
     "scoreBox": "assets2/uiBox.png",
@@ -39,6 +39,7 @@
 
     "sub": "assets2/sub.png",
     "number": "assets2/number.png",
+    "prop": "assets2/propella.png",
 
     "headC": "assets2/headC.png",
     "finC": "assets2/finC.png",
@@ -52,9 +53,13 @@
     "finA": "assets2/finA.png",
     "tailA": "assets2/tailA.png",
 
-    "fishA": "assets2/fishA.png",
-    "fishB": "assets2/fishB.png",
-    "fishC": "assets2/fishC.png",
+    "fishA": "assets2/number.png",
+    "fishB": "assets2/number.png",
+    "fishC": "assets2/number.png",
+
+    "bodyA": "assets2/fishA.png",
+    "bodyB": "assets2/fishB.png",
+    "bodyC": "assets2/fishC.png",
 
     "sign": "assets2/greaterThan.png",
     "equalTo": "assets2/equalTo.png",
@@ -67,6 +72,7 @@
     "gold": "assets/gold.png",
     "complete": "assets/completedDepth.png",
     "i": "assets/information.png"
+
   },
 
   "spritesheets": {

@@ -1,0 +1,31 @@
+{
+  "play": "Jogar",
+  "help": "Ajuda",
+  "gameTitle": "Greater Than You",
+
+  "menuTitle": "Escolher um Mundo",
+  "world": "Mundo",
+  "worldName1": "Recife de corais",
+  "worldName2": "Floresta de Algas",
+  "worldName3": "Naufrágio",
+  "worldName4": "O Abismo",
+  "worldName5": "Vulcão",
+  "worldName6": "Atlantis",
+  "fuel": "Combustível",
+  "fish": "Peixe",
+
+  "stage": "Etapa",
+  "paused": "Pausa",
+  "quit": "Desistir?",
+  "continue": "Jogar Em?",
+
+  "gameOver": "Fim de Jogo",
+  "score": "Partitura",
+  "highScore": "Pontuação Máxima",
+  "next": "Seguinte",
+  "earned": "Você ganhou um",
+  "bronze": "Bronze",
+  "silver": "Prata",
+  "gold": "Ouro",
+  "medal": "Medalha"
+}
