@@ -86549,9 +86549,9 @@ GreaterThan.Main.prototype = {
             game.debug.text("GameOver!", 600, 60, "#fff");
         }
 
-        game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
+        //game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
 
-        //game.debug.body(this.stopCircle);
+        //game.debug.body(this.player);
     },
 
     addGameInformation: function addGameInformation() {
@@ -86886,6 +86886,7 @@ GreaterThan.Main.prototype = {
         this.player.body.bounce.x = 1;
         this.player.body.bounce.y = 1;
         this.player.body.minBounceVelocity = 0;
+        this.player.body.setSize(75, 75, -25, -25);
 
         //Propella behind sub
         this.prop = this.add.sprite(-60, -10, 'prop');
