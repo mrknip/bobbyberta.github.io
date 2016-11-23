@@ -86584,6 +86584,7 @@ GreaterThan.Main.prototype = {
             playerCurrentValue: GreaterThan.DEPTHS[depthId].playerValue,
             alive: true,
             playerSpeed: 500,
+            playerDrag: 200,
             coolDownTime: 0.75,
 
             //Depth Progression Information
@@ -86871,13 +86872,12 @@ GreaterThan.Main.prototype = {
     addPlayer: function addPlayer() {
         this.player = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
 
-        this._addStopCircle();
-        this._addSlowCircle();
-        this._addMediumCircle();
-
         //Player Physics
         this.physics.enable(this.player, Phaser.Physics.ARCADE);
         this.player.anchor.setTo(0.5, 0.5);
+        this.player.allowRotation = false;
+        //enable Input
+        this.game.cursors = this.game.input.keyboard.createCursorKeys();
 
         this.game.camera.follow(this.player);
 
@@ -86910,69 +86910,36 @@ GreaterThan.Main.prototype = {
         this.player.addChild(this.playerNumber);
         this.player.addChild(this.playerNumberBase);
     },
-    _addStopCircle: function _addStopCircle() {
-
-        //this works for the bottom right corner - probably means that the anchor point of this sprite is top left
-        //needs to be moved into the middle of the player...
-
-        this.stopCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
-
-        //Player Physics
-        this.physics.enable(this.stopCircle, Phaser.Physics.ARCADE);
-        this.stopCircle.body.setSize(125, 75);
-        this.stopCircle.anchor.setTo(2, 1.5);
-    },
-    _addSlowCircle: function _addSlowCircle() {
-        //this works for the bottom right corner - probably means that the anchor point of this sprite is top left
-        //needs to be moved into the middle of the player...
-
-        this.slowCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
-
-        //Player Physics
-        this.physics.enable(this.slowCircle, Phaser.Physics.ARCADE);
-        this.slowCircle.body.setSize(150, 150);
-        this.slowCircle.anchor.setTo(2.5, 2.5);
-    },
-
-    _addMediumCircle: function _addMediumCircle() {
-        this.mediumCircle = this.add.sprite(this.config.worldSizeX / 2, this.config.worldSizeY / 2, '');
-
-        //Player Physics
-        this.physics.enable(this.mediumCircle, Phaser.Physics.ARCADE);
-        this.mediumCircle.body.setSize(300, 300);
-        this.mediumCircle.anchor.setTo(4.5, 4.5);
-
-        //player.addChild(this.mediumCircle)
-    },
 
     _playerMovement: function _playerMovement(speedMax) {
-        var mousePositionX = game.input.x + game.camera.x;
-        var mousePositionY = game.input.y + game.camera.y;
 
-        if (Phaser.Rectangle.contains(this.stopCircle.body, mousePositionX, mousePositionY)) {
-            this.player.body.velocity.setTo(0, 0);
-            this.stopCircle.body.velocity.setTo(0, 0);
-            this.slowCircle.body.velocity.setTo(0, 0);
-            this.mediumCircle.body.velocity.setTo(0, 0);
-        } else if (Phaser.Rectangle.contains(this.slowCircle.body, mousePositionX, mousePositionY)) {
-            game.physics.arcade.moveToPointer(this.player, speedMax / 2);
-            game.physics.arcade.moveToPointer(this.stopCircle, speedMax / 2);
-            game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 2);
-            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 2);
-        } else if (Phaser.Rectangle.contains(this.mediumCircle.body, mousePositionX, mousePositionY)) {
-            game.physics.arcade.moveToPointer(this.player, speedMax / 1.5);
-            game.physics.arcade.moveToPointer(this.stopCircle, speedMax / 1.5);
-            game.physics.arcade.moveToPointer(this.slowCircle, speedMax / 1.5);
-            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax / 1.5);
-        } else {
-            game.physics.arcade.moveToPointer(this.player, speedMax);
-            game.physics.arcade.moveToPointer(this.stopCircle, speedMax);
-            game.physics.arcade.moveToPointer(this.slowCircle, speedMax);
-            game.physics.arcade.moveToPointer(this.mediumCircle, speedMax);
-        }
+        this._mouseMovement(speedMax);
+        //this._keysMovement(speedMax);
 
         this.checkAnimation(this.player, this.sub);
         this._checkFlipProp(this.player, this.prop, this.speed);
+    },
+    _mouseMovement: function _mouseMovement(speedMax) {
+        this.player.rotation = game.physics.arcade.moveToPointer(this.player, speedMax, game.input.activePointer, 500);
+        this.player.angle = 0;
+    },
+
+    _keysMovement: function _keysMovement(speedMax) {
+
+        this.player.body.drag.x = speedMax * 2;
+        this.player.body.drag.y = speedMax * 2;
+
+        if (this.game.cursors.left.isDown) {
+            this.player.body.velocity.x = -speedMax;
+        } else if (this.game.cursors.right.isDown) {
+            this.player.body.velocity.x = speedMax;
+        }
+
+        if (this.game.cursors.up.isDown) {
+            this.player.body.velocity.y = -speedMax;
+        } else if (this.game.cursors.down.isDown) {
+            this.player.body.velocity.y = speedMax;
+        }
     },
 
     checkAnimation: function checkAnimation(object, frame) {
@@ -86993,38 +86960,51 @@ GreaterThan.Main.prototype = {
     },
 
     _checkFlipProp: function _checkFlipProp(object, prop, speed) {
-        var pointA = object.body.x;
+        var pointX = object.body.x;
+        var pointY = object.body.y;
 
         game.time.events.add(Phaser.Timer.SECOND * 0.1, function () {
-            this._updateProp(pointA, object.body.x, prop, speed);
+            this._updateProp(pointX, pointY, object.body.x, object.body.y, prop, speed);
         }, this);
     },
 
-    _updateProp: function _updateProp(pointA, objectBodyX, prop) {
-        var pointB = objectBodyX;
+    _updateProp: function _updateProp(pointX, pointY, objectBodyX, objectBodyY, prop) {
+        var pointXB = objectBodyX;
+        var pointYB = objectBodyY;
 
-        var mousePositionX = game.input.x + game.camera.x;
-        var mousePositionY = game.input.y + game.camera.y;
+        var angleSpeed, currentSpeed;
 
-        var angleSpeed;
+        currentSpeed = this.player.body.speed;
+        angleSpeed = currentSpeed / 100;
 
-        if (Phaser.Rectangle.contains(this.stopCircle.body, mousePositionX, mousePositionY)) {
-            angleSpeed = 0;
-        } else if (Phaser.Rectangle.contains(this.slowCircle.body, mousePositionX, mousePositionY)) {
-            angleSpeed = 2;
-        } else if (Phaser.Rectangle.contains(this.mediumCircle.body, mousePositionX, mousePositionY)) {
-            angleSpeed = 5;
-        } else {
-            angleSpeed = 10;
-        }
+        //work out propella movement
 
-        if (pointA > pointB) {
-            //looking left
+        if (pointX < pointXB && pointY < pointYB) {
+            //looking south west
+            prop.x = -60;
+            prop.angle += angleSpeed;
+        } else if (pointX < pointXB && pointY > pointYB) {
+            //looking north west
+            prop.x = -60;
+            prop.angle += angleSpeed;
+        } else if (pointX < pointXB) {
+            //looking west
+            prop.x = -60;
+            prop.angle += angleSpeed;
+        } else if (pointX > pointXB && pointY < pointYB) {
+            //looking south east
             prop.x = 60;
             prop.angle += angleSpeed;
-        } else if (pointA < pointB) {
-            prop.x = -60;
+        } else if (pointX > pointXB) {
+            //looking east
+            prop.x = 60;
             prop.angle -= angleSpeed;
+        } else if (pointY < pointYB) {
+            //looking south
+            prop.angle -= angleSpeed;
+        } else if (pointY > pointYB) {
+            //looking north
+            prop.angle += angleSpeed;
         }
     },
 
