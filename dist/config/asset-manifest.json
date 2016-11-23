@@ -10,6 +10,8 @@
     "box1": "assets/levelSelectBox.png",
     "locked": "assets/levelLocked.png",
     "home": "assets/homeButton.png",
+    "character": "assets2/character.png",
+    "frame": "assets2/frame1.png",
 
     "bgBase": "assets2/bg.jpg",
     "bgMiddle": "assets2/middleBg.png",
@@ -26,10 +28,12 @@
     "eatsUI": "assets/uiBar.png",
     "title": "assets/levelNameUI.png",
     "scoreBox": "assets2/uiBox.png",
+    "pause": "assets2/pause.png",
 
     "fuelBase": "assets2/baseHealthBar.png",
     "fuelMid": "assets2/healthBar1.png",
     "fuelTop": "assets2/healthBar2.png",
+    "fuelMarker": "assets2/fuelBarTop.png",
 
     "greaterEqual": "assets/enemyGreaterEqual.png",
     "lesserEqual": "assets/enemyLessEqual.png",
@@ -66,8 +70,7 @@
 
     "greater": "assets/enemyGreaterSquare.png",
     "lesser": "assets/enemyLessSquare.png",
-
-    "bronze": "assets/bronze.png",
+    
     "silver": "assets/silver.png",
     "gold": "assets/gold.png",
     "complete": "assets/completedDepth.png",

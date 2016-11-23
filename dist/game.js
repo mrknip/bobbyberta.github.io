@@ -84141,15 +84141,15 @@ GreaterThan.DEPTHS = [{
     oxygen: [{
         text: '-1',
         value: -1,
-        amount: 5
+        amount: 3
     }, {
         text: '-2',
         value: -2,
-        amount: 3
+        amount: 2
     }, {
         text: '-3',
         value: -3,
-        amount: 3
+        amount: 1
     }]
 }, {
     depthName: '2:7',
@@ -85748,40 +85748,6 @@ GreaterThan.DEPTHS = [{
         amount: 3
     }]
 }];
-
-testing = [{
-    totalEaten: 0,
-    oxygen: 0,
-    rightAnswers: 0,
-    wrongAnswers: 0,
-    pointsAtBronze: 0,
-    pointsAtSilver: 0,
-    pointsAtGold: 0,
-    worldWrap: false,
-    bronzePoints: 3,
-    silverPoints: 4,
-    goldPoints: 5,
-    oxygenPoints: 2,
-    DepthUpBonus: 500
-
-}];
-
-player = [{
-    currentDepth: 0,
-    currentWorld: 0,
-    startDepth: 0,
-    endDepth: 0,
-    DepthLocation: 0,
-    DepthMax: 0,
-    maxDepthLine: 155,
-    currentScore: 0,
-    totalScore: 0,
-    bronze: 10,
-    silver: 20,
-    gold: 30,
-    pauseEnabled: true,
-    language: 'ENG_UK'
-}];
 //# sourceMappingURL=data.js.map
 
 "use strict";
@@ -86170,10 +86136,6 @@ var GreaterThan;
                 timePlayer: 0,
                 currentScore: 0,
                 totalScore: 0,
-                bronze: 10,
-                silver: 20,
-                gold: 30,
-                pauseEnabled: true,
                 language: 'ENG_UK',
                 worldProgress: {
                     1: {
@@ -86358,14 +86320,6 @@ GreaterThan.GameOver.prototype = {
         this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
 
-        this.createInformationBox();
-        this.information = game.add.sprite(x / 1.05, y / 1.1, 'i');
-        this.information.anchor.setTo(0.5, 0.5);
-        this.information.inputEnabled = true;
-        this.information.events.onInputDown.add(function () {
-            this._showInformation();
-        }, this);
-
         if (this.gameData.worldProgress[currentWorld].medal === 'G') {
             this.medalText = i18n.t("gold");
         } else if (this.gameData.worldProgress[currentWorld].medal === 'S') {
@@ -86388,66 +86342,6 @@ GreaterThan.GameOver.prototype = {
         this.game.state.start("menu", true);
     },
 
-    showTestingData: function showTestingData() {
-        console.log('Stage ' + player[0].currentWorld + ' report');
-        console.log('amount of right answers: ' + testing[0].rightAnswers);
-        console.log('amount of wrong answers: ' + testing[0].wrongAnswers);
-        console.log('total Eaten: ' + testing[0].totalEaten);
-        console.log('points earned at Bronze: ' + testing[0].pointsAtBronze);
-        console.log('points earned at Silver: ' + testing[0].pointsAtSilver);
-        console.log('points earned at Gold: ' + testing[0].pointsAtGold);
-
-        var highestDepth = player[0].currentDepth - player[0].startDepth;
-
-        console.log('Highest Depth: ' + highestDepth);
-        console.log('Treasure Eaten: ' + testing[0].treasure);
-        console.log('Depth Up Bonus: ' + testing[0].depthUpBoonus);
-    },
-    createInformationBox: function createInformationBox() {
-        var depthNormalisation = this.gameData.currentDepth - this.gameData.startDepth;
-        var stage = this.gameData.currentWorld;
-        var highestDepth = depthNormalisation + 1;
-
-        this.informBox = this.add.image(200, 150, 'box1');
-        this.textGroup = this.add.group();
-
-        var x = 260;
-        var y = 240;
-        this.height = 0;
-
-        this.title = this.make.text(440, 180, 'Stage ' + stage + ' Points Break Down:', { fill: '#6f9695' });
-        this.textGroup.add(this.title);
-
-        this._addInformationText(x, y, 'Amount of right answers: ', testing[0].rightAnswers);
-        this._addInformationText(x, y, 'Amount of wrong answers: ', testing[0].wrongAnswers);
-        this._addInformationText(x, y, 'Total Eaten: ', testing[0].totalEaten);
-        this._addInformationText(x, y, 'Points earned at Bronze: ', testing[0].pointsAtBronze);
-        this._addInformationText(x, y, 'Points earned at Silver: ', testing[0].pointsAtSilver);
-        this._addInformationText(x, y, 'Points earned at Gold: ', testing[0].pointsAtGold);
-        this._addInformationText(x, y, 'Highest Depth Reached: ', highestDepth);
-        this._addInformationText(x, y, 'Bubbles Collected: ', testing[0].treasure);
-        this._addInformationText(x, y, 'Depth Up Bonus Points:  ', testing[0].depthUpBoonus);
-
-        this.textGroup.visible = false;
-        this.informBox.visible = false;
-    },
-    _addInformationText: function _addInformationText(x, y, text, data) {
-        var line = y + this.height;
-        this.text = this.make.text(x, line, text + data, { fill: '#6f9695' });
-        this.textGroup.add(this.text);
-        this.height += 40;
-    },
-    _showInformation: function _showInformation() {
-        if (this.config.clicked === false) {
-            this.informBox.visible = true;
-            this.textGroup.visible = true;
-            this.config.clicked = true;
-        } else {
-            this.informBox.visible = false;
-            this.textGroup.visible = false;
-            this.config.clicked = false;
-        }
-    },
     _updateDataWithMedal: function _updateDataWithMedal(currentWorld) {
         this.game.apiManager.handleWorldEnd({
             timePlayed: this.gameData.timePlayed,
@@ -86458,7 +86352,7 @@ GreaterThan.GameOver.prototype = {
 };
 //# sourceMappingURL=gameOver.js.map
 
-"use strict";
+'use strict';
 
 GreaterThan.Main = function (game) {
     this.game = game;
@@ -86477,6 +86371,7 @@ GreaterThan.Main.prototype = {
         rightInARow: GreaterThan.CONFIG.rightInARow,
         wrongInARow: GreaterThan.CONFIG.wrongInARow,
         unlockDepth: GreaterThan.CONFIG.unlockDepth,
+        maxDepth: 0,
 
         //Points to earn a medal
         bronzePoints: GreaterThan.CONFIG.bronzePoints,
@@ -86543,11 +86438,12 @@ GreaterThan.Main.prototype = {
         // If our timer is running, show the time in a nicely formatted way, else show 'Done!'
 
         // game.debug.body(this.player);
-        if (this.timer.running === true) {
-            game.debug.text(this._formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000)), 540, 35, "#fff");
-        } else {
-            game.debug.text("GameOver!", 600, 60, "#fff");
-        }
+        // if (this.timer.running === true) {
+        //     game.debug.text(this._formatTime(Math.round((this.timerEvent.delay - this.timer.ms) / 1000)), 540, 35, "#fff");
+        // }
+        // else {
+        //     game.debug.text("GameOver!", 600, 60, "#fff");
+        // }
 
         //game.debug.text(game.time.fps || '--', 5, 20, "#00ff00");
 
@@ -86565,10 +86461,8 @@ GreaterThan.Main.prototype = {
             worldSizeX: this.config.worldSizeX,
             worldSizeY: this.config.worldSizeY,
             equalToDepth: GreaterThan.DEPTHS[depthId].equalTo,
-            pauseEnabled: player[0].pauseEnabled,
 
             //Stage Data
-            depth: player[0].currentDepth, //The height of the arrow, indicating depth/Depth progression
             backgroundColour: '#6f9695',
             currentWorld: worldId,
             currentDepth: depthId,
@@ -86576,8 +86470,6 @@ GreaterThan.Main.prototype = {
             highestDepth: GreaterThan.WORLDS[worldId].highestDepth,
             score: this.gameData.currentScore,
 
-            //unlockNextDepth: player[0].worldData[stageId].locked,
-            //criteria for unlocking the next Depth
             toNextDepth: this.config.unlockDepth,
 
             //Player information
@@ -86588,11 +86480,11 @@ GreaterThan.Main.prototype = {
             coolDownTime: 0.75,
 
             //Depth Progression Information
-            depthUp: 0,
-            depthDown: 0,
-            depthLocation: player[0].depthLocation, //If the Depth you are playing is the highest Depth you have attempted
-            maxDepth: player[0].maxDepth,
-            maxDepthLine: player[0].maxDepthLine,
+            depth: depthId - GreaterThan.WORLDS[worldId].lowestDepth,
+            depthUp: 0, //counting how many right fish in a row
+            depthDown: 0, // counting how many wronge fish in a row
+            depthLocation: 0, //If the Depth you are playing is the highest Depth you have attempted
+            maxDepth: 0,
 
             //Greater Than Information
             greaterMinValue: GreaterThan.DEPTHS[depthId].greater[0].minValue,
@@ -86735,6 +86627,10 @@ GreaterThan.Main.prototype = {
         this.addSFX('timer');
     },
     _endTimer: function _endTimer() {
+        this.gameData.maxDepth = 0;
+        this.gameState.maxDepth = 0;
+        this.config.maxDepth = 0;
+
         this._updateGameData();
 
         this.timer.stop();
@@ -86754,15 +86650,23 @@ GreaterThan.Main.prototype = {
         this._addPauseMenu();
     },
     _addTitle: function _addTitle(textStyle) {
+        var text;
+
+        if (this.gameState.depth == 0) {
+            text = '10 m';
+        } else {
+            text = ' 00 m';
+        }
+
         this.depthTitle = this.add.image(0, 0, 'scoreBox');
-        this._setUIPosition(this.depthTitle, 10, 20);
-        this.titleText = this.make.text(5, 5, this.gameState.depthName, textStyle);
+        this._setUIPosition(this.depthTitle, 10, 18);
+        this.titleText = this.make.text(5, 5, text, textStyle);
         this.titleText.anchor.setTo(0.5, 0.5);
         this.depthTitle.addChild(this.titleText);
     },
     _addScore: function _addScore(textStyle) {
         this.scoreBox = this.add.image(0, 0, 'scoreBox');
-        this._setUIPosition(this.scoreBox, 10, 8);
+        this._setUIPosition(this.scoreBox, 3.5, 18);
         this.scoreText = this.make.text(5, 5, this.gameState.score, textStyle);
         this.scoreText.anchor.setTo(0.5, 0.5);
         this.scoreBox.addChild(this.scoreText);
@@ -86771,7 +86675,7 @@ GreaterThan.Main.prototype = {
         //Fuel Bar
         this.fuelBase = this.add.image(0, 0, 'fuelBase');
         this.fuelBase.fixedToCamera = true;
-        this.fuelBase.cameraOffset.setTo(250, 30);
+        this.fuelBase.cameraOffset.setTo(400, 40);
         this.fuelBase.anchor.setTo(0, 0.5);
 
         //
@@ -86782,13 +86686,17 @@ GreaterThan.Main.prototype = {
         this.fuelTop = this.add.image(10, 0, 'fuelTop');
         this.fuelTop.anchor.setTo(0, 0.5);
         this.fuelBase.addChild(this.fuelTop);
+
+        this.fuelMarker = this.add.image(10, 0, 'fuelMarker');
+        this.fuelMarker.anchor.setTo(0, 0.5);
+        this.fuelBase.addChild(this.fuelMarker);
     },
     animateFuel: function animateFuel() {
         game.add.tween(this.fuelTop.scale).to({ x: 0, y: 1 }, GreaterThan.CONFIG.roundTime, null, true, 0, Infinity);
     },
     _addHomeButton: function _addHomeButton() {
-        this.homeButton = game.add.sprite(40, 700, 'home');
-        this._setUIPosition(this.homeButton, 1.05, 15);
+        this.homeButton = game.add.sprite(40, 700, 'pause');
+        this._setUIPosition(this.homeButton, 1.05, 18);
         this.homeButton.inputEnabled = true;
         this.homeButton.events.onInputDown.add(function () {
             this._pause();
@@ -86805,6 +86713,11 @@ GreaterThan.Main.prototype = {
         uiElement.anchor.setTo(0.5, 0.5);
     },
     _goHome: function _goHome() {
+
+        this.gameData.maxDepth = 0;
+        this.gameState.maxDepth = 0;
+        this.config.maxDepth = 0;
+
         this.gameData.currentScore = this.gameState.score;
         this.game.state.start("gameOver", true);
     },
@@ -87241,30 +87154,31 @@ GreaterThan.Main.prototype = {
         this._checkChangeDepth();
     },
     _checkChangeDepth: function _checkChangeDepth() {
-        if (this.gameState.depthUp === this.config.rightInARow && this.gameState.currentDepth < this.gameState.highestDepth) {
-            if (this.gameState.depthLocation === this.gameState.maxDepth) {
 
-                if (this.gameState.currentDepth === 2) {
+        if (this.gameState.depthUp == this.config.rightInARow && this.gameState.currentDepth < this.gameState.highestDepth) {
+            if (this.gameState.depth == this.config.maxDepth) {
+
+                if (this.gameState.depth == 2) {
                     this.addPoints(this.config.bonusPoints);
                 }
-                if (this.gameState.currentDepth === 5) {
+                if (this.gameState.depth == 5) {
                     this.addPoints(this.config.bonusPoints);
                 }
-                if (this.gameState.currentDepth === 8) {
+                if (this.gameState.depth == 8) {
                     this.addPoints(this.config.bonusPoints);
                 }
 
-                this.gameState.maxDepth += 1;
+                this.config.maxDepth += 1;
             }
 
             this.gameState.depthLocation += 1;
             this.gameData.currentDepth += 1;
             this.addSFX('win');
-            this._depthChangeScreen();
+            this._depthChangeScreen('up');
         }
         if (this.gameState.depthDown === this.config.wrongInARow && this.gameState.currentDepth > this.gameState.lowestDepth) {
             this.addSFX('wave');
-            this._depthChangeScreen();
+            this._depthChangeScreen('down');
             this.gameData.currentDepth -= 1;
             this.gameState.depthLocation -= 1;
         }
@@ -87282,8 +87196,9 @@ GreaterThan.Main.prototype = {
             group.splice(i);
         }
     },
-    _depthChangeScreen: function _depthChangeScreen() {
+    _depthChangeScreen: function _depthChangeScreen(where) {
         this._lotsOfBubbles();
+        this._depthChangeText(where);
 
         game.time.events.add(Phaser.Timer.SECOND * 0, this._removeEntities, this);
     },
@@ -87307,6 +87222,33 @@ GreaterThan.Main.prototype = {
     addBubbleGroup: function addBubbleGroup() {
         this.bubbleGroup = this.add.group();
     },
+
+    _depthChangeText: function _depthChangeText(where) {
+
+        var styleA = { fill: "#ffffff", size: "300pt" };
+
+        var screenX = this.config.viewSizeX;
+        var screenY = this.config.viewSizeY;
+
+        var textUp = i18n.t("levelUpText");
+        var textDown = i18n.t("levelDownText");
+
+        var text;
+
+        if (where == 'up') {
+            text = textUp;
+        } else if (where == 'down') {
+            text = textDown;
+        }
+
+        this.changeText = game.add.text(0, 0, text, styleA);
+
+        this.changeText.fixedToCamera = true;
+        this.changeText.cameraOffset.setTo(screenX / 2, screenY / 3);
+        this.changeText.anchor.setTo(0.5, 0.5);
+
+        this.fade = game.add.tween(this.changeText).to({ alpha: 0 }, 5000, Phaser.Easing.Linear.None, true);
+    },
     _removeEntities: function _removeEntities() {
         if (this.gameState.currentDepth >= this.gameState.lowestDepth && this.gameState.currentDepth <= this.gameState.highestDepth) {
             this._removeGreaterLesser(this.gameState.greater);
@@ -87328,15 +87270,19 @@ GreaterThan.Main.prototype = {
         this.addGreaterLesserEntities();
         this.addTreasure();
         this._setNewDepthText();
+        this._died();
     },
 
     _setNewDepthText: function _setNewDepthText() {
         this.playerNumber.setText(this.gameState.playerCurrentValue);
         this.playerNumberBase.setText(this.gameState.playerCurrentValue);
-        this.titleText.setText(this.gameState.depthName);
+
+        if (this.gameState.depth == 0) {
+            this.titleText.setText('10 m');
+        } else {
+            this.titleText.setText(this.gameState.depth + '00 m');
+        }
         this.scoreText.setText(this.gameState.score);
-        //this._setUIPosition(this.arrow, 115, this.gameState.depth);
-        //this._setUIPosition(this.deepestDepth, 145, this.gameState.maxDepthLine);
     },
     _addToPlayerInformation: function _addToPlayerInformation() {
         var nextWorld;
@@ -87422,13 +87368,9 @@ GreaterThan.Main.prototype = {
 
         game.add.tween(this.solvedEquation).to({ x: 100 }, 3000, Phaser.Easing.Linear.None, true);
         game.add.tween(this.solvedEquation).to({ alpha: 0 }, 3000, Phaser.Easing.Linear.None, true);
-
-        // game.add.tween(this.solvedEquation.scale).to({x: 5, y: 5}, 3000, Phaser.Easing.Linear.None, true);
-        // game.add.tween(this.solvedEquation).to({alpha: 0}, 3000, Phaser.Easing.Linear.None, true);
     },
     _died: function _died() {
         this.gameState.alive = false;
-        //this.player.frame = 1;
         this.game.time.events.add(Phaser.Timer.SECOND * this.gameState.coolDownTime, this._reBorn, this);
     },
     _reBorn: function _reBorn() {
@@ -87604,16 +87546,6 @@ GreaterThan.Menu.prototype = {
         this.gameData.currentWorld = worldId;
         this.gameData.currentDepth = GreaterThan.WORLDS[worldId].lowestDepth;
         this.gameData.startDepth = GreaterThan.WORLDS[worldId].lowestDepth; // not strictly necessary
-
-        // player[0].currentDepth = GreaterThan.WORLDS[worldId].lowestDepth;
-        // player[0].currentWorld = worldId;
-        // player[0].currentDepth = 100;
-        // player[0].currentScore = 0;
-        // player[0].DepthLocation = 0;
-        // player[0].maxDepth = 0;
-        // player[0].maxDepthLine = 155;
-        // player[0].startDepth = GreaterThan.WORLDS[worldId].lowestDepth;
-        // player[0].endDepth = GreaterThan.WORLDS[worldId].highestDepth;
     },
 
     addStartWorld: function addStartWorld(worldId) {
@@ -87621,10 +87553,26 @@ GreaterThan.Menu.prototype = {
         this.box = this.add.image(0, 0, 'helpBox');
         this._setScreenPosition(this.box, 2, 2);
 
+        this._addFrames();
+
         this._addTitle(worldId);
-        this._addFuel();
+        this._addFuelText(worldId);
+        this._addFuelBar();
         this._addFish();
         this._addPlayButton();
+    },
+    _addFrames: function _addFrames() {
+        this.frame1 = this.add.image(0, 0, 'frame');
+        this.frame1.scale.setTo(1.5, 1.5);
+        this._setScreenPosition(this.frame1, 2.2, 4);
+
+        this.frame2 = this.add.image(0, 0, 'frame');
+        this.frame2.scale.setTo(1.5, 1.5);
+        this._setScreenPosition(this.frame2, 2, 2.25);
+
+        this.frame3 = this.add.image(0, 0, 'frame');
+        this.frame3.scale.setTo(1.5, 1.5);
+        this._setScreenPosition(this.frame3, 1.8, 1.6);
     },
     _addTitle: function _addTitle(worldId) {
         // todo
@@ -87636,19 +87584,81 @@ GreaterThan.Menu.prototype = {
         this.title = this.add.text(0, 0, titleText, titleStyle);
         this._setScreenPosition(this.title, 2, 7);
     },
-    _addFuel: function _addFuel() {
-        var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width };
+    _addFuelText: function _addFuelText(worldId) {
+        var nameKey = 'worldName' + worldId.toString(),
+            textWorldName = i18n.t(nameKey);
 
-        this.fuelText = game.add.text(0, 0, i18n.t("fuel") + ": 4 mins", style); // todo: translate
+        var style = { fill: "#213f6b", align: "left", wordWrap: true, wordWrapWidth: this.frame1.width - 220, fontSize: "17pt" };
 
-        this._setScreenPosition(this.fuelText, 4, 4);
+        this.fuelText = game.add.text(0, 0, i18n.t("There’s some strange fish in the ") + textWorldName + i18n.t(", could you collect some samples for me to study back in the lab?"), style); // todo: translate
+        //i18n.t("There’s some strange fish in the")
+        //i18n.t(", could you collect some samples for me to study back in the lab?")
+        this._setScreenPosition(this.fuelText, 2, 4);
+
+        this.honeyImage = game.add.image(-345, -55, 'character');
+        this.honeyImage.scale.setTo(1.5);
+        this.honeyImage.anchor.setTo(0, 0);
+        this.fuelText.addChild(this.honeyImage);
+    },
+    _addFuelBar: function _addFuelBar() {
+        var style = { fill: "#213f6b", align: "right", wordWrap: true, wordWrapWidth: this.frame2.width / 2.7, fontSize: "17pt" };
+
+        this.fuelBarText = game.add.text(0, 0, i18n.t("I've filled you up with 5mins of fuel, you'll have to be quick!"), style); // todo: translate
+        this.fuelBarText.anchor.setTo(0.5, 0.5);
+        this.fuelBarText.fixedToCamera = true;
+        this.fuelBarText.cameraOffset.setTo(680, 350);
+
+        this.fuelBase = this.add.image(0, 0, 'fuelBase');
+        this.fuelBase.fixedToCamera = true;
+        this.fuelBase.cameraOffset.setTo(225, 350);
+        this.fuelBase.anchor.setTo(0, 0.5);
+
+        //
+        this.fuelTop = this.add.image(10, 0, 'fuelTop');
+        this.fuelTop.anchor.setTo(0, 0.5);
+        this.fuelBase.addChild(this.fuelTop);
+
+        // this.fuelMid = this.add.image(10, 0, 'fuelMid');
+        // this.fuelMid.anchor.setTo(0, 0);
+        // this.fuelBase.addChild(this.fuelMid);
+
+        this.fuelMarker = this.add.image(10, 0, 'fuelMarker');
+        this.fuelMarker.anchor.setTo(0, 0.5);
+        this.fuelBase.addChild(this.fuelMarker);
+
+        // game.add.tween(this.fuelMid.scale).to({ x: 1, y: 0}, 6000, null, true,);
     },
     _addFish: function _addFish() {
-        var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.box.width };
+        var typeOfWorld, worldNumber;
 
-        this.fishText = game.add.text(0, 0, i18n.t("fish"), style);
+        worldNumber = this.gameData.currentWorld;
 
-        this._setScreenPosition(this.fishText, 4, 3);
+        if (worldNumber == 1) {
+            typeOfWorld = i18n.t("Greater");
+        } else if (worldNumber == 2) {
+            typeOfWorld = i18n.t("Lesser");
+        } else if (worldNumber == 3) {
+            typeOfWorld = i18n.t("either Greater or Lesser");
+        } else if (worldNumber == 4) {
+            typeOfWorld = i18n.t("Greater");
+        } else if (worldNumber == 5) {
+            typeOfWorld = i18n.t("Lesser");
+        } else if (worldNumber == 6) {
+            typeOfWorld = i18n.t("either Greater or Lesser");
+        }
+
+        var style = { fill: "#213f6b", align: "center", wordWrap: true, wordWrapWidth: this.frame3.width / 1.2, fontSize: "17pt" };
+
+        this.fishText = game.add.text(0, 0, i18n.t("Be careful fish can only be collected if you are ") + typeOfWorld + i18n.t(" than them!"), style);
+        //i18n.t("Be careful fish can only be collected if you are ")
+        //i18n.t(" than them!")
+
+
+        this.fishText.anchor.setTo(0, 0);
+        this.fishText.fixedToCamera = true;
+
+        this.fishText.cameraOffset.setTo(325, 440);
+        //275, 440 to offset to left
     },
     _addPlayButton: function _addPlayButton() {
         this.playButton = this.add.sprite(0, 0, 'play2');
@@ -87679,145 +87689,6 @@ GreaterThan.Menu.prototype = {
         this.game.state.start("main", true);
     }
 
-    // addTestSettings: function(){
-    //
-    //     this._addSettingButton();
-    //     this._addWrapWorld();
-    //     this._addWorldSize();
-    //     this._addAllPoints();
-    //
-    //     this.settings.add(this.settingsBg);
-    //     this.settings.add(this.title);
-    //     this.settings.add(this.wrapText);
-    //     this.settings.add(this.checkBox);
-    //     this.settings.add(this.worldSizeText);
-    //     this.settings.add(this.worldSize);
-    //     this.settings.add(this.pointsTitle);
-    //     this.settings.add(this.pointsBox);
-    //     this.settings.add(this.pointsText);
-    //
-    //     this.settings.visible = false;
-    // },
-    // _showSettings: function(){
-    //     if(this.config.settingsClicked == false){
-    //         this.settings.visible = true;
-    //         this.config.settingsClicked = true;
-    //     }else{
-    //         this.settings.visible = false;
-    //         this.config.settingsClicked = false;
-    //     }
-    // },
-    // _addSettingButton: function(){
-    //     this.settingsButton = game.add.sprite(10, 680, 'settings');
-    //     this.settingsButton.inputEnabled = true;
-    //     this.settingsButton.events.onInputDown.add(
-    //         function () {
-    //             this._showSettings();
-    //         },
-    //         this);
-    //
-    //     //Settings Box
-    //     this.settings = this.add.group();
-    //     this.settingsBg = this.add.image(200, 150, 'box1');
-    //     this.title = this.make.text(450, 180, 'Settings for Testing ', {fill: '#f4f0ce'});
-    // },
-    // _addWrapWorld: function(){
-    //     this.wrapText = this.make.text(260, 240, 'Wrap World? ', {fill: '#6f9695'});
-    //     this.checkBox = this.add.sprite(470, 240, 'checkBox');
-    //     this.checkBox.inputEnabled = true;
-    //     this.checkBox.events.onInputDown.add(
-    //         function () {
-    //             this._checkBoxClicked();
-    //         },
-    //         this);
-    //
-    //     if(testing[0].worldWrap == false){
-    //         this.checkBox.frame = 0;
-    //     }else{
-    //         this.checkBox.frame = 1;
-    //     }
-    // },
-    // _checkBoxClicked: function(){
-    //     if(this.config.checkBoxTicked == false){
-    //         this.checkBox.frame = 1;
-    //         testing[0].worldWrap = true;
-    //         this.config.checkBoxTicked =  true;
-    //     }else{
-    //         this.checkBox.frame = 0;
-    //         testing[0].worldWrap = false;
-    //         this.config.checkBoxTicked =  false;
-    //     }
-    //
-    // },
-    // _addWorldSize: function(){
-    //     this.worldSizeText = this.make.text(260, 280, 'World Size? ', {fill: '#6f9695'});
-    //     this.worldSize = this.add.sprite(470, 280, 'worldSize');
-    //     this.worldSize.inputEnabled = true;
-    //     this.worldSize.events.onInputDown.add(
-    //         function () {
-    //             this._changeWorldSize();
-    //         },
-    //         this);
-    //
-    //     if(ui[0].worldSizeX == 1500){
-    //         this.worldSize.frame = 0;
-    //         this.config.worldSize = 'small';
-    //     }else if(ui[0].worldSizeX == 2000){
-    //         this.worldSize.frame = 1;
-    //         this.config.worldSize = 'medium';
-    //     }else{
-    //         this.worldSize.frame = 2;
-    //         this.config.worldSize = 'large';
-    //     }
-    // },
-    // _changeWorldSize: function(){
-    //     if(this.config.worldSize == 'small'){
-    //         this.worldSize.frame = 1;
-    //         this.config.worldSize = 'medium';
-    //         ui[0].worldSizeX = 2000;
-    //         ui[0].worldSizeY = 2000;
-    //     }else if (this.config.worldSize == 'medium'){
-    //         this.worldSize.frame = 2;
-    //         this.config.worldSize = 'large';
-    //         ui[0].worldSizeX = 2500;
-    //         ui[0].worldSizeY = 2500;
-    //     }else{
-    //         this.worldSize.frame = 0;
-    //         this.config.worldSize = 'small';
-    //         ui[0].worldSizeX = 1500;
-    //         ui[0].worldSizeY = 1500;
-    //     }
-    // },
-    // _addAllPoints: function(){
-    //     this._addPoints(260, 320, testing[0].bronzePoints, 'Bronze Points:  ', this._changeBronzePoints );
-    //     //this._addPoints(260, 330, testing[0].silverPoints, 'Silver Points:  ', this._changeSilverPoints );
-    //     //this._addPoints(260, 340, testing[0].goldPoints, 'Gold Points:  ', this._changeGoldPoints );
-    //
-    // },
-    // _addPoints: function(x, y, points, title, onClick){
-    //
-    //     var spritePosition = x + 210;
-    //     var pointsTextPosition = x + 220
-    //
-    //     this.pointsTitle = this.make.text(x, y, title, {fill: '#6f9695'});
-    //     this.pointsBox = this.add.sprite(spritePosition, y, 'points');
-    //     this.pointsBox.inputEnabled = true;
-    //     this.pointsBox.events.onInputDown.add(
-    //         function () {
-    //             onClick();
-    //         },
-    //         this);
-    //     this.pointsText = this.make.text(pointsTextPosition, y, points, {fill: '#b4d6ae'});
-    // },
-    // _changeBronzePoints: function(){
-    //
-    // },
-    // _changeSilverPoints: function(){
-    //
-    // },
-    // _changeGoldPoints: function(){
-    //
-    // },
 };
 //# sourceMappingURL=menu.js.map
 
