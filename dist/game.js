@@ -86525,12 +86525,20 @@ GreaterThan.Main.prototype = {
 
     addBackground: function addBackground() {
         var i;
+        var currentBgImage;
+        var amountOfBgFish;
 
         this.game.world.setBounds(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         this.bounds = new Phaser.Rectangle(0, 0, this.gameState.worldSizeX, this.gameState.worldSizeY);
         // /1.2
 
-        this.background = game.add.image(0, 0, 'bgBase');
+        if (this.gameState.currentWorld == 2) {
+            currentBgImage = 'kelpBg';
+        } else {
+            currentBgImage = 'bgBase';
+        }
+
+        this.background = game.add.image(0, 0, currentBgImage);
         this.background.fixedToCamera = true;
         // this.background3 = game.add.image(0,0, 'bgMiddle');
         // this.background2 = game.add.image(0,0, 'bgTop');
@@ -86539,23 +86547,17 @@ GreaterThan.Main.prototype = {
         //Random background fish
         this.bgFishes = this.add.group();
 
-        for (i = 0; i < 15; i++) {
-            this.bgFish = this.bgFishes.create(this.bounds.randomX, this.bounds.randomY, 'bgFish');
-            this.physics.enable(this.bgFish, Phaser.Physics.ARCADE);
-            this.bgFish.scale.setTo(game.rnd.integerInRange(0.5, 1.2));
-            this.bgFish.body.velocity.x = game.rnd.integerInRange(-25, 25);
-            this.bgFish.body.velocity.y = game.rnd.integerInRange(-25, 25);
+        amountOfBgFish = game.rnd.integerInRange(1, 3);
+
+        for (i = 0; i < amountOfBgFish; i++) {
+            this.bgFish = this.bgFishes.create(game.rnd.realInRange(100, this.config.viewSizeX - 100), game.rnd.realInRange(100, this.config.viewSizeY - 100), 'bgFish');
+            this.bgFish.scale.setTo(game.rnd.realInRange(0.5, 1.2));
+            this.bgFish.fixedToCamera = true;
         }
 
-        //Physics for particles
-        this.bgFishPhysics = this.game.make.group();
-        this.bgFishPhysics.create(-50, -50, 'block');
-        this.bgFishes.add(this.bgFishPhysics);
-
-        this.bgFishes.setAll('body.collideWorldBounds', true);
-        this.bgFishes.setAll('body.bounce.x', 1);
-        this.bgFishes.setAll('body.bounce.y', 1);
-        this.bgFishes.setAll('body.minBounceVelocity', 0);
+        if (this.gameState.currentWorld == 2) {
+            this._addKelp(this.bounds);
+        }
 
         //The Background aninimated dust particles
         this.dusts = this.add.group();
@@ -86564,7 +86566,7 @@ GreaterThan.Main.prototype = {
         for (i = 0; i < 100; i++) {
             this.dust = this.dusts.create(this.bounds.randomX, this.bounds.randomY, 'particle');
             this.physics.enable(this.dust, Phaser.Physics.ARCADE);
-            this.dust.scale.setTo(game.rnd.integerInRange(0.001, 1));
+            this.dust.scale.setTo(game.rnd.realInRange(0.1, 1));
             this.dust.body.velocity.x = game.rnd.integerInRange(-20, 20);
             this.dust.body.velocity.y = game.rnd.integerInRange(-22, 20);
         }
@@ -86582,6 +86584,25 @@ GreaterThan.Main.prototype = {
         //enable Input
         // todo: factor out
         this.game.cursors = this.game.input.keyboard.createCursorKeys();
+    },
+    _addKelp: function _addKelp(bounds) {
+        var i;
+
+        console.log("I here... somewhere...");
+
+        //Adding in kelp
+        this.kelpGroup = this.add.group();
+
+        for (i = 0; i < 6; i++) {
+            this.kelp = this.kelpGroup.create(bounds.randomX, this.gameState.worldSizeY, 'kelp1');
+            this.kelp.anchor.setTo(0.5, 1);
+            this.kelp.width = game.rnd.integerInRange(100, 300);
+            this.kelp.height = this.gameState.worldSizeX;
+            this.kelp.alpha = game.rnd.realInRange(0.5, 0.95);
+
+            console.log("This happened");
+            console.log(this.kelp);
+        }
     },
     _addBackgroundColour: function _addBackgroundColour() {
         this._defineBackground();

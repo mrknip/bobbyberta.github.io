@@ -20,6 +20,10 @@
     "particle": "assets2/particle.png",
     "bgFish": "assets2/bg_fish.png",
 
+    "kelpBg": "assets2/kelpBg.png",
+    "kelp1": "assets2/kelp_01.png",
+    "kelp2": "assets2/kelp_02.png",
+
     "play2": "assets2/playButton2.png",
 
     "up": "assets/levelUp.png",
@@ -70,7 +74,7 @@
 
     "greater": "assets/enemyGreaterSquare.png",
     "lesser": "assets/enemyLessSquare.png",
-    
+
     "silver": "assets/silver.png",
     "gold": "assets/gold.png",
     "complete": "assets/completedDepth.png",
